@@ -2,34 +2,109 @@
   <table class="table">
     <thead>
       <tr>
-        <th *ngFor="let col of columns; let i = index">
-          {{ col.header }}
-          <span
-            *ngIf="allowUserToResizeColumns"
-            class="resize-handle"
-            (mousedown)="startResize($event, i)"
-          ></span>
+        <th *ngFor="let col of columns; let i = index" [style.width.px]="col.width">
+          <div class="th-content">
+            {{ col.header }}
+            <span
+              *ngIf="allowUserToResizeColumns"
+              class="resize-handle"
+              (mousedown)="startResize($event, i)"
+            ></span>
+          </div>
         </th>
       </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let row of data; let r = index">
+      <tr
+        *ngFor="let row of data; let r = index"
+        [class.row-focused]="selectionMode === 'FullRowSelect' && focusedCell.row === r"
+        (click)="selectionMode === 'FullRowSelect' ? focusCell(r, 0) : null"
+      >
         <td
           *ngFor="let col of columns; let c = index"
           [class.focused]="focusedCell.row === r && focusedCell.col === c"
-          (click)="selectionMode === 'FullRowSelect' ? focusCell(r, 0) : focusCell(r, c)"
+          (click)="selectionMode !== 'FullRowSelect' ? focusCell(r, c) : null"
         >
-          <input
-            #gridInput
-            type="text"
-            class="cell-input"
-            [(ngModel)]="row[col.field]"
-            (focus)="focusCell(r, c)"
-            (keydown)="handleKeyDown($event, r, c)"
-            (keypress)="handleKeyPress($event, r, c)"
-            autocomplete="off"
-          />
+          <ng-container [ngSwitch]="col.type">
+
+            <!-- 🟦 Text -->
+            <input
+              *ngSwitchCase="'text'"
+              #gridInput
+              type="text"
+              class="cell-input"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+              autocomplete="off"
+            />
+
+            <!-- 🟩 Number -->
+            <input
+              *ngSwitchCase="'number'"
+              #gridInput
+              type="number"
+              class="cell-input number"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+              autocomplete="off"
+            />
+
+            <!-- 🟨 Date -->
+            <input
+              *ngSwitchCase="'date'"
+              #gridInput
+              type="date"
+              class="cell-input"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+            />
+
+            <!-- 🟧 Boolean -->
+            <input
+              *ngSwitchCase="'boolean'"
+              #gridInput
+              type="checkbox"
+              class="cell-checkbox"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+            />
+
+            <!-- 🟪 Select -->
+            <select
+              *ngSwitchCase="'select'"
+              #gridInput
+              class="cell-input"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+            >
+              <option value="">-- Select --</option>
+              <option
+                *ngFor="let opt of parent[col.options]"
+                [value]="opt[col.optionValue]"
+              >
+                {{ opt[col.optionLabel] }}
+              </option>
+            </select>
+
+            <!-- 🟥 Default -->
+            <input
+              *ngSwitchDefault
+              #gridInput
+              type="text"
+              class="cell-input"
+              [(ngModel)]="row[col.field]"
+              (focus)="focusCell(r, c)"
+              (keydown)="handleKeyDown($event, r, c)"
+              autocomplete="off"
+            />
+
+          </ng-container>
         </td>
       </tr>
     </tbody>

@@ -45,7 +45,6 @@ export interface Customer {
   updatedSystemName: string;
   updatedAt: string;
 }
-
 export interface Product {
   productID: number;
   productName: string;
@@ -79,6 +78,7 @@ export interface Product {
   productDescription: string;
   productImage: string;
   companyID: number;
+  branchID: number;
 
   color?: string;
   size?: string;
@@ -94,17 +94,18 @@ export interface Product {
   taxType?: string;
   isGSTInclusive?: boolean;
   taxableValue?: number;
-  cGSTRate?: number;
-  cGSTAmount?: number;
-  sGSTRate?: number;
-  sGSTAmount?: number;
-  iGSTRate?: number;
-  iGSTAmount?: number;
-  cESSRate?: number;
-  cESSAmount?: number;
+
+  cgstRate?: number;
+  cgstAmount?: number;
+  sgstRate?: number;
+  sgstAmount?: number;
+  igstRate?: number;
+  igstAmount?: number;
+  cessRate?: number;
+  cessAmount?: number;
+
   [key: string]: any;
 }
-
 
 export interface Supplier {
   supplierID: number;

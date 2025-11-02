@@ -1,21 +1,36 @@
 /* ================================
+🎨 THEME VARIABLES
+================================= */
+:root {
+  --color-primary: #1D1160;
+  --color-primary-dark: #140C44;
+  --color-secondary: #F4A261;
+  --color-text-light: #ffffff;
+  --color-text-dark: #1D1160;
+  --color-bg-white: #F5F6FA;
+  --color-bg-light: #ffffff;
+  --color-border: #ccd2f1; /* ✅ soft blue border tone */
+  --color-border-hover: #aeb7ec; /* ✅ slightly darker hover tone */
+  --border-radius: 5px;
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ================================
 🧱 GRID CONTAINER
 ================================= */
 .data-grid-container {
   font-family: 'Poppins', sans-serif;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: var(--color-bg-light);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-soft);
   padding: 8px;
-
-  /* Responsive grid area */
   width: 100%;
   height: 100%;
   max-height: calc(100vh - 180px);
   overflow: auto;
-
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--color-border); /* ✅ outer grid boundary */
 }
 
 /* ================================
@@ -33,37 +48,44 @@
 📌 HEADER
 ================================= */
 th {
-  background: #f8f9fa;
+  background: #f6f8fe;
   text-align: left;
   padding: 8px 10px;
   font-weight: 600;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--color-text-dark);
+  border-bottom: 2px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   white-space: nowrap;
   height: 38px;
   position: sticky;
   top: 0;
   z-index: 5;
-  color: #1d1160;
 }
 
-/* Optional: Add subtle divider lines between headers */
+th:last-child {
+  border-right: none;
+}
+
 th + th {
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--color-border);
 }
 
 /* ================================
 🧠 DATA CELLS
 ================================= */
 td {
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   padding: 0;
   vertical-align: middle;
   height: 34px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center; /* ✅ centers text inside cells */
   overflow: hidden;
-  position: relative;
-  transition: background-color 0.1s ease-in-out;
+  transition: background-color 0.15s ease;
+}
+
+td:last-child {
+  border-right: none;
 }
 
 /* ================================
@@ -78,23 +100,22 @@ td {
   font-family: inherit;
   font-size: 14px;
   padding: 4px 6px;
-  text-align: left;
+  text-align: center; /* ✅ centers input text */
   line-height: 1.4;
-  caret-color: transparent; /* hide blinking cursor until editing */
+  caret-color: transparent;
 }
 
-/* Show caret when actively editing (Angular adds a class dynamically if needed) */
 .cell-input.editing {
   caret-color: auto;
-  background-color: #fdfdfd;
+  background-color: #ffffff;
 }
 
 /* ================================
 🔷 FOCUSED CELL
 ================================= */
 td.focused {
-  background-color: #e3f2fd !important;
-  outline: 2px solid #1d1160;
+  background-color: #e7eaff !important; /* ✅ light blue focus fill */
+  outline: 2px solid var(--color-primary);
   outline-offset: -1px;
   transition: outline-color 0.1s ease-in-out;
 }
@@ -103,7 +124,7 @@ td.focused {
 🖱️ HOVER EFFECT
 ================================= */
 td:hover {
-  background-color: #fafafa;
+  background-color: #f3f5ff; /* ✅ subtle hover */
 }
 
 /* ================================
@@ -121,9 +142,8 @@ td:hover {
   z-index: 10;
 }
 
-/* Optional: add subtle visual cue when hovering near edge */
 th:hover .resize-handle {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(29, 17, 96, 0.12);
 }
 
 /* ================================
@@ -135,12 +155,12 @@ th:hover .resize-handle {
 }
 
 .data-grid-container::-webkit-scrollbar-thumb {
-  background: #cfd4da;
+  background: var(--color-border);
   border-radius: 4px;
 }
 
 .data-grid-container::-webkit-scrollbar-thumb:hover {
-  background: #b0b6bd;
+  background: var(--color-border-hover);
 }
 
 /* ================================

@@ -30,6 +30,7 @@ export class InputDataGridComponent implements AfterViewInit {
   @Input() allowUserToResizeColumns = true;
   @Input() readOnly = false;
   @Input() selectionMode: 'CellSelect' | 'FullRowSelect' = 'CellSelect';
+@Input() parent: any = {};
 
   /* =============================
    📤 Events
@@ -105,108 +106,129 @@ export class InputDataGridComponent implements AfterViewInit {
     const index = row * this.columns.length + col;
     return flat[index] || null;
   }
+handleKeyDown(event: KeyboardEvent, row: number, col: number) {
+  const key = event.key.toLowerCase();
 
-  /* ---------------- Keyboard Handling ---------------- */
-  handleKeyDown(event: KeyboardEvent, row: number, col: number) {
-    const key = event.key.toLowerCase();
+  // ✅ Ctrl + N → Add new row
+  if (event.ctrlKey && key === 'n') {
+    event.preventDefault();
+    this.addRow();
+    this.focusCell(this.data.length - 1, 0);
+    return;
+  }
 
-    // ✅ Ctrl + N → Add new row
-    if (event.ctrlKey && key === 'n') {
-      event.preventDefault();
-      this.addRow();
-      this.focusCell(this.data.length - 1, 0);
-      return;
-    }
+  // ✅ Ctrl + Delete → Delete current row
+  if (event.ctrlKey && key === 'delete' && this.allowUserToDeleteRows) {
+    event.preventDefault();
+    this.deleteRow(row);
+    return;
+  }
 
-    // ✅ Ctrl + Delete → Delete current row
-    if (event.ctrlKey && key === 'delete' && this.allowUserToDeleteRows) {
-      event.preventDefault();
-      this.deleteRow(row);
-      return;
-    }
+  // ✅ Delete → Clear cell
+  if (key === 'delete' && !event.ctrlKey) {
+    event.preventDefault();
+    const field = this.columns[col].field;
+    this.data[row][field] = '';
+    this.cellValueChanged.emit({ row, col, value: '' });
+    return;
+  }
 
-    // ✅ Delete → Clear cell
-    if (key === 'delete' && !event.ctrlKey) {
-      event.preventDefault();
-      const field = this.columns[col].field;
-      this.data[row][field] = '';
-      this.cellValueChanged.emit({ row, col, value: '' });
-      return;
-    }
+  // ✅ Enter → Move right or to next row
+  if (key === 'enter') {
+    event.preventDefault();
+    this.disableEditing(row, col);
 
-    // ✅ Enter → Move right or add new row
-    if (key === 'enter') {
-      event.preventDefault();
-      this.disableEditing(row, col);
-
-      if (col < this.columns.length - 1) {
-        // Move to next column
-        this.focusCell(row, col + 1);
-        this.enableEditing(row, col + 1);
-      } else if (row < this.data.length - 1) {
-        // Move to next row
+    if (col < this.columns.length - 1) {
+      // Move to next column in same row
+      this.focusCell(row, col + 1);
+      this.enableEditing(row, col + 1);
+    } else {
+      // Move to next row, first cell
+      if (row < this.data.length - 1) {
         this.focusCell(row + 1, 0);
         this.enableEditing(row + 1, 0);
       } else if (this.allowUserToAddRows) {
-        // Add row at end
+        // Add row if at end
         this.addRow();
         this.focusCell(this.data.length - 1, 0);
         this.enableEditing(this.data.length - 1, 0);
       }
-      return;
     }
+    return;
+  }
 
-    // ✅ Escape → Cancel editing
-    if (key === 'escape') {
-      event.preventDefault();
-      this.disableEditing(row, col);
-      return;
-    }
+  // ✅ Escape → Cancel editing
+  if (key === 'escape') {
+    event.preventDefault();
+    this.disableEditing(row, col);
+    return;
+  }
 
-    // ✅ Tab / Shift + Tab → Navigate horizontally
-    if (key === 'tab') {
-      event.preventDefault();
-      const nextCol = event.shiftKey ? col - 1 : col + 1;
-      if (nextCol >= 0 && nextCol < this.columns.length) {
-        this.focusCell(row, nextCol);
-      } else if (!event.shiftKey && this.allowUserToAddRows && row === this.data.length - 1) {
+  // ✅ Tab / Shift+Tab → Navigate horizontally and wrap
+  if (key === 'tab') {
+    event.preventDefault();
+    const nextCol = event.shiftKey ? col - 1 : col + 1;
+
+    if (nextCol >= 0 && nextCol < this.columns.length) {
+      // Move horizontally within same row
+      this.focusCell(row, nextCol);
+    } else if (!event.shiftKey) {
+      // Move to next row’s first column
+      if (row < this.data.length - 1) {
+        this.focusCell(row + 1, 0);
+      } else if (this.allowUserToAddRows) {
         this.addRow();
         this.focusCell(this.data.length - 1, 0);
       }
-      return;
+    } else {
+      // Shift+Tab at first column → Move to previous row’s last column
+      if (row > 0) {
+        this.focusCell(row - 1, this.columns.length - 1);
+      }
     }
-
-    // ✅ Arrow key navigation with wrapping
-    switch (key) {
-      case 'arrowright':
-        event.preventDefault();
-        if (col < this.columns.length - 1) {
-          this.focusCell(row, col + 1);
-        } else if (row < this.data.length - 1) {
-          this.focusCell(row + 1, 0);
-        }
-        break;
-
-      case 'arrowleft':
-        event.preventDefault();
-        if (col > 0) {
-          this.focusCell(row, col - 1);
-        } else if (row > 0) {
-          this.focusCell(row - 1, this.columns.length - 1);
-        }
-        break;
-
-      case 'arrowup':
-        event.preventDefault();
-        this.focusCell(row - 1, col);
-        break;
-
-      case 'arrowdown':
-        event.preventDefault();
-        this.focusCell(row + 1, col);
-        break;
-    }
+    return;
   }
+
+  // ✅ Arrow key navigation with wrapping
+  switch (key) {
+    case 'arrowright':
+      event.preventDefault();
+      if (col < this.columns.length - 1) {
+        this.focusCell(row, col + 1);
+      } else if (row < this.data.length - 1) {
+        this.focusCell(row + 1, 0);
+      } else if (this.allowUserToAddRows) {
+        this.addRow();
+        this.focusCell(this.data.length - 1, 0);
+      }
+      break;
+
+    case 'arrowleft':
+      event.preventDefault();
+      if (col > 0) {
+        this.focusCell(row, col - 1);
+      } else if (row > 0) {
+        this.focusCell(row - 1, this.columns.length - 1);
+      }
+      break;
+
+    case 'arrowup':
+      event.preventDefault();
+      if (row > 0) this.focusCell(row - 1, col);
+      break;
+
+    case 'arrowdown':
+      event.preventDefault();
+      if (row < this.data.length - 1) {
+        this.focusCell(row + 1, col);
+      } else if (this.allowUserToAddRows) {
+        this.addRow();
+        this.focusCell(this.data.length - 1, col);
+      }
+      break;
+  }
+}
+
 
   handleKeyPress(event: KeyboardEvent, row: number, col: number) {
     if (event.key.length === 1 && !this.isEditingCell(row, col)) {

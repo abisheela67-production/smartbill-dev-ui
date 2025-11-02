@@ -1,12 +1,38 @@
+<div class="product-management">
+  <div class="header">
+    <h1 class="page-title">🧾 Product Management</h1>
 
+    <div class="action-buttons">
+      <button type="button" class="btn btn-primary" (click)="addNewProduct()">➕ Add Product</button>
+      <button type="button" class="btn btn-secondary" (click)="saveAllProducts()">💾 Save</button>
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Product List</h3>
+    </div>
 
     <div class="card-body flex-grow-1 overflow-auto">
       <app-input-data-grid
         [columns]="columns"
         [data]="products"
+        [parent]="{
+          companies: companies,
+          categories: categories,
+          subCategories: subCategories,
+          brands: brands,
+          units: units,
+          hsnCodes: hsnCodes,
+          taxes: taxes,
+          cesses: cesses
+        }"
+        selectionMode="CellSelect"
+        [allowUserToAddRows]="true"
+        [allowUserToDeleteRows]="true"
+        [allowUserToResizeColumns]="true"
         (cellValueChanged)="onCellValueChanged($event)"
-        (rowAdded)="onRowAdded($event)">
-      </app-input-data-grid>
+      ></app-input-data-grid>
     </div>
-
+  </div>
+</div>

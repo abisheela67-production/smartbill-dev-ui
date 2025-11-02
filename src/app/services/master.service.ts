@@ -3,7 +3,7 @@ import { environment } from '../config';
 import { HttpClient } from '@angular/common/http';  
 import { Observable } from 'rxjs';
 import { Brand, Category, Customer, Cess,Product, Supplier, Tax, Unit, HSN, Service, SubCategory } from './../pages/models/common-models/master-models/master';
-
+import forkJoin from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
@@ -56,10 +56,11 @@ export class MasterService {
     return this.http.get<Product[]>(`${this.baseUrl}/GetProducts`);
   }
 
-
-  saveProduct(product: Product): Observable<any> {
+  /** Save a single product */
+  saveProduct(product: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Product`, product);
   }
+
 
   // ================= Supplier =================
   getSuppliers(): Observable<Supplier[]> {
