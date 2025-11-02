@@ -4,11 +4,11 @@ import { RouterModule, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { NavItem } from '../nav';
-
+import { SharedModule } from '../../../shared/shared.module';
 @Component({
   selector: 'app-default-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SharedModule],
   templateUrl: './default-header.component.html',
   styleUrls: ['./default-header.component.css']
 })

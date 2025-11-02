@@ -1,50 +1,83 @@
 <div class="container mt-5">
-
   <div class="row g-4">
     <!-- User Form -->
     <div class="col-lg-4 col-md-5">
       <div class="form-container">
-  <h2 class="mb-4 text-primary fw-bold text-center">User Master</h2>
+        <h2 class="mb-4 text-primary fw-bold text-center">User Master</h2>
 
         <form (ngSubmit)="saveOrUpdateUser()" #userForm="ngForm">
-
           <div class="form-column mb-3">
             <label>User Name</label>
-            <input type="text" [(ngModel)]="user.userName" name="userName" class="form-control" required>
+            <input
+              type="text"
+              [(ngModel)]="user.userName"
+              name="userName"
+              class="form-control"
+              required
+            />
           </div>
 
           <div class="form-column mb-3">
-  <label>Password</label>
-  <input type="text" [(ngModel)]="user.passwordHash" name="passwordHash" class="form-control" 
-         [required]="user.userID === 0">
-</div>
+            <label>Password</label>
+            <input
+              type="text"
+              [(ngModel)]="user.passwordHash"
+              name="passwordHash"
+              class="form-control"
+              [required]="user.userID === 0"
+            />
+          </div>
 
           <div class="form-column mb-3">
             <label>Email</label>
-            <input type="email" [(ngModel)]="user.email" name="email" class="form-control" required>
+            <input
+              type="email"
+              [(ngModel)]="user.email"
+              name="email"
+              class="form-control"
+              required
+            />
           </div>
 
           <div class="form-column mb-3">
             <label>Company</label>
-            <select class="form-select" [(ngModel)]="user.companyID" name="companyID">
+            <select
+              class="form-select"
+              [(ngModel)]="user.companyID"
+              name="companyID"
+            >
               <option [ngValue]="0">-- Select Company --</option>
-              <option *ngFor="let c of companies" [ngValue]="c.companyID">{{ c.companyName }}</option>
+              <option *ngFor="let c of companies" [ngValue]="c.companyID">
+                {{ c.companyName }}
+              </option>
             </select>
           </div>
 
           <div class="form-column mb-3">
             <label>Branch</label>
-            <select class="form-select" [(ngModel)]="user.branchID" name="branchID">
+            <select
+              class="form-select"
+              [(ngModel)]="user.branchID"
+              name="branchID"
+            >
               <option [ngValue]="0">-- Select Branch --</option>
-              <option *ngFor="let b of branches" [ngValue]="b.branchID">{{ b.branchName }}</option>
+              <option *ngFor="let b of branches" [ngValue]="b.branchID">
+                {{ b.branchName }}
+              </option>
             </select>
           </div>
 
           <div class="form-column mb-3">
             <label>Department</label>
-            <select class="form-select" [(ngModel)]="user.departmentID" name="departmentID">
+            <select
+              class="form-select"
+              [(ngModel)]="user.departmentID"
+              name="departmentID"
+            >
               <option [ngValue]="0">-- Select Department --</option>
-              <option *ngFor="let d of departments" [ngValue]="d.departmentID">{{ d.departmentName }}</option>
+              <option *ngFor="let d of departments" [ngValue]="d.departmentID">
+                {{ d.departmentName }}
+              </option>
             </select>
           </div>
 
@@ -52,21 +85,30 @@
             <label>Role</label>
             <select class="form-select" [(ngModel)]="user.roleID" name="roleID">
               <option [ngValue]="0">-- Select Role --</option>
-              <option *ngFor="let r of roles" [ngValue]="r.roleID">{{ r.roleName }}</option>
+              <option *ngFor="let r of roles" [ngValue]="r.roleID">
+                {{ r.roleName }}
+              </option>
             </select>
           </div>
 
           <div class="form-column mb-3 checkbox-column">
             <label>
-              <input type="checkbox" [(ngModel)]="user.isActive" name="isActive"> Active
+              <input
+                type="checkbox"
+                [(ngModel)]="user.isActive"
+                name="isActive"
+              />
+              Active
             </label>
           </div>
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-              {{ user.userID > 0 ? 'Update' : 'Save' }}
+              {{ user.userID > 0 ? "Update" : "Save" }}
             </button>
-            <button type="button" class="btn btn-outline" (click)="resetForm()">Reset</button>
+            <button type="button" class="btn btn-outline" (click)="resetForm()">
+              Reset
+            </button>
           </div>
         </form>
       </div>
@@ -101,27 +143,39 @@
                 <td>{{ getDepartmentName(u.departmentID) }}</td>
                 <td>{{ getRoleName(u.roleID) }}</td>
                 <td>
-                  <span class="badge" [ngClass]="u.isActive ? 'bg-success' : 'bg-danger'">
-                    {{ u.isActive ? 'Active' : 'Inactive' }}
+                  <span
+                    class="badge"
+                    [ngClass]="u.isActive ? 'bg-success' : 'bg-danger'"
+                  >
+                    {{ u.isActive ? "Active" : "Inactive" }}
                   </span>
                 </td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-outline-warning me-1" (click)="editUser(u)" title="Edit">
+                  <button
+                    class="btn btn-sm btn-outline-warning me-1"
+                    (click)="editUser(u)"
+                    title="Edit"
+                  >
                     <i class="bi bi-pencil-fill"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(u)" title="Delete">
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="deleteUser(u)"
+                    title="Delete"
+                  >
                     <i class="bi bi-trash-fill"></i>
                   </button>
                 </td>
               </tr>
               <tr *ngIf="users.length === 0">
-                <td colspan="9" class="text-center text-muted">No users found.</td>
+                <td colspan="9" class="text-center text-muted">
+                  No users found.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-
   </div>
 </div>

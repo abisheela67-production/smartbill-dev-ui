@@ -1,77 +1,75 @@
 <header class="header">
-  <div class="header-inner">
-    <!-- Left: App Title -->
-    <div class="app-title">SmartBillPro</div>
+  <div class="top-header">
+    <div class="left">
+      <div class="brand">
+        <span class="brand-text">SmartBillPro</span>
+      </div>
 
-    <!-- Center: Navigation -->
-    <nav class="header-nav">
-      <ul class="nav-list">
-        <li
-          class="nav-item"
-          *ngFor="let item of navItems"
-          [class.open]="item.expanded"
-          (mouseenter)="onMouseEnter(item)"
-          (mouseleave)="onMouseLeave(item)"
-        >
-          <a
-            [routerLink]="item.route || ''"
-            class="nav-link"
-            routerLinkActive="active"
-          >
-            {{ item.label }}
-            <svg
-              *ngIf="item.children?.length"
-              class="dropdown-icon"
-              viewBox="0 0 20 20"
-            >
-              <path d="M5 7l5 5 5-5H5z"></path>
-            </svg>
-          </a>
+      <div class="search-box">
+        <input type="text" placeholder="Search..." />
+      </div>
+    </div>
 
-          <!-- Submenu -->
-          <ul
-            *ngIf="item.children?.length"
-            class="submenu"
-            [class.show]="item.expanded"
-          >
-            <li *ngFor="let sub of item.children">
-              <a
-                [routerLink]="sub.route || ''"
-                class="submenu-link"
-                routerLinkActive="active"
-              >
-                {{ sub.label }}
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Right: User Menu -->
-    <div class="header-right" *ngIf="isLoggedIn()">
-      <div class="user-menu" (click)="toggleUserDropdown($event)">
-        <div class="user-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2h19.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"
-            />
-          </svg>
-        </div>
+    <div class="right" *ngIf="isLoggedIn()">
+    
+      <div
+        class="user-menu"
+        [class.open]="userDropdownOpen"
+        (click)="toggleUserDropdown($event)"
+      >
         <div class="user-info">
           <span class="username">{{ getCurrentUserName() || 'User' | titlecase }}</span>
-          <span class="role">({{ getCurrentUserRole() || 'Guest' | titlecase }})</span>
+          <span class="role">{{ getCurrentUserRole() || 'Guest' | titlecase }}</span>
         </div>
-        <svg class="dropdown-icon" viewBox="0 0 20 20">
-          <path d="M5 7l5 5 5-5H5z"></path>
-        </svg>
+        <lucide-angular name="chevron-down" class="dropdown-icon"></lucide-angular>
       </div>
 
       <ul class="dropdown" *ngIf="userDropdownOpen">
-        <li (click)="goToProfile()">Profile</li>
-        <li (click)="goToSettings()">Settings</li>
-        <li (click)="logout()">Logout</li>
+        <li (click)="goToProfile()">
+          <lucide-angular name="user"></lucide-angular> Profile
+        </li>
+        <li (click)="goToSettings()">
+          <lucide-angular name="settings"></lucide-angular> Settings
+        </li>
+        <li (click)="logout()">
+          <lucide-angular name="log-out"></lucide-angular> Logout
+        </li>
       </ul>
     </div>
   </div>
+
+  <nav class="nav-bar">
+    <ul class="nav-list">
+      <li
+        class="nav-item"
+        *ngFor="let item of navItems"
+        [class.open]="item.expanded"
+        (mouseenter)="onMouseEnter(item)"
+        (mouseleave)="onMouseLeave(item)"
+      >
+        <a [routerLink]="item.route || ''" class="nav-link" routerLinkActive="active">
+          <lucide-angular *ngIf="item.icon" [name]="item.icon"></lucide-angular>
+          <span>{{ item.label }}</span>
+          <lucide-angular
+            *ngIf="item.children?.length"
+            name="chevron-down"
+            class="submenu-icon"
+          ></lucide-angular>
+        </a>
+
+        <ul *ngIf="item.children?.length" class="submenu" [class.show]="item.expanded">
+          <li *ngFor="let sub of item.children">
+            <a
+              [routerLink]="sub.route || ''"
+              class="submenu-link"
+              routerLinkActive="active"
+            >
+              <lucide-angular *ngIf="sub.icon" [name]="sub.icon"></lucide-angular>
+              {{ sub.label }}
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
 </header>

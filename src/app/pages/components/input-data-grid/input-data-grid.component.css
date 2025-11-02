@@ -1,90 +1,161 @@
-/* 🧱 Grid Container */
+/* ================================
+🧱 GRID CONTAINER
+================================= */
 .data-grid-container {
   font-family: 'Poppins', sans-serif;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 8px;
+
+  /* Responsive grid area */
   width: 100%;
-  height: calc(100vh - 160px);
+  height: 100%;
+  max-height: calc(100vh - 180px);
   overflow: auto;
+
   display: flex;
   flex-direction: column;
 }
 
-/* 🧾 Table Styling */
+/* ================================
+🧾 TABLE STYLING
+================================= */
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
   table-layout: auto;
   flex: 1;
-  border: 1px solid #dcdcdc;
 }
 
-/* 🧩 Header */
+/* ================================
+📌 HEADER
+================================= */
 th {
-  background: #f7f7f7;
+  background: #f8f9fa;
   text-align: left;
-  padding: 6px 8px;
+  padding: 8px 10px;
   font-weight: 600;
-  border: 1px solid #dcdcdc;
+  border-bottom: 2px solid #e5e7eb;
   white-space: nowrap;
-  height: 30px;
+  height: 38px;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 5;
+  color: #1d1160;
 }
 
-/* 🧠 Table Cells */
+/* Optional: Add subtle divider lines between headers */
+th + th {
+  border-left: 1px solid #eee;
+}
+
+/* ================================
+🧠 DATA CELLS
+================================= */
 td {
-  border: 1px solid #e0e0e0;
-  padding: 4px 6px;
-  vertical-align: top; /* ✅ top aligns multiline text */
-  transition: background 0.15s ease-in-out;
+  border-bottom: 1px solid #f1f1f1;
+  padding: 0;
+  vertical-align: middle;
+  height: 34px;
   text-overflow: ellipsis;
-  white-space: normal; /* ✅ allow text to wrap */
-  word-break: break-word; /* ✅ break long text gracefully */
-  min-height: 24px; /* default compact height */
-  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  transition: background-color 0.1s ease-in-out;
 }
 
-/* ✨ Input Cell */
+/* ================================
+✏️ INPUT CELL
+================================= */
 .cell-input {
   width: 100%;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
-  padding: 2px 4px;
+  font-size: 14px;
+  padding: 4px 6px;
   text-align: left;
   line-height: 1.4;
-  resize: none; /* ✅ prevents manual resize, but auto expands */
-  overflow: hidden;
-  white-space: normal;
-  word-break: break-word;
-  caret-color: transparent;
+  caret-color: transparent; /* hide blinking cursor until editing */
 }
 
-/* 🔷 Focused Cell */
+/* Show caret when actively editing (Angular adds a class dynamically if needed) */
+.cell-input.editing {
+  caret-color: auto;
+  background-color: #fdfdfd;
+}
+
+/* ================================
+🔷 FOCUSED CELL
+================================= */
 td.focused {
-  background-color: #e3f2fd;
-  outline: 1px solid #2196f3;
+  background-color: #e3f2fd !important;
+  outline: 2px solid #1d1160;
+  outline-offset: -1px;
+  transition: outline-color 0.1s ease-in-out;
 }
 
-/* 🖱️ Hover */
+/* ================================
+🖱️ HOVER EFFECT
+================================= */
 td:hover {
-  background-color: #f9f9f9;
+  background-color: #fafafa;
 }
 
-/* 🪟 Smooth Scrolling */
+/* ================================
+📏 RESIZE HANDLE
+================================= */
+.resize-handle {
+  display: inline-block;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: transparent;
+  z-index: 10;
+}
+
+/* Optional: add subtle visual cue when hovering near edge */
+th:hover .resize-handle {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ================================
+🪟 SCROLLBAR
+================================= */
 .data-grid-container::-webkit-scrollbar {
   height: 8px;
   width: 8px;
 }
 
 .data-grid-container::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #cfd4da;
   border-radius: 4px;
+}
+
+.data-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #b0b6bd;
+}
+
+/* ================================
+📱 RESPONSIVE IMPROVEMENTS
+================================= */
+@media (max-width: 768px) {
+  .table {
+    font-size: 13px;
+  }
+
+  th {
+    padding: 6px 8px;
+  }
+
+  .cell-input {
+    padding: 3px 4px;
+  }
 }

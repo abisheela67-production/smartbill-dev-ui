@@ -2,46 +2,32 @@
   <div class="login-card shadow-lg">
     <!-- Brand Section -->
     <div class="brand-section">
-      <svg viewBox="0 0 120 120" width="84" height="84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
-        <rect width="120" height="120" rx="22" fill="none" />
-        <g transform="translate(12,10)">
-          <path d="M18 84 L36 20 L56 84 Z" fill="currentColor"/>
-          <path d="M38 36c-6-2-10 1-12 3-2 2-3.5 6.5 0 10.5 3.5 4 10 4 15 6 4.7 1.7 7.5 5 6.5 9-1 4.2-5.3 6.5-10 7.5" fill="white"/>
-        </g>
-      </svg>
-
       <h1 class="company-name">SmartBillPro</h1>
     </div>
 
-    <!-- Login Title -->
-    <h2 class="login-title" [style.color]="colors.primary">Welcome Back</h2>
+    <!-- Title -->
+    <h2 class="login-title">Welcome Back</h2>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Username -->
       <div class="form-group">
-        <label for="username" class="form-label">Username</label>
+        <label for="username" class="form-label required">Username</label>
         <input type="text" id="username" formControlName="username" placeholder="Enter your username" autocomplete="username">
         <div class="error" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
           Username is required
         </div>
       </div>
 
-      <!-- Password -->
       <div class="form-group">
-        <label for="password" class="form-label">Password</label>
+        <label for="password" class="form-label required">Password</label>
         <input type="password" id="password" formControlName="password" placeholder="Enter your password" autocomplete="current-password">
         <div class="error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
           Password is required
         </div>
       </div>
 
-      <!-- Error message -->
       <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-      <!-- Login button -->
-      <button type="submit" [style.backgroundColor]="colors.primary" [style.color]="colors.textLight">
-        Login
-      </button>
+      <button type="submit">Login</button>
     </form>
   </div>
 </div>

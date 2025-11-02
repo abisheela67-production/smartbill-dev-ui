@@ -19,7 +19,6 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./input-data-grid.component.css'],
 })
 export class InputDataGridComponent implements AfterViewInit {
-
   /* =============================
    🧠 DataGridView-Like Properties
   ==============================*/
@@ -29,7 +28,6 @@ export class InputDataGridComponent implements AfterViewInit {
   @Input() allowUserToAddRows = true;
   @Input() allowUserToDeleteRows = false;
   @Input() allowUserToResizeColumns = true;
-
   @Input() readOnly = false;
   @Input() selectionMode: 'CellSelect' | 'FullRowSelect' = 'CellSelect';
 
@@ -45,10 +43,10 @@ export class InputDataGridComponent implements AfterViewInit {
   @Output() columnResized = new EventEmitter<any>();
 
   /* =============================
-   🔧 Internal state
+   🔧 Internal State
   ==============================*/
   @ViewChildren('gridInput') inputs!: QueryList<ElementRef>;
-  focusedCell = { row: -1, col: -1 };
+  focusedCell = { row: 0, col: 0 };
   editingCell = { row: -1, col: -1 };
 
   resizingColumn: number | null = null;
@@ -56,30 +54,46 @@ export class InputDataGridComponent implements AfterViewInit {
   startWidth: number | null = null;
 
   ngAfterViewInit() {
-    if (this.data.length) setTimeout(() => this.focusCell(0, 0), 200);
+    if (this.data.length) setTimeout(() => this.focusCell(0, 0), 150);
   }
 
   /* ---------------- Focus & Navigation ---------------- */
   focusCell(row: number, col: number) {
+    if (row < 0 || col < 0) return;
+    if (row >= this.data.length) row = this.data.length - 1;
+    if (col >= this.columns.length) col = this.columns.length - 1;
+
     this.focusedCell = { row, col };
     this.cellFocus.emit({ row, col, field: this.columns[col].field });
+
+    // Wait until inputs are ready
+    setTimeout(() => {
+      const input = this.getInput(row, col);
+      if (input) input.nativeElement.focus();
+    }, 30);
   }
 
   enableEditing(row: number, col: number) {
     if (this.readOnly) return;
     this.editingCell = { row, col };
     this.cellBeginEdit.emit({ row, col });
-    setTimeout(() => this.getInput(row, col)?.nativeElement.focus(), 10);
+    setTimeout(() => {
+      const input = this.getInput(row, col);
+      if (input) {
+        input.nativeElement.focus();
+        input.nativeElement.select();
+      }
+    }, 10);
   }
 
   disableEditing(row: number, col: number) {
-    if (this.isEditingCell(row, col)) {
-      const field = this.columns[col].field;
-      const value = this.data[row][field];
-      this.cellEndEdit.emit({ row, col, value });
-      this.cellValueChanged.emit({ row, col, value });
-      this.editingCell = { row: -1, col: -1 };
-    }
+    if (!this.isEditingCell(row, col)) return;
+
+    const field = this.columns[col].field;
+    const value = this.data[row][field];
+    this.cellEndEdit.emit({ row, col, value });
+    this.cellValueChanged.emit({ row, col, value });
+    this.editingCell = { row: -1, col: -1 };
   }
 
   isEditingCell(row: number, col: number): boolean {
@@ -87,7 +101,7 @@ export class InputDataGridComponent implements AfterViewInit {
   }
 
   getInput(row: number, col: number): ElementRef | null {
-    const flat = this.inputs.toArray();
+    const flat = this.inputs?.toArray();
     const index = row * this.columns.length + col;
     return flat[index] || null;
   }
@@ -96,54 +110,129 @@ export class InputDataGridComponent implements AfterViewInit {
   handleKeyDown(event: KeyboardEvent, row: number, col: number) {
     const key = event.key.toLowerCase();
 
+    // ✅ Ctrl + N → Add new row
+    if (event.ctrlKey && key === 'n') {
+      event.preventDefault();
+      this.addRow();
+      this.focusCell(this.data.length - 1, 0);
+      return;
+    }
+
+    // ✅ Ctrl + Delete → Delete current row
+    if (event.ctrlKey && key === 'delete' && this.allowUserToDeleteRows) {
+      event.preventDefault();
+      this.deleteRow(row);
+      return;
+    }
+
+    // ✅ Delete → Clear cell
+    if (key === 'delete' && !event.ctrlKey) {
+      event.preventDefault();
+      const field = this.columns[col].field;
+      this.data[row][field] = '';
+      this.cellValueChanged.emit({ row, col, value: '' });
+      return;
+    }
+
+    // ✅ Enter → Move right or add new row
     if (key === 'enter') {
       event.preventDefault();
-      if (this.isEditingCell(row, col)) {
-        this.disableEditing(row, col);
-        const nextCol = col < this.columns.length - 1 ? col + 1 : 0;
-        const nextRow = nextCol === 0 && row < this.data.length - 1 ? row + 1 : row;
-        setTimeout(() => this.focusCell(nextRow, nextCol), 10);
-      } else {
-        this.enableEditing(row, col);
+      this.disableEditing(row, col);
+
+      if (col < this.columns.length - 1) {
+        // Move to next column
+        this.focusCell(row, col + 1);
+        this.enableEditing(row, col + 1);
+      } else if (row < this.data.length - 1) {
+        // Move to next row
+        this.focusCell(row + 1, 0);
+        this.enableEditing(row + 1, 0);
+      } else if (this.allowUserToAddRows) {
+        // Add row at end
+        this.addRow();
+        this.focusCell(this.data.length - 1, 0);
+        this.enableEditing(this.data.length - 1, 0);
       }
       return;
     }
 
-    // Arrow keys navigation
+    // ✅ Escape → Cancel editing
+    if (key === 'escape') {
+      event.preventDefault();
+      this.disableEditing(row, col);
+      return;
+    }
+
+    // ✅ Tab / Shift + Tab → Navigate horizontally
+    if (key === 'tab') {
+      event.preventDefault();
+      const nextCol = event.shiftKey ? col - 1 : col + 1;
+      if (nextCol >= 0 && nextCol < this.columns.length) {
+        this.focusCell(row, nextCol);
+      } else if (!event.shiftKey && this.allowUserToAddRows && row === this.data.length - 1) {
+        this.addRow();
+        this.focusCell(this.data.length - 1, 0);
+      }
+      return;
+    }
+
+    // ✅ Arrow key navigation with wrapping
     switch (key) {
       case 'arrowright':
+        event.preventDefault();
         if (col < this.columns.length - 1) {
-          event.preventDefault();
           this.focusCell(row, col + 1);
+        } else if (row < this.data.length - 1) {
+          this.focusCell(row + 1, 0);
         }
         break;
+
       case 'arrowleft':
+        event.preventDefault();
         if (col > 0) {
-          event.preventDefault();
           this.focusCell(row, col - 1);
+        } else if (row > 0) {
+          this.focusCell(row - 1, this.columns.length - 1);
         }
         break;
+
       case 'arrowup':
-        if (row > 0) {
-          event.preventDefault();
-          this.focusCell(row - 1, col);
-        }
+        event.preventDefault();
+        this.focusCell(row - 1, col);
         break;
+
       case 'arrowdown':
-        if (row < this.data.length - 1) {
-          event.preventDefault();
-          this.focusCell(row + 1, col);
-        }
+        event.preventDefault();
+        this.focusCell(row + 1, col);
         break;
+    }
+  }
+
+  handleKeyPress(event: KeyboardEvent, row: number, col: number) {
+    if (event.key.length === 1 && !this.isEditingCell(row, col)) {
+      this.enableEditing(row, col);
+      setTimeout(() => {
+        const field = this.columns[col].field;
+        this.data[row][field] = event.key;
+        this.cellValueChanged.emit({ row, col, value: event.key });
+      }, 10);
     }
   }
 
   /* ---------------- Row Management ---------------- */
   addRow() {
     const newRow: any = {};
-    this.columns.forEach(c => (newRow[c.field] = ''));
+    this.columns.forEach((c) => (newRow[c.field] = ''));
     this.data.push(newRow);
     this.rowAdded.emit(newRow);
+  }
+
+  deleteRow(row: number) {
+    if (row < 0 || row >= this.data.length) return;
+    this.data.splice(row, 1);
+    this.rowDeleted.emit(row);
+    const next = Math.min(row, this.data.length - 1);
+    this.focusCell(next, 0);
   }
 
   /* ---------------- Column Resize ---------------- */
@@ -159,7 +248,7 @@ export class InputDataGridComponent implements AfterViewInit {
   resizeMove = (event: MouseEvent) => {
     if (this.resizingColumn === null) return;
     const dx = event.pageX - (this.startX ?? 0);
-    const newWidth = Math.max(50, (this.startWidth ?? 0) + dx);
+    const newWidth = Math.max(60, (this.startWidth ?? 0) + dx);
     const th = document.querySelectorAll('th')[this.resizingColumn];
     if (th) (th as HTMLElement).style.width = `${newWidth}px`;
   };
@@ -170,24 +259,4 @@ export class InputDataGridComponent implements AfterViewInit {
     document.removeEventListener('mousemove', this.resizeMove);
     document.removeEventListener('mouseup', this.resizeStop);
   };
- handleKeyPress(event: KeyboardEvent, row: number, col: number) {
-  // Only allow typing in focused cell
-  if (!(this.focusedCell.row === row && this.focusedCell.col === col)) {
-    event.preventDefault();
-    return;
-  }
-
-  const key = event.key;
-
-  // Allow only A-Z, a-z, 0-9
-  const isValidChar = /^[a-zA-Z0-9]$/.test(key);
-  if (!isValidChar) {
-    event.preventDefault();
-    return;
-  }
-
-  // Type character into focused cell
-  const field = this.columns[col].field;
-  this.data[row][field] = (this.data[row][field] || '') + key;
-}
 }
