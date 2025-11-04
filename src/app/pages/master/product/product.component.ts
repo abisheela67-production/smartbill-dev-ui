@@ -1,13 +1,16 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { HostListener } from '@angular/core';
+import { SharedModule } from '../../../shared/shared.module';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import * as ExcelJS from 'exceljs';
 import { MasterService } from '../../../services/master.service';
 import { ValidationService } from '../../../services/properties/validation.service';
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
-
+import { saveAs } from 'file-saver';
 import {
   Product,
   Category,
@@ -19,6 +22,8 @@ import {
   Cess,
 } from '../../models/common-models/master-models/master';
 import { Company } from '../../models/common-models/companyMaster';
+import { IconsModule } from '../../../shared/icons.module';
+import { icons } from 'lucide-angular';
 
 interface ApiResponse {
   success: boolean;
@@ -28,13 +33,13 @@ interface ApiResponse {
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [FormsModule, CommonModule, InputDataGridComponent],
+  imports: [FormsModule, CommonModule, InputDataGridComponent,SharedModule,IconsModule],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent implements OnInit, AfterViewInit {
   @ViewChild(InputDataGridComponent) grid!: InputDataGridComponent;
-
+@HostListener('window:keydown', ['$event'])
   products: Product[] = [];
   companies: Company[] = [];
   categories: Category[] = [];
@@ -190,6 +195,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
     this.products.push(this.newProduct());
     this.focusLastRow();
   }
+  private updateSerialNumbers(): void {
+  this.products.forEach((p, index) => {
+    p.sno = index + 1;
+  });
+}
+
 
   private focusFirstGridCell(): void {
     if (this.grid && this.products.length > 0) {
@@ -201,6 +212,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
     const newProd = this.newProduct();
     this.products.push(newProd);
     this.focusLastRow();
+      this.updateSerialNumbers();
   }
 
   private focusLastRow(): void {
@@ -353,4 +365,84 @@ export class ProductComponent implements OnInit, AfterViewInit {
       this.swall.error('Error', 'All products failed to save.');
     }
   }
+
+async downloadTemplate() {
+  try {
+    // ✅ Use already loaded dropdowns, or fetch if empty
+    const masterData = {
+      categories: this.categories?.length ? this.categories : await this.masterService.getCategories().toPromise(),
+      subCategories: this.subCategories?.length ? this.subCategories : await this.masterService.getSubCategories().toPromise(),
+      brands: this.brands?.length ? this.brands : await this.masterService.getBrands().toPromise(),
+      units: this.units?.length ? this.units : await this.masterService.getUnits().toPromise(),
+      hsnCodes: this.hsnCodes?.length ? this.hsnCodes : await this.masterService.getHSNCodes().toPromise(),
+      taxes: this.taxes?.length ? this.taxes : await this.masterService.getTaxes().toPromise(),
+      cesses: this.cesses?.length ? this.cesses : await this.masterService.getCesses().toPromise(),
+      companies: this.companies?.length ? this.companies : await this.commonService.getCompanies().toPromise(),
+    };
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Product Template');
+
+    const headers = this.columns.map(col => col.header);
+    sheet.addRow(headers);
+
+   const categories = masterData.categories?.map((x: any) => x.categoryName) ?? [];
+const subCategories = masterData.subCategories?.map((x: any) => x.subCategoryName) ?? [];
+const brands = masterData.brands?.map((x: any) => x.brandName) ?? [];
+const units = masterData.units?.map((x: any) => x.unitName) ?? [];
+const hsnCodes = masterData.hsnCodes?.map((x: any) => x.hsnCode) ?? [];
+const taxes = masterData.taxes?.map((x: any) => x.taxName) ?? [];
+const cesses = masterData.cesses?.map((x: any) => x.cessName) ?? [];
+const companies = masterData.companies?.map((x: any) => x.companyName) ?? [];
+
+
+    for (let i = 2; i <= 200; i++) {
+      sheet.getCell(`G${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${categories.join(',')}"`] };
+      sheet.getCell(`H${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${subCategories.join(',')}"`] };
+      sheet.getCell(`I${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${brands.join(',')}"`] };
+      sheet.getCell(`J${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${units.join(',')}"`] };
+      sheet.getCell(`K${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${units.join(',')}"`] };
+      sheet.getCell(`L${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${hsnCodes.join(',')}"`] };
+      sheet.getCell(`M${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${taxes.join(',')}"`] };
+      sheet.getCell(`N${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${cesses.join(',')}"`] };
+      sheet.getCell(`O${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${companies.join(',')}"`] };
+    }
+
+    sheet.getRow(1).font = { bold: true };
+    sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    sheet.columns.forEach(col => (col.width = 20));
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), 'ProductMasterTemplate.xlsx');
+
+    this.swall.success('Template Downloaded', 'Excel template generated successfully!');
+  } catch (err) {
+    console.error('Template download error:', err);
+    this.swall.error('Error', 'Failed to generate template');
+  }
+}
+
+@HostListener('window:keydown', ['$event'])
+handleKeyboardShortcuts(e: KeyboardEvent) {
+  if (e.shiftKey && e.key.toLowerCase() === 'n') {
+    e.preventDefault();
+    this.addNewProduct();
+  }
+  if (e.shiftKey && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    this.saveAllProducts();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 }

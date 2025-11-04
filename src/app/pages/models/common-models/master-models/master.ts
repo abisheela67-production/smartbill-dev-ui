@@ -46,6 +46,7 @@ export interface Customer {
   updatedAt: string;
 }
 export interface Product {
+   sno?: number;
   productID: number;
   productName: string;
   productCode: string;

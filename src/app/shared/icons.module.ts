@@ -6,7 +6,8 @@ import {
   Package, Tag, Grid, UserRound, Hash, Box, Briefcase,
   LayoutGrid, Truck, Percent, Ruler, Droplet,
   ShoppingCart, FilePlus, FileText, FileX,
-  DollarSign, FilePlus2, FileX2,ChevronDown,Search
+  DollarSign, FilePlus2, FileX2, ChevronDown, Search,
+  Download, Plus, Save // ✅ add these three
 } from 'lucide-angular';
 
 @NgModule({
@@ -17,7 +18,8 @@ import {
       Package, Tag, Grid, UserRound, Hash, Box, Briefcase,
       LayoutGrid, Truck, Percent, Ruler, Droplet,
       ShoppingCart, FilePlus, FileText, FileX,
-      DollarSign, FilePlus2, FileX2,ChevronDown,Search
+      DollarSign, FilePlus2, FileX2, ChevronDown, Search,
+      Download, Plus, Save // ✅ must also include here
     }),
   ],
   exports: [LucideAngularModule],

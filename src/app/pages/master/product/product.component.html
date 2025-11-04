@@ -1,17 +1,25 @@
 <div class="product-management">
-  <div class="header">
-    <h1 class="page-title">🧾 Product Management</h1>
 
-    <div class="action-buttons">
-      <button type="button" class="btn btn-primary" (click)="addNewProduct()">➕ Add Product</button>
-      <button type="button" class="btn btn-secondary" (click)="saveAllProducts()">💾 Save</button>
-    </div>
-  </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Product List</h3>
+        <div class="header">
+    <h1 class="page-title">Product Management</h1>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="downloadTemplate()">
+        Download Product Template
+      </button>
+
+      <button class="btn btn-primary" (click)="addNewProduct()">
+        Add Product
+      </button>
+
+      <button class="btn btn-secondary" (click)="saveAllProducts()">
+        Save
+      </button>
     </div>
+
 
     <div class="card-body flex-grow-1 overflow-auto">
       <app-input-data-grid
@@ -27,7 +35,7 @@
           taxes: taxes,
           cesses: cesses
         }"
-        selectionMode="CellSelect"
+        selectionMode="FullRowSelect"
         [allowUserToAddRows]="true"
         [allowUserToDeleteRows]="true"
         [allowUserToResizeColumns]="true"

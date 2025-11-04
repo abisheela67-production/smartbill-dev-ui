@@ -40,7 +40,6 @@
               autocomplete="off"
             />
 
-            <!-- 🟩 Number -->
             <input
               *ngSwitchCase="'number'"
               #gridInput
@@ -52,7 +51,6 @@
               autocomplete="off"
             />
 
-            <!-- 🟨 Date -->
             <input
               *ngSwitchCase="'date'"
               #gridInput
@@ -63,7 +61,6 @@
               (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- 🟧 Boolean -->
             <input
               *ngSwitchCase="'boolean'"
               #gridInput
@@ -74,7 +71,6 @@
               (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- 🟪 Select -->
             <select
               *ngSwitchCase="'select'"
               #gridInput
