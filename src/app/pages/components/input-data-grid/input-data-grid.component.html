@@ -18,12 +18,15 @@
     <tbody>
       <tr
         *ngFor="let row of data; let r = index"
-        [class.row-focused]="selectionMode === 'FullRowSelect' && focusedCell.row === r"
+        [class.row-focused]="
+          selectionMode === 'FullRowSelect' && focusedCell.row === r
+        "
         (click)="selectionMode === 'FullRowSelect' ? focusCell(r, 0) : null"
       >
         <td
           *ngFor="let col of columns; let c = index"
           [class.focused]="focusedCell.row === r && focusedCell.col === c"
+          [class.readonly]="col.readOnly"
           (click)="selectionMode !== 'FullRowSelect' ? focusCell(r, c) : null"
         >
           <ng-container [ngSwitch]="col.type">
@@ -35,49 +38,65 @@
               type="text"
               class="cell-input"
               [(ngModel)]="row[col.field]"
+              [readonly]="col.readOnly"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
               autocomplete="off"
             />
 
+            <!-- 🔢 Number -->
             <input
               *ngSwitchCase="'number'"
               #gridInput
               type="number"
               class="cell-input number"
               [(ngModel)]="row[col.field]"
+              [readonly]="col.readOnly"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
               autocomplete="off"
             />
 
+            <!-- 📅 Date -->
             <input
               *ngSwitchCase="'date'"
               #gridInput
               type="date"
               class="cell-input"
               [(ngModel)]="row[col.field]"
+              [readonly]="col.readOnly"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
             />
 
+            <!-- ☑️ Boolean -->
             <input
               *ngSwitchCase="'boolean'"
               #gridInput
               type="checkbox"
               class="cell-checkbox"
               [(ngModel)]="row[col.field]"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
             />
 
+            <!-- 🔽 Select -->
             <select
               *ngSwitchCase="'select'"
               #gridInput
               class="cell-input"
               [(ngModel)]="row[col.field]"
+              [disabled]="col.readOnly"
               (focus)="focusCell(r, c)"
-              (keydown)="handleKeyDown($event, r, c)"
+              (keydown)="handleSelectKeyDown($event, r, c, gridInput)"
             >
               <option value="">-- Select --</option>
               <option
@@ -95,11 +114,13 @@
               type="text"
               class="cell-input"
               [(ngModel)]="row[col.field]"
+              [readonly]="col.readOnly"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
               autocomplete="off"
             />
-
           </ng-container>
         </td>
       </tr>

@@ -2,15 +2,15 @@
 🎨 THEME VARIABLES
 ================================= */
 :root {
-  --color-primary: #1D1160;
-  --color-primary-dark: #140C44;
+  --color-primary: #1D1160;         /* Focus color (deep purple) */
+  --color-primary-dark: #140C44;    /* Editing / active tone */
   --color-secondary: #F4A261;
-  --color-text-light: #ffffff;
-  --color-text-dark: #1D1160;
+  --color-text-light: #ffffff;      /* White text */
+  --color-text-dark: #1D1160;       /* Dark text */
   --color-bg-white: #F5F6FA;
   --color-bg-light: #ffffff;
   --color-border: #000000;
-  --color-border-hover: #aeb7ec; /* ✅ slightly darker hover tone */
+  --color-border-hover: #aeb7ec;
   --border-radius: 5px;
   --shadow-soft: 0 4px 12px rgba(0,0,0,0.05);
 }
@@ -25,14 +25,12 @@
   box-shadow: var(--shadow-soft);
   padding: 8px;
   width: 100%;
-  height: 100%;
-  max-height: calc(100vh - 180px);
+ height: 500px; /* Fixed height for scrolling */ 
   overflow: auto;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border); /* ✅ outer grid boundary */
+  border: 1px solid var(--color-border);
   border-color: #000000 !important;
-
 }
 
 /* ================================
@@ -42,18 +40,14 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  table-layout: auto;
-  flex: 1;
   border-color: #000000 !important;
-
+  table-layout: fixed; /* ✅ keep column alignment consistent */
 }
 
 /* ================================
 📌 HEADER
 ================================= */
 th {
-  border-color: #000000 !important;
-
   background: #f6f8fe;
   text-align: left;
   padding: 8px 10px;
@@ -63,20 +57,17 @@ th {
   border-right: 1px solid var(--color-border);
   white-space: nowrap;
   height: 38px;
-  position: sticky;
+  position: sticky;  /* ✅ header stays visible on scroll */
   top: 0;
   z-index: 5;
+  border-color: #000000 !important;
 }
 
 th:last-child {
   border-right: none;
-  border-color: #000000 !important;
-
 }
 
 th + th {
-  border-color: #000000 !important;
-
   border-left: 1px solid var(--color-border);
 }
 
@@ -84,16 +75,21 @@ th + th {
 🧠 DATA CELLS
 ================================= */
 td {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
   border-bottom: 1px solid var(--color-border);
-  border-color: #000000 !important;
   border-right: 1px solid var(--color-border);
-  padding: 0;
+  border-color: #000000 !important;
+  padding: 6px 8px;
+  text-align: center;
   vertical-align: middle;
-  height: 34px;
-  text-align: center; /* ✅ centers text inside cells */
-  overflow: hidden;
-  transition: background-color 0.15s ease;
-  color: white;
+  height: auto;            /* ✅ Adjusts automatically to content */
+  min-height: 38px;        /* Base row height */
+  line-height: 1.4;
+  transition: background-color 0.15s ease, color 0.15s ease, outline-color 0.15s ease;
+  overflow: visible;       /* ✅ allows dropdowns and large text */
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 td:last-child {
@@ -101,43 +97,55 @@ td:last-child {
 }
 
 /* ================================
-✏️ INPUT CELL
+✏️ INPUT CELL (UPDATED)
 ================================= */
 .cell-input {
   width: 100%;
-  height: 100%;
+  height: auto;
+  min-height: 34px;
   border: none;
   outline: none;
   background: transparent;
   font-family: inherit;
   font-size: 14px;
+  text-align: center;
+  color: inherit;
   padding: 4px 6px;
-  text-align: center; /* ✅ centers input text */
-  line-height: 1.4;
-  caret-color: transparent;
+  box-sizing: border-box;
+  caret-color: auto; /* default cursor color */
 }
 
-.cell-input.editing {
-  caret-color: auto;
-  background-color:VAR(--color-primary);
+/* When editing / focused, show bright caret */
+.cell-input.editing,
+td.focused .cell-input {
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-light);
+  caret-color: #ffffff; /* ✅ visible white caret */
 }
+
 
 /* ================================
 🔷 FOCUSED CELL
 ================================= */
 td.focused {
-  background-color:var(--color-primary); /* ✅ light blue focus fill */
-  outline: 2px solid var(--color-primary);
+  background-color: var(--color-primary) !important; /* Focus back color */
+  color: var(--color-text-light) !important;          /* White text */
+  outline: 2px solid var(--color-primary-dark);
   outline-offset: -1px;
-  transition: outline-color 0.1s ease-in-out;
-  color:rgb(255, 255, 255);
+  transition: background-color 0.15s ease, outline-color 0.15s ease;
+  z-index: 2;
+}
+
+/* Make input text white when focused */
+td.focused .cell-input {
+  color: var(--color-text-light);
 }
 
 /* ================================
 🖱️ HOVER EFFECT
 ================================= */
-td:hover {
-  background-color: #f3f5ff; /* ✅ subtle hover */
+td:not(.focused):hover {
+  background-color: #e8eaff;
 }
 
 /* ================================
@@ -160,7 +168,7 @@ th:hover .resize-handle {
 }
 
 /* ================================
-🪟 SCROLLBAR
+🧭 SCROLLBAR STYLING
 ================================= */
 .data-grid-container::-webkit-scrollbar {
   height: 8px;
@@ -175,6 +183,23 @@ th:hover .resize-handle {
 .data-grid-container::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-hover);
 }
+
+/* Read-only input styling */
+.cell-input[readonly],
+.cell-input:disabled,
+.cell-select:disabled,
+.cell-checkbox:disabled {
+  background-color: #f2f2f2;
+  color: #777;
+  cursor: not-allowed;
+  border: 1px solid #ddd;
+}
+
+/* Optional: make read-only cells visually distinct */
+td.readonly {
+  background-color: #f9f9f9;
+}
+
 
 /* ================================
 📱 RESPONSIVE IMPROVEMENTS

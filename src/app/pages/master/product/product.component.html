@@ -1,46 +1,39 @@
 <div class="product-management">
-
-
-  <div class="card">
-    <div class="card-header">
-        <div class="header">
+  <div class="header">
     <h1 class="page-title">Product Management</h1>
 
     <div class="action-buttons">
-      <button class="btn btn-primary" (click)="downloadTemplate()">
+      <button class="btn btn-primary btn-elevated" (click)="downloadTemplate()">
         Download Product Template
       </button>
-
-      <button class="btn btn-primary" (click)="addNewProduct()">
+      <button class="btn btn-success btn-elevated" (click)="addNewProduct()">
         Add Product
       </button>
-
       <button class="btn btn-secondary" (click)="saveAllProducts()">
         Save
       </button>
     </div>
+  </div>
 
-
-    <div class="card-body flex-grow-1 overflow-auto">
-      <app-input-data-grid
-        [columns]="columns"
-        [data]="products"
-        [parent]="{
-          companies: companies,
-          categories: categories,
-          subCategories: subCategories,
-          brands: brands,
-          units: units,
-          hsnCodes: hsnCodes,
-          taxes: taxes,
-          cesses: cesses
-        }"
-        selectionMode="FullRowSelect"
-        [allowUserToAddRows]="true"
-        [allowUserToDeleteRows]="true"
-        [allowUserToResizeColumns]="true"
-        (cellValueChanged)="onCellValueChanged($event)"
-      ></app-input-data-grid>
-    </div>
+  <div class="data-grid-section">
+    <app-input-data-grid
+      [columns]="visibleColumns"
+      [data]="products"
+      [parent]="{
+        companies: companies,
+        categories: categories,
+        subCategories: subCategories,
+        brands: brands,
+        units: units,
+        hsnCodes: hsnCodes,
+        taxes: taxes,
+        cesses: cesses
+      }"
+      selectionMode="FullRowSelect"
+      [allowUserToAddRows]="true"
+      [allowUserToDeleteRows]="true"
+      [allowUserToResizeColumns]="true"
+      (cellValueChanged)="onCellValueChanged($event)"
+    ></app-input-data-grid>
   </div>
 </div>

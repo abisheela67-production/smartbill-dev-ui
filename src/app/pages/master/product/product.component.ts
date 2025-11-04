@@ -49,120 +49,125 @@ export class ProductComponent implements OnInit, AfterViewInit {
   hsnCodes: HSN[] = [];
   taxes: Tax[] = [];
   cesses: Cess[] = [];
+columns = [
+  { field: 'sno', header: 'S.NO', type: 'text', width: '30px', visible: true ,readOnly: true},
+  { field: 'barcode', header: 'BARCODE', type: 'text', visible: false, },
+  { field: 'productCode', header: 'PRODUCT CODE', type: 'text', visible: false },
+  { field: 'productName', header: 'PRODUCT NAME', type: 'text', visible: true },
+  { field: 'productDescription', header: 'DESCRIPTION', type: 'text', visible: false },
+  { field: 'isService', header: 'IS SERVICE', type: 'boolean', visible: false },
 
-  columns = [
-    { field: 'sno', header: 'S.NO', type: 'text', width: '60px' },
-    { field: 'barcode', header: 'BARCODE', type: 'text' },
-    { field: 'productCode', header: 'PRODUCT CODE', type: 'text' },
-    { field: 'productName', header: 'PRODUCT NAME', type: 'text' },
-    { field: 'productDescription', header: 'DESCRIPTION', type: 'text' },
-    { field: 'isService', header: 'IS SERVICE', type: 'boolean' },
+  // Categorization
+  {
+    field: 'categoryID',
+    header: 'CATEGORY',
+    type: 'select',
+    options: 'categories',
+    optionLabel: 'categoryName',
+    optionValue: 'categoryID',
+    visible: true,
+  },
+  {
+    field: 'subCategoryID',
+    header: 'SUB CATEGORY',
+    type: 'select',
+    options: 'subCategories',
+    optionLabel: 'subCategoryName',
+    optionValue: 'subCategoryID',
+    visible: true,
+  },
+  {
+    field: 'brandID',
+    header: 'BRAND',
+    type: 'select',
+    options: 'brands',     
+    optionLabel: 'brandName',
+    optionValue: 'brandID',
+    visible: false,
+  },
+  {
+    field: 'unitID',
+    header: 'UNIT',
+    type: 'select',
+    options: 'units',
+    optionLabel: 'unitName',
+    optionValue: 'unitID',
+    visible: true,
+  },
+  {
+    field: 'secondaryUnitID',
+    header: 'SECONDARY UNIT',
+    type: 'select',
+    options: 'units',
+    optionLabel: 'unitName',
+    optionValue: 'unitID',
+    visible: false,
+  },
 
-    // Categorization
-    {
-      field: 'categoryID',
-      header: 'CATEGORY',
-      type: 'select',
-      options: 'categories',
-      optionLabel: 'categoryName',
-      optionValue: 'categoryID',
-    },
-    {
-      field: 'subCategoryID',
-      header: 'SUB CATEGORY',
-      type: 'select',
-      options: 'subCategories',
-      optionLabel: 'subCategoryName',
-      optionValue: 'subCategoryID',
-    },
-    {
-      field: 'brandID',
-      header: 'BRAND',
-      type: 'select',
-      options: 'brands',
-      optionLabel: 'brandName',
-      optionValue: 'brandID',
-    },
-    {
-      field: 'unitID',
-      header: 'UNIT',
-      type: 'select',
-      options: 'units',
-      optionLabel: 'unitName',
-      optionValue: 'unitID',
-    },
-    {
-      field: 'secondaryUnitID',
-      header: 'SECONDARY UNIT',
-      type: 'select',
-      options: 'units',
-      optionLabel: 'unitName',
-      optionValue: 'unitID',
-    },
+  // Taxation
+  {
+    field: 'hsnid',
+    header: 'HSN CODE',
+    type: 'select',
+    options: 'hsnCodes',
+    optionLabel: 'hsnCode',
+    optionValue: 'hsnid',
+    visible: false,
+  },
+  {
+    field: 'taxID',
+    header: 'TAX NAME',
+    type: 'select',
+    options: 'taxes',
+    optionLabel: 'taxName',
+    optionValue: 'taxID',
+    visible: false,
+  },
+  {
+    field: 'cessID',
+    header: 'CESS NAME',
+    type: 'select',
+    options: 'cesses',
+    optionLabel: 'cessName',
+    optionValue: 'cessID',
+    visible: false,
+  },
+  {
+    field: 'companyID',
+    header: 'COMPANY',
+    type: 'select',
+    options: 'companies',
+    optionLabel: 'companyName',
+    optionValue: 'companyID',
+    visible: true,
+     readOnly: true,
+  },
 
-    // Taxation
-    {
-      field: 'hsnid',
-      header: 'HSN CODE',
-      type: 'select',
-      options: 'hsnCodes',
-      optionLabel: 'hsnCode',
-      optionValue: 'hsnid',
-    },
-    {
-      field: 'taxID',
-      header: 'TAX NAME',
-      type: 'select',
-      options: 'taxes',
-      optionLabel: 'taxName',
-      optionValue: 'taxID',
-    },
-    {
-      field: 'cessID',
-      header: 'CESS NAME',
-      type: 'select',
-      options: 'cesses',
-      optionLabel: 'cessName',
-      optionValue: 'cessID',
-    },
-    {
-      field: 'companyID',
-      header: 'COMPANY',
-      type: 'select',
-      options: 'companies',
-      optionLabel: 'companyName',
-      optionValue: 'companyID',
-    },
+  { field: 'purchaseRate', header: 'PURCHASE RATE', type: 'number', visible: false },
+  { field: 'mrp', header: 'MRP', type: 'number', visible: true },
+  { field: 'retailPrice', header: 'RETAIL PRICE', type: 'number', visible: false },
+  { field: 'saleRate', header: 'SALE RATE', type: 'number', visible: true },
 
-    // Pricing
-    { field: 'purchaseRate', header: 'PURCHASE RATE', type: 'number' },
-    { field: 'mrp', header: 'MRP', type: 'number' },
-    { field: 'retailPrice', header: 'RETAIL PRICE', type: 'number' },
-    { field: 'wholesalePrice', header: 'WHOLESALE PRICE', type: 'number' },
-    { field: 'saleRate', header: 'SALE RATE', type: 'number' },
-    { field: 'discountPercentage', header: 'DISCOUNT %', type: 'number' },
-    { field: 'discountAmount', header: 'DISCOUNT AMOUNT', type: 'number' },
-
-    // Stock & Attributes
-    { field: 'openingStock', header: 'OPENING STOCK', type: 'number' },
-    { field: 'reorderLevel', header: 'REORDER LEVEL', type: 'number' },
-    { field: 'currentStock', header: 'CURRENT STOCK', type: 'number' },
-    { field: 'expiryDate', header: 'EXPIRY DATE', type: 'date' },
-    { field: 'color', header: 'COLOR', type: 'text' },
-    { field: 'size', header: 'SIZE', type: 'text' },
-    { field: 'weight', header: 'WEIGHT', type: 'number' },
-    { field: 'volume', header: 'VOLUME', type: 'number' },
-    { field: 'material', header: 'MATERIAL', type: 'text' },
-    { field: 'finishType', header: 'FINISH TYPE', type: 'text' },
-    { field: 'shadeCode', header: 'SHADE CODE', type: 'text' },
-    { field: 'capacity', header: 'CAPACITY', type: 'text' },
-    { field: 'modelNumber', header: 'MODEL NUMBER', type: 'text' },
-
-    // Meta Info
-    { field: 'isActive', header: 'ACTIVE', type: 'boolean' },
-    { field: 'createdAt', header: 'CREATED AT', type: 'datetime' },
-    { field: 'updatedAt', header: 'UPDATED AT', type: 'datetime' },
-  ];
+  { field: 'wholesalePrice', header: 'WHOLESALE PRICE', type: 'number', visible: true },
+  { field: 'discountPercentage', header: 'DISCOUNT %', type: 'number', visible: false },
+  { field: 'discountAmount', header: 'DISCOUNT AMOUNT', type: 'number', visible: false },
+  { field: 'openingStock', header: 'OPENING STOCK', type: 'number', visible: false },
+  { field: 'reorderLevel', header: 'REORDER LEVEL', type: 'number', visible: false },
+  { field: 'currentStock', header: 'CURRENT STOCK', type: 'number', visible: false },
+  { field: 'expiryDate', header: 'EXPIRY DATE', type: 'date', visible: false },
+  { field: 'color', header: 'COLOR', type: 'text', visible: false },
+  { field: 'size', header: 'SIZE', type: 'text', visible: false },
+  { field: 'weight', header: 'WEIGHT', type: 'number', visible: false },
+  { field: 'volume', header: 'VOLUME', type: 'number', visible: false },
+  { field: 'material', header: 'MATERIAL', type: 'text', visible: false },
+  { field: 'finishType', header: 'FINISH TYPE', type: 'text', visible: false },
+  { field: 'shadeCode', header: 'SHADE CODE', type: 'text', visible: false },
+  { field: 'capacity', header: 'CAPACITY', type: 'text', visible: false },
+  { field: 'modelNumber', header: 'MODEL NUMBER', type: 'text', visible: false },
+  { field: 'isActive', header: 'ACTIVE', type: 'boolean', visible: true },
+  { field: 'createdAt', header: 'CREATED AT', type: 'datetime', visible: false },
+  { field: 'updatedAt', header: 'UPDATED AT', type: 'datetime', visible: false },
+];
 
   constructor(
     private readonly masterService: MasterService,
@@ -182,14 +187,23 @@ export class ProductComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.focusFirstGridCell(), 300);
   }
 
-  // ==========================================================
-  // Grid Logic
-  // ==========================================================
-  onCellValueChanged(event: any): void {
-    const { row, col, value } = event;
-    const field = this.columns[col].field;
-    this.products[row][field] = value;
+onCellValueChanged(event: any): void {
+  const { row, col, value } = event;
+  const field = this.columns[col].field;
+
+  this.products[row][field] = value;
+
+  if (field === 'productName' && value && value.trim() !== '') {
+    const isLastRow = row === this.products.length - 1;
+    if (isLastRow) {
+      this.addNewProduct();
+    }
   }
+}
+get visibleColumns() {
+  return (this.columns || []).filter(col => col.visible);
+}
+
 
   onRowAdded(): void {
     this.products.push(this.newProduct());
@@ -204,7 +218,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   private focusFirstGridCell(): void {
     if (this.grid && this.products.length > 0) {
-      this.grid.focusCell(0, 3);
+      this.grid.focusCell(0, 1);
     }
   }
 
@@ -218,7 +232,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
   private focusLastRow(): void {
     setTimeout(() => {
       const rowIndex = this.products.length - 1;
-      if (this.grid) this.grid.focusCell(rowIndex, 3);
+      if (this.grid) this.grid.focusCell(rowIndex, 1);
     }, 200);
   }
 

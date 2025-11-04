@@ -64,7 +64,10 @@ export class InputDataGridComponent implements AfterViewInit {
     el.focus?.();
 
     const tag = el.tagName?.toLowerCase();
-    if ((tag === 'input' || tag === 'textarea') && typeof (el as any).select === 'function') {
+    if (
+      (tag === 'input' || tag === 'textarea') &&
+      typeof (el as any).select === 'function'
+    ) {
       (el as any).select();
     }
   }
@@ -117,107 +120,157 @@ export class InputDataGridComponent implements AfterViewInit {
     const index = row * this.columns.length + col;
     return flat[index] || null;
   }
+handleKeyDown(event: KeyboardEvent, row: number, col: number) {
+  const key = event.key.toLowerCase();
+  const activeElement = document.activeElement as HTMLElement;
+  const isSelect = activeElement?.tagName?.toLowerCase() === 'select';
+  const totalCols = this.columns.length;
 
-  /* ---------------- Keyboard Handling ---------------- */
-  handleKeyDown(event: KeyboardEvent, row: number, col: number) {
-    const key = event.key.toLowerCase();
+  // 🗑️ Delete row or clear cell
+  if (key === 'delete') {
+    event.preventDefault();
+    if (this.allowUserToDeleteRows) {
+      this.deleteRow(row);
+      return;
+    }
 
-    // Delete → Clear or Delete row
-    if (key === 'delete') {
-      event.preventDefault();
-
-      if (event.ctrlKey && this.allowUserToDeleteRows) {
-        this.deleteRow(row);
-        return;
-      }
-
-      const field = this.columns[col].field;
+    const field = this.columns[col].field;
+    if (!this.columns[col].readOnly) {
       this.data[row][field] = '';
       this.cellValueChanged.emit({ row, col, value: '' });
+    }
+    return;
+  }
+
+  // 🆕 Ctrl + N → Add new row
+  if (event.ctrlKey && key === 'n') {
+    event.preventDefault();
+    this.addRow();
+    this.focusCell(this.data.length - 1, 0);
+    return;
+  }
+
+  // ↩ Enter → Move to next editable cell
+  if (key === 'enter') {
+    event.preventDefault();
+    this.disableEditing(row, col);
+    this.focusNextEditableCell(row, col);
+    return;
+  }
+
+  // 🚪 Escape → Cancel edit
+  if (key === 'escape') {
+    event.preventDefault();
+    this.disableEditing(row, col);
+    return;
+  }
+
+  // ⇥ Tab / Shift+Tab → Move across editable cells
+  if (key === 'tab') {
+    event.preventDefault();
+    if (event.shiftKey) {
+      this.focusPrevEditableCell(row, col);
+    } else {
+      this.focusNextEditableCell(row, col);
+    }
+    return;
+  }
+}
+focusNextEditableCell(row: number, col: number) {
+  const totalCols = this.columns.length;
+
+  // 👉 Move to next editable cell in current row
+  for (let c = col + 1; c < totalCols; c++) {
+    if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+      this.focusCell(row, c);
+      this.enableEditing(row, c);
       return;
     }
+  }
 
-    // Ctrl + N → Add new row
-    if (event.ctrlKey && key === 'n') {
-      event.preventDefault();
-      this.addRow();
-      this.focusCell(this.data.length - 1, 0);
-      return;
-    }
-
-    // Enter → Move to next cell or add new row
-    if (key === 'enter') {
-      event.preventDefault();
-      this.disableEditing(row, col);
-
-      if (col < this.columns.length - 1) {
-        this.focusCell(row, col + 1);
-        this.enableEditing(row, col + 1);
-      } else if (row < this.data.length - 1) {
-        this.focusCell(row + 1, 0);
-        this.enableEditing(row + 1, 0);
-      } else if (this.allowUserToAddRows) {
-        this.addRow();
-        this.focusCell(this.data.length - 1, 0);
-        this.enableEditing(this.data.length - 1, 0);
+  // 👉 Move to next row’s first editable cell
+  if (row + 1 < this.data.length) {
+    for (let c = 0; c < totalCols; c++) {
+      if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+        this.focusCell(row + 1, c);
+        this.enableEditing(row + 1, c);
+        return;
       }
-      return;
     }
+  }
 
-    // Escape → Cancel editing
-    if (key === 'escape') {
-      event.preventDefault();
-      this.disableEditing(row, col);
-      return;
-    }
-
-    // Tab Navigation
-    if (key === 'tab') {
-      event.preventDefault();
-      const nextCol = event.shiftKey ? col - 1 : col + 1;
-
-      if (nextCol >= 0 && nextCol < this.columns.length) {
-        this.focusCell(row, nextCol);
-      } else if (!event.shiftKey && row < this.data.length - 1) {
-        this.focusCell(row + 1, 0);
-      } else if (!event.shiftKey && this.allowUserToAddRows) {
-        this.addRow();
-        this.focusCell(this.data.length - 1, 0);
-      } else if (event.shiftKey && row > 0) {
-        this.focusCell(row - 1, this.columns.length - 1);
+  // 👉 If new row creation is allowed
+  if (this.allowUserToAddRows) {
+    this.addRow();
+    for (let c = 0; c < totalCols; c++) {
+      if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+        this.focusCell(this.data.length - 1, c);
+        this.enableEditing(this.data.length - 1, c);
+        return;
       }
+    }
+  }
+}
+
+focusPrevEditableCell(row: number, col: number) {
+  // 👈 Move backward across editable cells
+  for (let c = col - 1; c >= 0; c--) {
+    if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+      this.focusCell(row, c);
+      this.enableEditing(row, c);
       return;
     }
+  }
 
-    // Arrow keys
-    switch (key) {
-      case 'arrowright':
-        event.preventDefault();
-        if (col < this.columns.length - 1) this.focusCell(row, col + 1);
-        else if (row < this.data.length - 1) this.focusCell(row + 1, 0);
-        else if (this.allowUserToAddRows) {
-          this.addRow();
-          this.focusCell(this.data.length - 1, 0);
+  // 👈 If at start, go to previous row’s last editable column
+  if (row > 0) {
+    for (let c = this.columns.length - 1; c >= 0; c--) {
+      if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+        this.focusCell(row - 1, c);
+        this.enableEditing(row - 1, c);
+        return;
+      }
+    }
+  }
+}
+
+  handleSelectKeyDown(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+    select: HTMLSelectElement
+  ) {
+    switch (event.key) {
+      case 'ArrowDown':
+        // Move to next option if dropdown is open, else open it
+        if (!select.matches(':focus')) select.focus();
+        if (select.selectedIndex < select.options.length - 1) {
+          select.selectedIndex++;
+          select.dispatchEvent(new Event('change'));
         }
+        event.preventDefault();
         break;
 
-      case 'arrowleft':
-        event.preventDefault();
-        if (col > 0) this.focusCell(row, col - 1);
-        else if (row > 0) this.focusCell(row - 1, this.columns.length - 1);
-        break;
-
-      case 'arrowup':
-        event.preventDefault();
-        if (row > 0) this.focusCell(row - 1, col);
-        break;
-
-      case 'arrowdown':
-        event.preventDefault();
-        if (row < this.data.length - 1) this.focusCell(row + 1, col);
-        else if (this.allowUserToAddRows) {
-          this.focusCell(this.data.length - 1, col);
+      case 'ArrowUp':
+        // Move to previous option
+        if (select.selectedIndex > 0) {
+          select.selectedIndex--;
+          select.dispatchEvent(new Event('change'));
         }
+        event.preventDefault();
+        break;
+
+      case 'Enter':
+        // Confirm selection and move to next cell
+        this.handleKeyDown(event, rowIndex, colIndex);
+        break;
+
+      case 'Tab':
+        // Move to next column
+        this.handleKeyDown(event, rowIndex, colIndex);
+        break;
+
+      default:
         break;
     }
   }
@@ -247,7 +300,7 @@ export class InputDataGridComponent implements AfterViewInit {
     this.data.splice(row, 1);
     this.rowDeleted.emit(row);
     const next = Math.min(row, this.data.length - 1);
-    this.focusCell(next, 0);
+    this.focusCell(next, 1);
   }
 
   /* ---------------- Column Resize ---------------- */
