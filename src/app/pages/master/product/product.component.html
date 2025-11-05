@@ -1,19 +1,39 @@
-<div class="product-management">
-  <div class="header">
-    <h1 class="page-title">Product Management</h1>
-
-    <div class="action-buttons">
+<app-group-box title="Product Details">
+ <div class="action-buttons">
       <button class="btn btn-primary btn-elevated" (click)="downloadTemplate()">
         Download Product Template
       </button>
       <button class="btn btn-success btn-elevated" (click)="addNewProduct()">
         Add Product
       </button>
+
+<button>
+  
+        <input
+          type="file"
+          id="fileInput"
+          (change)="uploadExcel($event)"
+          style="display: none"
+        />
+        <label for="fileInput" class="btn btn-info btn-elevated"
+          >Upload Products</label
+        >
+</button>
+
+<!-- 🔹 Spinner overlay -->
+<div class="upload-spinner" *ngIf="isUploading">
+  <div class="spinner"></div>
+  <p>Uploading and processing Excel...</p>
+</div>
+
+
       <button class="btn btn-secondary" (click)="saveAllProducts()">
         Save
       </button>
     </div>
-  </div>
+
+<div class="product-management">
+
 
   <div class="data-grid-section">
     <app-input-data-grid
@@ -37,3 +57,6 @@
     ></app-input-data-grid>
   </div>
 </div>
+
+
+</app-group-box>

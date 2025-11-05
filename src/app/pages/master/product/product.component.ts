@@ -24,6 +24,7 @@ import {
 import { Company } from '../../models/common-models/companyMaster';
 import { IconsModule } from '../../../shared/icons.module';
 import { icons } from 'lucide-angular';
+import { GroupBoxComponent } from '../../../shared/group-box/group-box.component';
 
 interface ApiResponse {
   success: boolean;
@@ -33,12 +34,15 @@ interface ApiResponse {
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [FormsModule, CommonModule, InputDataGridComponent,SharedModule,IconsModule],
+  imports: [FormsModule, CommonModule, InputDataGridComponent, SharedModule, IconsModule, GroupBoxComponent],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent implements OnInit, AfterViewInit {
   @ViewChild(InputDataGridComponent) grid!: InputDataGridComponent;
+  @ViewChild(GroupBoxComponent) groupBox!: GroupBoxComponent;
+
+
 @HostListener('window:keydown', ['$event'])
   products: Product[] = [];
   companies: Company[] = [];
@@ -168,6 +172,7 @@ columns = [
   { field: 'createdAt', header: 'CREATED AT', type: 'datetime', visible: false },
   { field: 'updatedAt', header: 'UPDATED AT', type: 'datetime', visible: false },
 ];
+  filteredSubCategories: any;
 
   constructor(
     private readonly masterService: MasterService,
@@ -215,6 +220,11 @@ get visibleColumns() {
   });
 }
 
+refreshGrid(): void {
+  this.products = [];              // clear all rows
+  this.products.push(this.newProduct()); // add one empty row
+  this.updateSerialNumbers();      // reassign S.No
+}
 
   private focusFirstGridCell(): void {
     if (this.grid && this.products.length > 0) {
@@ -354,7 +364,9 @@ get visibleColumns() {
 
           if (successCount + errorCount === this.products.length) {
             this.showSaveSummary(successCount, errorCount);
+
           }
+            this.refreshGrid();
         },
         error: (err) => {
           console.error(`Save failed for product ${index + 1}:`, err);
@@ -379,57 +391,123 @@ get visibleColumns() {
       this.swall.error('Error', 'All products failed to save.');
     }
   }
-
 async downloadTemplate() {
   try {
-    // ✅ Use already loaded dropdowns, or fetch if empty
-    const masterData = {
-      categories: this.categories?.length ? this.categories : await this.masterService.getCategories().toPromise(),
-      subCategories: this.subCategories?.length ? this.subCategories : await this.masterService.getSubCategories().toPromise(),
-      brands: this.brands?.length ? this.brands : await this.masterService.getBrands().toPromise(),
-      units: this.units?.length ? this.units : await this.masterService.getUnits().toPromise(),
-      hsnCodes: this.hsnCodes?.length ? this.hsnCodes : await this.masterService.getHSNCodes().toPromise(),
-      taxes: this.taxes?.length ? this.taxes : await this.masterService.getTaxes().toPromise(),
-      cesses: this.cesses?.length ? this.cesses : await this.masterService.getCesses().toPromise(),
-      companies: this.companies?.length ? this.companies : await this.commonService.getCompanies().toPromise(),
+    // ✅ Step 1: Visible columns only
+    const visibleCols = this.columns.filter(col => col.visible);
+
+    // ✅ Step 2: Load master data safely
+    const masterData: any = {
+      categories: this.categories && this.categories.length ? this.categories : await this.masterService.getCategories().toPromise() || [],
+      subCategories: this.subCategories && this.subCategories.length ? this.subCategories : await this.masterService.getSubCategories().toPromise() || [],
+      brands: this.brands && this.brands.length ? this.brands : await this.masterService.getBrands().toPromise() || [],
+      units: this.units && this.units.length ? this.units : await this.masterService.getUnits().toPromise() || [],
+      hsnCodes: this.hsnCodes && this.hsnCodes.length ? this.hsnCodes : await this.masterService.getHSNCodes().toPromise() || [],
+      taxes: this.taxes && this.taxes.length ? this.taxes : await this.masterService.getTaxes().toPromise() || [],
+      cesses: this.cesses && this.cesses.length ? this.cesses : await this.masterService.getCesses().toPromise() || [],
+      companies: this.companies && this.companies.length ? this.companies : await this.commonService.getCompanies().toPromise() || [],
     };
 
+    // ✅ Step 3: Workbook setup
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Product Template');
 
-    const headers = this.columns.map(col => col.header);
+    // ✅ Step 4: Header (no change)
+    const headers = visibleCols.map(col => col.header);
     sheet.addRow(headers);
 
-   const categories = masterData.categories?.map((x: any) => x.categoryName) ?? [];
-const subCategories = masterData.subCategories?.map((x: any) => x.subCategoryName) ?? [];
-const brands = masterData.brands?.map((x: any) => x.brandName) ?? [];
-const units = masterData.units?.map((x: any) => x.unitName) ?? [];
-const hsnCodes = masterData.hsnCodes?.map((x: any) => x.hsnCode) ?? [];
-const taxes = masterData.taxes?.map((x: any) => x.taxName) ?? [];
-const cesses = masterData.cesses?.map((x: any) => x.cessName) ?? [];
-const companies = masterData.companies?.map((x: any) => x.companyName) ?? [];
+    // ✅ Step 5: Column letter mapping
+    const colMap = new Map<string, string>();
+    visibleCols.forEach((col, index) => {
+      const letter = sheet.getColumn(index + 1).letter;
+      colMap.set(col.field, letter);
+    });
 
+    // ✅ Step 6: Safe lists
+    const categoryList = (masterData.categories ?? []).map((x: any) => x.categoryName);
+    const subCategoryList = (masterData.subCategories ?? []).map((x: any) => x.subCategoryName);
+    const brandList = (masterData.brands ?? []).map((x: any) => x.brandName);
+    const unitList = (masterData.units ?? []).map((x: any) => x.unitName);
+    const hsnList = (masterData.hsnCodes ?? []).map((x: any) => x.hsnCode);
+    const taxList = (masterData.taxes ?? []).map((x: any) => x.taxName);
+    const cessList = (masterData.cesses ?? []).map((x: any) => x.cessName);
+    const companyList = (masterData.companies ?? []).map((x: any) => x.companyName);
 
+    // ✅ Step 7: Apply validation + readonly styles
     for (let i = 2; i <= 200; i++) {
-      sheet.getCell(`G${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${categories.join(',')}"`] };
-      sheet.getCell(`H${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${subCategories.join(',')}"`] };
-      sheet.getCell(`I${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${brands.join(',')}"`] };
-      sheet.getCell(`J${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${units.join(',')}"`] };
-      sheet.getCell(`K${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${units.join(',')}"`] };
-      sheet.getCell(`L${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${hsnCodes.join(',')}"`] };
-      sheet.getCell(`M${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${taxes.join(',')}"`] };
-      sheet.getCell(`N${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${cesses.join(',')}"`] };
-      sheet.getCell(`O${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"${companies.join(',')}"`] };
+      for (const col of visibleCols) {
+        const letter = colMap.get(col.field)!;
+        const cell = sheet.getCell(`${letter}${i}`);
+
+        // 🔹 Dropdowns
+        if (col.type === 'select') {
+          let list: string[] = [];
+          switch (col.field) {
+            case 'categoryID': list = categoryList; break;
+            case 'subCategoryID': list = subCategoryList; break;
+            case 'brandID': list = brandList; break;
+            case 'unitID':
+            case 'secondaryUnitID': list = unitList; break;
+            case 'hsnid': list = hsnList; break;
+            case 'taxID': list = taxList; break;
+            case 'cessID': list = cessList; break;
+            case 'companyID': list = companyList; break;
+          }
+          if (list.length > 0) {
+            cell.dataValidation = {
+              type: 'list',
+              allowBlank: true,
+              formulae: [`"${list.join(',')}"`],
+            };
+          }
+        }
+
+        // 🔹 Boolean dropdown
+        if (col.type === 'boolean') {
+          cell.dataValidation = {
+            type: 'list',
+            allowBlank: true,
+            formulae: ['"TRUE,FALSE"'],
+          };
+        }
+
+        // 🔹 Number-only column
+        if (col.type === 'number') {
+          cell.dataValidation = {
+            type: 'decimal',
+            operator: 'greaterThanOrEqual',
+            allowBlank: true,
+            formulae: [0],
+          };
+        }
+
+        // 🔹 Read-only cells styling
+        if (col.readOnly) {
+          cell.protection = { locked: true };
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFD9D9D9' },
+          };
+        } else {
+          cell.protection = { locked: false };
+        }
+      }
     }
 
-    sheet.getRow(1).font = { bold: true };
-    sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    // ✅ Step 8: Style header
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1D1160' } };
     sheet.columns.forEach(col => (col.width = 20));
 
+    // ✅ Step 9: Protect & Save
+    sheet.protect('protected', { selectLockedCells: true, selectUnlockedCells: true });
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), 'ProductMasterTemplate.xlsx');
+    saveAs(new Blob([buffer]), 'ProductVisibleTemplate.xlsx');
 
-    this.swall.success('Template Downloaded', 'Excel template generated successfully!');
+    this.swall.success('Template Downloaded', 'Excel template generated (visible + formatted).');
   } catch (err) {
     console.error('Template download error:', err);
     this.swall.error('Error', 'Failed to generate template');
@@ -446,13 +524,112 @@ handleKeyboardShortcuts(e: KeyboardEvent) {
     e.preventDefault();
     this.saveAllProducts();
   }
+
+
+
+
+
+
+}
+
+isUploading: boolean = false;
+
+
+private safeString(value: any): string {
+  return String(value ?? '').trim();
 }
 
 
+async uploadExcel(event: any): Promise<void> {
+  const file = event.target.files?.[0];
+  if (!file) return;
 
+  this.isUploading = true; // show spinner
 
+  try {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(await file.arrayBuffer());
+    const sheet = workbook.worksheets[0];
 
+    // ✅ Get header row safely
+    const headerRow = sheet.getRow(1);
+    const headers = (Array.isArray(headerRow.values)
+      ? headerRow.values.slice(1)
+      : Object.values(headerRow.values)
+    )
+      .filter((x): x is string => typeof x === 'string')
+      .map(x => x.trim());
 
+    const uploadedData: any[] = [];
+
+    sheet.eachRow((row, rowIndex) => {
+      if (rowIndex === 1) return; // skip header
+
+      const rowValues = Array.isArray(row.values)
+        ? row.values.slice(1)
+        : Object.values(row.values);
+
+      // ✅ skip totally empty rows
+      const isEmpty = rowValues.every(
+        v => v === null || v === undefined || String(v).trim() === ''
+      );
+      if (isEmpty) return;
+
+      const rowObj: any = {};
+      headers.forEach((header, index) => {
+        rowObj[header] = rowValues[index];
+      });
+
+      // ✅ only import if Product Name has value
+      const productName = String(rowObj['Product Name'] ?? '').trim();
+      if (!productName) return; // skip row if product name is blank
+
+      // ✅ match dropdowns by name → ID
+      const category = this.categories.find(
+        c =>
+          c.categoryName.toLowerCase() ===
+          String(rowObj['Category'] ?? '').toLowerCase()
+      );
+      const subCategory = this.subCategories.find(
+        s =>
+          s.subCategoryName.toLowerCase() ===
+          String(rowObj['Sub Category'] ?? '').toLowerCase()
+      );
+      const unit = this.units.find(
+        u =>
+          u.unitName.toLowerCase() ===
+          String(rowObj['Unit'] ?? '').toLowerCase()
+      );
+
+      uploadedData.push({
+        productName,
+        categoryID: category?.categoryID ?? 0,
+        subCategoryID: subCategory?.subCategoryID ?? 0,
+        unitID: unit?.unitID ?? 0,
+      });
+    });
+
+    if (uploadedData.length > 0) {
+      this.products = uploadedData;
+    } else {
+      alert('No valid products found in the uploaded file.');
+    }
+
+    // ✅ filter subcategories per row
+    this.products.forEach((p, index) => {
+      this.filteredSubCategories[index] = this.subCategories.filter(
+        s => s.categoryID === p.categoryID
+      );
+    });
+
+    console.log('✅ Uploaded Data:', this.products);
+  } catch (error) {
+    console.error('❌ Excel Upload Error:', error);
+    alert('Error while processing the Excel file.');
+  } finally {
+    this.isUploading = false; // hide spinner
+  }
+}
 
 
 
