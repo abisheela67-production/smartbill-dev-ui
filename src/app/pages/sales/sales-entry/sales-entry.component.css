@@ -1,44 +1,144 @@
-.invoice-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  font-family: Arial, sans-serif;
-  background: #fff;
+.controls {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
 
-  .invoice-header {
+.invoice-container {
+  width: 100%;
+  max-width: 210mm;
+  margin: auto;
+  padding: 25px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+  .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+
+    .logo {
+      width: 100px;
+      height: auto;
+    }
+
+    .company-info {
+      text-align: left;
+
+      h2 {
+        font-size: 1.4rem;
+        margin: 0 0 5px 0;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 2px 0;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+    }
+
+    .invoice-info {
+      text-align: right;
+
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 5px 0;
+        color: #1D1160;
+      }
+
+      p {
+        margin: 2px 0;
+        font-size: 0.85rem;
+      }
+    }
   }
 
   .customer-info {
     margin-bottom: 20px;
+    h3 {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+    p {
+      margin: 2px 0;
+      font-size: 0.85rem;
+    }
   }
 
-  .invoice-table {
+  table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    font-size: 0.85rem;
 
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
+      text-align: center;
     }
 
     th {
-      background: #f4f4f4;
+      background-color: #f0f0f0;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #fafafa;
     }
   }
 
-  .invoice-summary {
-    text-align: right;
-    margin-bottom: 20px;
+  .summary {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+
+    p {
+      margin: 2px 0;
+      font-size: 0.9rem;
+
+      strong {
+        font-size: 1rem;
+      }
+    }
   }
 
-  .invoice-footer {
-    text-align: center;
+  .footer {
     margin-top: 30px;
-    font-style: italic;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 0.85rem;
+
+    .bank-qr {
+      display: flex;
+      gap: 25px;
+      align-items: flex-start;
+
+      .bank-details {
+        p {
+          margin: 0;
+        }
+      }
+
+      .qr-code {
+        text-align: center;
+        p {
+          margin-top: 5px;
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    p {
+      text-align: center;
+    }
   }
 }

@@ -1,55 +1,74 @@
-<div class="invoice-container">
-  <!-- Header -->
-  <div class="invoice-header">
-    <h1>Invoice</h1>
+<div>
+  <label>Select Page Size:</label>
+  <select [(ngModel)]="selectedPageSize">
+    <option *ngFor="let size of pageSizes" [value]="size">{{size.toUpperCase()}}</option>
+  </select>
+  <button (click)="downloadPDF()">Download PDF</button>
+</div>
+
+<div id="invoicePDF" class="invoice-container">
+  <div class="header">
+    <img [src]="company.logo" alt="Logo" class="logo">
     <div>
-      <strong>Company Name:</strong> {{company.name}} <br>
-      <strong>Address:</strong> {{company.address}}
+      <h2>{{company.name}}</h2>
+      <p>{{company.address}}</p>
+      <p>GSTIN: {{company.gstin}}</p>
     </div>
-    <div>
-      <strong>Date:</strong> {{invoice.date | date}} <br>
-      <strong>Invoice No:</strong> {{invoice.number}}
+    <div class="invoice-info">
+      <h1>Tax Invoice</h1>
+      <p>Invoice No: {{invoice.number}}</p>
+      <p>Date: {{invoice.date | date:'dd-MMM-yyyy'}}</p>
+      <p>Place of Supply: {{invoice.placeOfSupply}}</p>
     </div>
   </div>
 
-  <!-- Customer Info -->
   <div class="customer-info">
-    <strong>Bill To:</strong> <br>
-    {{customer.name}} <br>
-    {{customer.address}}
+    <h3>Bill To:</h3>
+    <p>{{customer.name}}</p>
+    <p>{{customer.address}}</p>
+    <p>GSTIN: {{customer.gstin}}</p>
   </div>
 
-  <!-- Invoice Items Table -->
-  <table class="invoice-table">
+  <table class="items-table">
     <thead>
       <tr>
-        <th>#</th>
-        <th>Product</th>
+        <th>S.No</th>
+        <th>Description</th>
+        <th>HSN/SAC</th>
         <th>Qty</th>
-        <th>Unit Price</th>
+        <th>Unit</th>
+        <th>Rate</th>
+        <th>Taxable Value</th>
+        <th>GST %</th>
+        <th>Cess %</th>
         <th>Total</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of invoice.items; let i = index">
-        <td>{{i + 1}}</td>
+        <td>{{i+1}}</td>
         <td>{{item.name}}</td>
+        <td>{{item.hsn}}</td>
         <td>{{item.quantity}}</td>
-        <td>{{item.unitPrice | currency}}</td>
-        <td>{{item.quantity * item.unitPrice | currency}}</td>
+        <td>{{item.unit}}</td>
+        <td>{{item.rate | currency}}</td>
+        <td>{{item.quantity * item.rate | currency}}</td>
+        <td>{{item.gst}}</td>
+        <td>{{item.cess}}</td>
+        <td>{{(item.quantity*item.rate)+(item.quantity*item.rate*item.gst/100)+(item.quantity*item.rate*item.cess/100) | currency}}</td>
       </tr>
     </tbody>
   </table>
 
-  <!-- Summary -->
-  <div class="invoice-summary">
-    <p><strong>Subtotal:</strong> {{ getSubtotal() | currency }}</p>
-    <p><strong>Tax ({{invoice.taxRate}}%):</strong> {{ getTax() | currency }}</p>
-    <p><strong>Total:</strong> {{ getTotal() | currency }}</p>
+  <div class="summary">
+    <p>Subtotal: {{getSubtotal() | currency}}</p>
+    <p>Total GST: {{getGSTTotal() | currency}}</p>
+    <p>Total Cess: {{getCessTotal() | currency}}</p>
+    <p><strong>Grand Total: {{getGrandTotal() | currency}}</strong></p>
   </div>
 
-  <!-- Footer -->
-  <div class="invoice-footer">
-    Thank you for your business!
+  <div class="footer">
+    <p>Bank Details: {{company.bankDetails}}</p>
+    <p>Authorized Signatory</p>
   </div>
 </div>
