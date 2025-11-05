@@ -861,7 +861,6 @@ lucide-icon.info {
   color: #3A86FF;
 }
 
-/* 🚫 Disabled / Inactive */
 lucide-icon.disabled {
   color: #bbb;
   opacity: 0.6;
@@ -935,7 +934,7 @@ app-default-header {
 /* MAIN CONTENT — Adjust for header height */
 .layout-content {
   flex: 1;
-  margin-top: 130px;
+  margin-top: 120px;
   overflow-y: auto;
   background: #f9f9f9;
   padding: 20px;

@@ -1,0 +1,55 @@
+<div class="invoice-container">
+  <!-- Header -->
+  <div class="invoice-header">
+    <h1>Invoice</h1>
+    <div>
+      <strong>Company Name:</strong> {{company.name}} <br>
+      <strong>Address:</strong> {{company.address}}
+    </div>
+    <div>
+      <strong>Date:</strong> {{invoice.date | date}} <br>
+      <strong>Invoice No:</strong> {{invoice.number}}
+    </div>
+  </div>
+
+  <!-- Customer Info -->
+  <div class="customer-info">
+    <strong>Bill To:</strong> <br>
+    {{customer.name}} <br>
+    {{customer.address}}
+  </div>
+
+  <!-- Invoice Items Table -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of invoice.items; let i = index">
+        <td>{{i + 1}}</td>
+        <td>{{item.name}}</td>
+        <td>{{item.quantity}}</td>
+        <td>{{item.unitPrice | currency}}</td>
+        <td>{{item.quantity * item.unitPrice | currency}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Summary -->
+  <div class="invoice-summary">
+    <p><strong>Subtotal:</strong> {{ getSubtotal() | currency }}</p>
+    <p><strong>Tax ({{invoice.taxRate}}%):</strong> {{ getTax() | currency }}</p>
+    <p><strong>Total:</strong> {{ getTotal() | currency }}</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="invoice-footer">
+    Thank you for your business!
+  </div>
+</div>

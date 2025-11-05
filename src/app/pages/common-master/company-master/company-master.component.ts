@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ViewChild } from '@angular/core';
 import { Company } from '../../models/common-models/companyMaster'
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { CommonModule } from '@angular/common';
@@ -6,13 +6,19 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { InputRestrictDirective } from '../../../directives/input-restrict.directive';
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
+import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
+import { group } from 'console';
+import { GroupBoxComponent } from '../../../shared/group-box/group-box.component';
+
+InputDataGridComponent
 @Component({
   selector: 'app-company-master',
   imports: [
     CommonModule,
     FormsModule,
     FocusOnKeyDirective,
-    InputRestrictDirective
+    InputRestrictDirective,
+    GroupBoxComponent   
   ],
   templateUrl: './company-master.component.html',
   styleUrls: ['./company-master.component.css']
@@ -20,7 +26,7 @@ import { SweetAlertService } from '../../../services/properties/sweet-alert.serv
 export class CompanyMasterComponent {
   selectedLogoFile: File | null = null;
   selectedImageFile: File | null = null;
-
+  @ViewChild(GroupBoxComponent) groupBox!: GroupBoxComponent;
   companies: Company[] = [];
   company: Company = {} as Company;
   constructor(private commonservice: CommonserviceService,

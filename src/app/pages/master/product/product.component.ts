@@ -144,7 +144,7 @@ columns = [
     optionLabel: 'companyName',
     optionValue: 'companyID',
     visible: true,
-     readOnly: true,
+     readOnly: false,
   },
 
   { field: 'purchaseRate', header: 'PURCHASE RATE', type: 'number', visible: false },
@@ -398,32 +398,32 @@ async downloadTemplate() {
 
     // ✅ Step 2: Load master data safely
     const masterData: any = {
-      categories: this.categories && this.categories.length ? this.categories : await this.masterService.getCategories().toPromise() || [],
-      subCategories: this.subCategories && this.subCategories.length ? this.subCategories : await this.masterService.getSubCategories().toPromise() || [],
-      brands: this.brands && this.brands.length ? this.brands : await this.masterService.getBrands().toPromise() || [],
-      units: this.units && this.units.length ? this.units : await this.masterService.getUnits().toPromise() || [],
-      hsnCodes: this.hsnCodes && this.hsnCodes.length ? this.hsnCodes : await this.masterService.getHSNCodes().toPromise() || [],
-      taxes: this.taxes && this.taxes.length ? this.taxes : await this.masterService.getTaxes().toPromise() || [],
-      cesses: this.cesses && this.cesses.length ? this.cesses : await this.masterService.getCesses().toPromise() || [],
-      companies: this.companies && this.companies.length ? this.companies : await this.commonService.getCompanies().toPromise() || [],
+      categories: this.categories?.length ? this.categories : await this.masterService.getCategories().toPromise() || [],
+      subCategories: this.subCategories?.length ? this.subCategories : await this.masterService.getSubCategories().toPromise() || [],
+      brands: this.brands?.length ? this.brands : await this.masterService.getBrands().toPromise() || [],
+      units: this.units?.length ? this.units : await this.masterService.getUnits().toPromise() || [],
+      hsnCodes: this.hsnCodes?.length ? this.hsnCodes : await this.masterService.getHSNCodes().toPromise() || [],
+      taxes: this.taxes?.length ? this.taxes : await this.masterService.getTaxes().toPromise() || [],
+      cesses: this.cesses?.length ? this.cesses : await this.masterService.getCesses().toPromise() || [],
+      companies: this.companies?.length ? this.companies : await this.commonService.getCompanies().toPromise() || [],
     };
 
     // ✅ Step 3: Workbook setup
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Product Template');
 
-    // ✅ Step 4: Header (no change)
+    // ✅ Step 4: Header row
     const headers = visibleCols.map(col => col.header);
     sheet.addRow(headers);
 
-    // ✅ Step 5: Column letter mapping
+    // ✅ Step 5: Map field → column letter
     const colMap = new Map<string, string>();
     visibleCols.forEach((col, index) => {
       const letter = sheet.getColumn(index + 1).letter;
       colMap.set(col.field, letter);
     });
 
-    // ✅ Step 6: Safe lists
+    // ✅ Step 6: Master dropdown lists
     const categoryList = (masterData.categories ?? []).map((x: any) => x.categoryName);
     const subCategoryList = (masterData.subCategories ?? []).map((x: any) => x.subCategoryName);
     const brandList = (masterData.brands ?? []).map((x: any) => x.brandName);
@@ -433,13 +433,38 @@ async downloadTemplate() {
     const cessList = (masterData.cesses ?? []).map((x: any) => x.cessName);
     const companyList = (masterData.companies ?? []).map((x: any) => x.companyName);
 
-    // ✅ Step 7: Apply validation + readonly styles
+    // ✅ Step 7: Apply validations + styles + S.No fill
     for (let i = 2; i <= 200; i++) {
       for (const col of visibleCols) {
         const letter = colMap.get(col.field)!;
         const cell = sheet.getCell(`${letter}${i}`);
 
-        // 🔹 Dropdowns
+        // 🔹 Auto-fill S.No
+        if (col.field === 'sno') {
+          cell.value = i - 1;
+          cell.alignment = { horizontal: 'center' };
+          cell.protection = { locked: true };
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFD9D9D9' }, // light gray
+          };
+          continue;
+        }
+
+        // 🔹 Product Name always editable (no restriction)
+        if (col.field === 'productName') {
+          cell.protection = { locked: false };
+          // Optional: highlight editable column
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF99' }, // light yellow
+          };
+          continue;
+        }
+
+        // 🔹 Dropdown lists
         if (col.type === 'select') {
           let list: string[] = [];
           switch (col.field) {
@@ -471,7 +496,7 @@ async downloadTemplate() {
           };
         }
 
-        // 🔹 Number-only column
+        // 🔹 Numeric columns
         if (col.type === 'number') {
           cell.dataValidation = {
             type: 'decimal',
@@ -481,13 +506,13 @@ async downloadTemplate() {
           };
         }
 
-        // 🔹 Read-only cells styling
+        // 🔹 Read-only columns
         if (col.readOnly) {
           cell.protection = { locked: true };
           cell.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FFD9D9D9' },
+            fgColor: { argb: 'FFD9D9D9' }, // gray
           };
         } else {
           cell.protection = { locked: false };
@@ -495,24 +520,25 @@ async downloadTemplate() {
       }
     }
 
-    // ✅ Step 8: Style header
+    // ✅ Step 8: Header styling
     const headerRow = sheet.getRow(1);
     headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
     headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1D1160' } };
     sheet.columns.forEach(col => (col.width = 20));
 
-    // ✅ Step 9: Protect & Save
+    // ✅ Step 9: Protect and Save
     sheet.protect('protected', { selectLockedCells: true, selectUnlockedCells: true });
     const buffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([buffer]), 'ProductVisibleTemplate.xlsx');
 
-    this.swall.success('Template Downloaded', 'Excel template generated (visible + formatted).');
+    this.swall.success('Template Downloaded', 'Excel template generated successfully with S.No and editable Product Name.');
   } catch (err) {
     console.error('Template download error:', err);
     this.swall.error('Error', 'Failed to generate template');
   }
 }
+
 
 @HostListener('window:keydown', ['$event'])
 handleKeyboardShortcuts(e: KeyboardEvent) {
@@ -538,102 +564,121 @@ isUploading: boolean = false;
 private safeString(value: any): string {
   return String(value ?? '').trim();
 }
-
-
-async uploadExcel(event: any): Promise<void> {
-  const file = event.target.files?.[0];
-  if (!file) return;
-
-  this.isUploading = true; // show spinner
-
+async onFileUpload(event: any) {
   try {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.isUploading = true;
+
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    await workbook.xlsx.load(arrayBuffer);
+
     const sheet = workbook.worksheets[0];
-
-    // ✅ Get header row safely
     const headerRow = sheet.getRow(1);
-    const headers = (Array.isArray(headerRow.values)
-      ? headerRow.values.slice(1)
-      : Object.values(headerRow.values)
-    )
-      .filter((x): x is string => typeof x === 'string')
-      .map(x => x.trim());
 
-    const uploadedData: any[] = [];
+    // Extract headers safely
+    const headers = (Array.isArray(headerRow.values) ? headerRow.values.slice(1) : Object.values(headerRow.values))
+      .map(h => this.getCellText(h).trim());
 
-    sheet.eachRow((row, rowIndex) => {
-      if (rowIndex === 1) return; // skip header
+    // Map Excel headers → component fields
+    const fieldMap: Record<number, string> = {};
+    this.columns.forEach(col => {
+      const idx = headers.findIndex(h => h.toLowerCase() === col.header.toLowerCase());
+      if (idx >= 0) fieldMap[idx + 1] = col.field;
+    });
 
-      const rowValues = Array.isArray(row.values)
-        ? row.values.slice(1)
-        : Object.values(row.values);
+    const validData: any[] = [];
 
-      // ✅ skip totally empty rows
-      const isEmpty = rowValues.every(
-        v => v === null || v === undefined || String(v).trim() === ''
-      );
-      if (isEmpty) return;
+    // Read Excel rows
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // skip header
 
       const rowObj: any = {};
-      headers.forEach((header, index) => {
-        rowObj[header] = rowValues[index];
+      let hasProductName = false;
+
+      row.eachCell((cell, colNumber) => {
+        const field = fieldMap[colNumber];
+        if (!field) return;
+
+        const value = this.getCellText(cell.value).trim();
+        rowObj[field] = value;
+
+        if (field === 'productName' && value) hasProductName = true;
       });
 
-      // ✅ only import if Product Name has value
-      const productName = String(rowObj['Product Name'] ?? '').trim();
-      if (!productName) return; // skip row if product name is blank
-
-      // ✅ match dropdowns by name → ID
-      const category = this.categories.find(
-        c =>
-          c.categoryName.toLowerCase() ===
-          String(rowObj['Category'] ?? '').toLowerCase()
-      );
-      const subCategory = this.subCategories.find(
-        s =>
-          s.subCategoryName.toLowerCase() ===
-          String(rowObj['Sub Category'] ?? '').toLowerCase()
-      );
-      const unit = this.units.find(
-        u =>
-          u.unitName.toLowerCase() ===
-          String(rowObj['Unit'] ?? '').toLowerCase()
-      );
-
-      uploadedData.push({
-        productName,
-        categoryID: category?.categoryID ?? 0,
-        subCategoryID: subCategory?.subCategoryID ?? 0,
-        unitID: unit?.unitID ?? 0,
-      });
+      if (hasProductName) validData.push(rowObj);
     });
 
-    if (uploadedData.length > 0) {
-      this.products = uploadedData;
-    } else {
-      alert('No valid products found in the uploaded file.');
+    if (!validData.length) {
+      this.products = [];
+      this.swall.warning('No Valid Products', 'No rows with Product Name found.');
+      return;
     }
 
-    // ✅ filter subcategories per row
-    this.products.forEach((p, index) => {
-      this.filteredSubCategories[index] = this.subCategories.filter(
-        s => s.categoryID === p.categoryID
-      );
+    // Map dropdown fields dynamically
+    const dropdownFields: Record<string, any[]> = {
+      categoryName: this.categories,
+      subCategoryName: this.subCategories,
+      brandName: this.brands,
+      unitName: this.units,
+      companyName: this.companies,
+      hsnCode: this.hsnCodes,
+      taxName: this.taxes,
+      cessName: this.cesses,
+    };
+
+    const mappedData = validData.map(row => {
+      const newRow: any = { ...row };
+
+      Object.keys(dropdownFields).forEach(key => {
+        const list = dropdownFields[key];
+        const value = row[key];
+        if (!value || !Array.isArray(list)) return;
+
+        const obj = list.find(x =>
+          x[key.replace(/Name|Code$/, '')]?.toString().toLowerCase() === value.toLowerCase()
+        ) || null;
+
+        newRow[key.replace(/Name|Code$/, 'ID')] = obj?.[key.replace(/Name|Code$/, 'ID')] ?? null;
+        newRow[key.replace(/Name|Code$/, '')] = obj ?? null;
+      });
+
+      return newRow;
     });
 
-    console.log('✅ Uploaded Data:', this.products);
-  } catch (error) {
-    console.error('❌ Excel Upload Error:', error);
-    alert('Error while processing the Excel file.');
+    // Update the grid's datasource and reassign S.No
+    this.products = mappedData.filter(p => !!p.productName?.trim());
+    this.updateSerialNumbers();
+
+    this.swall.success(
+      'Upload Successful',
+      `${this.products.length} valid product rows loaded and dropdowns auto-selected.`
+    );
+
+    // Optional: focus first cell after upload
+    setTimeout(() => this.focusFirstGridCell(), 200);
+
+  } catch (err) {
+    console.error('Upload error:', err);
+    this.swall.error('Error', 'Failed to process uploaded Excel.');
   } finally {
-    this.isUploading = false; // hide spinner
+    this.isUploading = false;
   }
 }
 
 
 
-
+private getCellText(value: any): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'object') {
+    if ('text' in value) return String((value as any).text);
+    if ('result' in value) return String((value as any).result);
+    return JSON.stringify(value);
+  }
+  return String(value);
+}
 
 
 }
