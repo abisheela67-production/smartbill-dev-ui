@@ -39,11 +39,11 @@ interface ApiResponse {
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent implements OnInit, AfterViewInit {
+  [key: string]: any; // Add index signature
   @ViewChild(InputDataGridComponent) grid!: InputDataGridComponent;
   @ViewChild(GroupBoxComponent) groupBox!: GroupBoxComponent;
 
 
-@HostListener('window:keydown', ['$event'])
   products: Product[] = [];
   companies: Company[] = [];
   categories: Category[] = [];
@@ -53,11 +53,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
   hsnCodes: HSN[] = [];
   taxes: Tax[] = [];
   cesses: Cess[] = [];
+
 columns = [
-  { field: 'sno', header: 'S.NO', type: 'text', width: '30px', visible: true ,readOnly: true},
+  { field: 'sno', header: 'S.NO', type: 'text', width: '30px', visible: true ,readOnly: true,},
   { field: 'barcode', header: 'BARCODE', type: 'text', visible: false, },
   { field: 'productCode', header: 'PRODUCT CODE', type: 'text', visible: false },
-  { field: 'productName', header: 'PRODUCT NAME', type: 'text', visible: true },
+  { field: 'productName', header: 'PRODUCT NAME', type: 'text', visible: true, requiredForNextRow: true},
   { field: 'productDescription', header: 'DESCRIPTION', type: 'text', visible: false },
   { field: 'isService', header: 'IS SERVICE', type: 'boolean', visible: false },
 
@@ -70,6 +71,7 @@ columns = [
     optionLabel: 'categoryName',
     optionValue: 'categoryID',
     visible: true,
+     allowUploadFill: true
   },
   {
     field: 'subCategoryID',
@@ -79,7 +81,9 @@ columns = [
     optionLabel: 'subCategoryName',
     optionValue: 'subCategoryID',
     visible: true,
-  },
+    allowUploadFill: true,
+  }
+  ,
   {
     field: 'brandID',
     header: 'BRAND',
@@ -136,16 +140,6 @@ columns = [
     optionValue: 'cessID',
     visible: false,
   },
-  {
-    field: 'companyID',
-    header: 'COMPANY',
-    type: 'select',
-    options: 'companies',
-    optionLabel: 'companyName',
-    optionValue: 'companyID',
-    visible: true,
-     readOnly: false,
-  },
 
   { field: 'purchaseRate', header: 'PURCHASE RATE', type: 'number', visible: false },
   { field: 'mrp', header: 'MRP', type: 'number', visible: true },
@@ -171,6 +165,17 @@ columns = [
   { field: 'isActive', header: 'ACTIVE', type: 'boolean', visible: true },
   { field: 'createdAt', header: 'CREATED AT', type: 'datetime', visible: false },
   { field: 'updatedAt', header: 'UPDATED AT', type: 'datetime', visible: false },
+    {
+    field: 'companyID',
+    header: 'COMPANY',
+    type: 'select',
+    options: 'companies',
+    optionLabel: 'companyName',
+    optionValue: 'companyID',
+    visible: true,
+     readOnly: true,
+  },
+
 ];
   filteredSubCategories: any;
 
@@ -192,28 +197,71 @@ columns = [
     setTimeout(() => this.focusFirstGridCell(), 300);
   }
 
-onCellValueChanged(event: any): void {
-  const { row, col, value } = event;
-  const field = this.columns[col].field;
 
-  this.products[row][field] = value;
+get visibleColumns() {
+  return (this.columns || []).filter(col => col.visible);
+}@HostListener('window:keydown', ['$event'])
+handleKeyboardShortcuts(e: KeyboardEvent) {
+  // 🟢 SHIFT + N → Add new product
+  if (e.shiftKey && e.key.toLowerCase() === 'n') {
+    e.preventDefault();
+    this.addNewProduct();
+    return;
+  }
 
-  if (field === 'productName' && value && value.trim() !== '') {
-    const isLastRow = row === this.products.length - 1;
-    if (isLastRow) {
+  // 🟢 SHIFT + S → Save all products
+  if (e.shiftKey && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    this.saveAllProducts();
+    return;
+  }
+
+  // 🟢 ENTER → Only act in Wholesale Price column
+  if (e.key === 'Enter' && this.grid?.currentCell && typeof this.grid.currentCell === 'object') {
+    const { row, col } = this.grid.currentCell;
+    const field = this.columns[col]?.field;
+
+    if (field === 'wholesalePrice') {
+      const currentRow = this.products[row];
+      if (!currentRow) return;
+
+      // ✅ Trim and validate
+      const name = (currentRow.productName || '').trim();
+      const hasName = name.length > 0;
+      const hasRate =
+        (currentRow.wholesalePrice && currentRow.wholesalePrice > 0) ||
+        (currentRow.saleRate && currentRow.saleRate > 0);
+
+      // 🚫 Don’t add if product name is empty or only spaces, or rate is 0
+      if (!hasName || !hasRate) return;
+
+      // ✅ Add new row if valid
+      e.preventDefault();
       this.addNewProduct();
     }
   }
 }
-get visibleColumns() {
-  return (this.columns || []).filter(col => col.visible);
+onCellValueChanged(event: any): void {
+  const { row, col, value } = event;
+  const field = this.columns[col].field;
+  const trimmedValue = (value ?? '').toString().trim();
+
+  // Always store trimmed value
+  this.products[row][field] = trimmedValue;
+
+  // ✅ Only add a new row if productName has a valid (non-empty) value
+  if (field === 'productName') {
+    const isLastRow = row === this.products.length - 1;
+    const hasValidValue = trimmedValue !== '';
+
+    if (isLastRow && hasValidValue) {
+      this.addNewProduct();
+    }
+  }
 }
 
 
-  onRowAdded(): void {
-    this.products.push(this.newProduct());
-    this.focusLastRow();
-  }
+
   private updateSerialNumbers(): void {
   this.products.forEach((p, index) => {
     p.sno = index + 1;
@@ -540,6 +588,7 @@ async downloadTemplate() {
 }
 
 
+/*
 @HostListener('window:keydown', ['$event'])
 handleKeyboardShortcuts(e: KeyboardEvent) {
   if (e.shiftKey && e.key.toLowerCase() === 'n') {
@@ -557,127 +606,88 @@ handleKeyboardShortcuts(e: KeyboardEvent) {
 
 
 }
-
+*/
 isUploading: boolean = false;
 
 
 private safeString(value: any): string {
   return String(value ?? '').trim();
-}
-async onFileUpload(event: any) {
+}async onFileUpload(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
   try {
-    const file = event.target.files[0];
-    if (!file) return;
-
     this.isUploading = true;
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await file.arrayBuffer());
+    const sheet = wb.worksheets[0];
+    const header = sheet.getRow(1).values as string[];
 
-    const workbook = new ExcelJS.Workbook();
-    const arrayBuffer = await file.arrayBuffer();
-    await workbook.xlsx.load(arrayBuffer);
-
-    const sheet = workbook.worksheets[0];
-    const headerRow = sheet.getRow(1);
-
-    // Extract headers safely
-    const headers = (Array.isArray(headerRow.values) ? headerRow.values.slice(1) : Object.values(headerRow.values))
-      .map(h => this.getCellText(h).trim());
-
-    // Map Excel headers → component fields
+    // Map Excel header → field
     const fieldMap: Record<number, string> = {};
-    this.columns.forEach(col => {
-      const idx = headers.findIndex(h => h.toLowerCase() === col.header.toLowerCase());
-      if (idx >= 0) fieldMap[idx + 1] = col.field;
+    this.visibleColumns.forEach((col) => {
+      const idx = header.findIndex(
+        (h: any) => String(h || '').trim().toLowerCase() === col.header.toLowerCase()
+      );
+      if (idx > 0) fieldMap[idx] = col.field;
     });
 
-    const validData: any[] = [];
-
-    // Read Excel rows
-    sheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) return; // skip header
-
-      const rowObj: any = {};
-      let hasProductName = false;
-
-      row.eachCell((cell, colNumber) => {
-        const field = fieldMap[colNumber];
-        if (!field) return;
-
-        const value = this.getCellText(cell.value).trim();
-        rowObj[field] = value;
-
-        if (field === 'productName' && value) hasProductName = true;
+    const uploadedRows: any[] = [];
+    sheet.eachRow((row, i) => {
+      if (i === 1) return;
+      const obj: any = {};
+      row.eachCell((cell, j) => {
+        const f = fieldMap[j];
+        if (f) obj[f] = String(cell.value ?? '').trim();
       });
-
-      if (hasProductName) validData.push(rowObj);
+      if (obj.productName) uploadedRows.push(obj);
     });
 
-    if (!validData.length) {
-      this.products = [];
-      this.swall.warning('No Valid Products', 'No rows with Product Name found.');
-      return;
-    }
-
-    // Map dropdown fields dynamically
-    const dropdownFields: Record<string, any[]> = {
-      categoryName: this.categories,
-      subCategoryName: this.subCategories,
-      brandName: this.brands,
-      unitName: this.units,
-      companyName: this.companies,
-      hsnCode: this.hsnCodes,
-      taxName: this.taxes,
-      cessName: this.cesses,
+    const mapValue = (list: any[], label: string, id: string, val: string) => {
+      const match = list.find(
+        (x) => String(x[label] ?? '').toLowerCase() === String(val).toLowerCase()
+      );
+      return match ? match[id] : 0;
     };
 
-    const mappedData = validData.map(row => {
-      const newRow: any = { ...row };
+    // ✅ Merge logic (update if exists, else add new)
+    for (const r of uploadedRows) {
+      const existing = this.products.find(
+        (p) => p.productName.trim().toLowerCase() === r.productName.trim().toLowerCase()
+      );
 
-      Object.keys(dropdownFields).forEach(key => {
-        const list = dropdownFields[key];
-        const value = row[key];
-        if (!value || !Array.isArray(list)) return;
+      const mappedData: Product = {
+        ...this.newProduct(),
+        ...r,
+        categoryID: mapValue(this.categories, 'categoryName', 'categoryID', r.categoryID),
+        subCategoryID: mapValue(this.subCategories, 'subCategoryName', 'subCategoryID', r.subCategoryID),
+        unitID: mapValue(this.units, 'unitName', 'unitID', r.unitID),
+        companyID: mapValue(this.companies, 'companyName', 'companyID', r.companyID),
+        isActive: (r.isActive || '').toString().toLowerCase() === 'true',
+      };
 
-        const obj = list.find(x =>
-          x[key.replace(/Name|Code$/, '')]?.toString().toLowerCase() === value.toLowerCase()
-        ) || null;
+      if (existing) {
+        // 🔄 Update existing
+        Object.assign(existing, mappedData);
+      } else {
+        // ➕ Add new
+        this.products.push(mappedData);
+      }
+    }
 
-        newRow[key.replace(/Name|Code$/, 'ID')] = obj?.[key.replace(/Name|Code$/, 'ID')] ?? null;
-        newRow[key.replace(/Name|Code$/, '')] = obj ?? null;
-      });
-
-      return newRow;
-    });
-
-    // Update the grid's datasource and reassign S.No
-    this.products = mappedData.filter(p => !!p.productName?.trim());
     this.updateSerialNumbers();
-
     this.swall.success(
-      'Upload Successful',
-      `${this.products.length} valid product rows loaded and dropdowns auto-selected.`
+      'Upload Success',
+      `${uploadedRows.length} records processed. Updated ${uploadedRows.filter(r =>
+        this.products.some(p => p.productName.trim().toLowerCase() === r.productName.trim().toLowerCase())
+      ).length} existing and added new ${uploadedRows.length} products.`
     );
-
-    // Optional: focus first cell after upload
-    setTimeout(() => this.focusFirstGridCell(), 200);
-
   } catch (err) {
-    console.error('Upload error:', err);
-    this.swall.error('Error', 'Failed to process uploaded Excel.');
+    console.error('Upload error', err);
+    this.swall.error('Error', 'Excel upload failed');
   } finally {
     this.isUploading = false;
   }
-}
-
-
-
-private getCellText(value: any): string {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'object') {
-    if ('text' in value) return String((value as any).text);
-    if ('result' in value) return String((value as any).result);
-    return JSON.stringify(value);
-  }
-  return String(value);
 }
 
 
