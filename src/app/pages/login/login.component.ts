@@ -52,9 +52,9 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
       if (username === 'admin' && password === '123') {
-        localStorage.setItem('userId', '0'); // dummy ID
+        localStorage.setItem('userId', '0'); 
         localStorage.setItem('userName', 'admin');
-        localStorage.setItem('role', 'admin'); // 👈 important
+        localStorage.setItem('role', 'admin'); 
         alert(`Login successful 🎉 Welcome admin`);
         this.router.navigate(['/default']);
         return;
@@ -68,6 +68,7 @@ export class LoginComponent {
         localStorage.setItem('userId', matchedUser.userID.toString());
         localStorage.setItem('userName', matchedUser.userName);
         localStorage.setItem('role', 'client');
+          localStorage.setItem('companyId', matchedUser.companyID.toString()); 
         alert(`Login successful  Welcome ${matchedUser.userName}`);
         this.router.navigate(['/default']);
       } else {

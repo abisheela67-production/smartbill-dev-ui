@@ -69,6 +69,10 @@ export class CommonserviceService {
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/GetUserList`);
   }
+
+
+
+  
   // === User Permission APIs ===
 
   savePermission(permission: UserPermission): Observable<number> {

@@ -1,0 +1,60 @@
+<app-group-box title="Purchase Order">
+  <!-- Header: Company + Supplier in one row -->
+  <div class="purchase-header grid grid-cols-2 gap-4">
+
+    <!-- Company -->
+    <div>
+      <label class="block font-medium mb-1">Company Name</label>
+      <select
+        class="form-select w-full"
+        [(ngModel)]="selectedCompanyId"
+        name="companySelect"
+        disabled
+      >
+        <option *ngFor="let c of companies" [value]="c.companyID">
+          {{ c.companyName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Supplier -->
+    <div>
+      <label class="block font-medium mb-1">Supplier</label>
+      <select
+        class="form-select w-full"
+        [(ngModel)]="selectedSupplierId"
+        name="supplierSelect"
+      >
+        <option [ngValue]="null">-- Select Supplier --</option>
+        <option *ngFor="let s of suppliers" [value]="s.supplierID">
+          {{ s.supplierName }}
+        </option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- Product grid below -->
+  <div class="product-management mt-4">
+    <div class="data-grid-section">
+      <app-input-data-grid
+        [columns]="visibleColumns"
+        [data]="purchaseOrderEntries"
+        [parent]="{
+          companies: companies,
+          categories: categories,
+          subCategories: subCategories,
+          brands: brands,
+          units: units,
+          hsnCodes: hsnCodes,
+          taxes: taxes,
+          cesses: cesses
+        }"
+        selectionMode="FullRowSelect"
+        [allowUserToAddRows]="true"
+        [allowUserToDeleteRows]="true"
+        [allowUserToResizeColumns]="true"
+      ></app-input-data-grid>
+    </div>
+  </div>
+</app-group-box>

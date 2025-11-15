@@ -25,6 +25,9 @@ import { PurchaseCancelComponent } from './pages/purchase/purchase-cancel/purcha
 import { SalesEntryComponent } from './pages/sales/sales-entry/sales-entry.component';
 import { SalesViewComponent } from './pages/sales/sales-view/sales-view.component';
 import { SalesEditComponent } from './pages/sales/sales-edit/sales-edit.component';
+import { PurchsaeOrderEntryComponent } from './purchase-order/purchsae-order-entry/purchsae-order-entry.component';
+import { PurchsaeOrderViewComponent } from './purchase-order/purchsae-order-view/purchsae-order-view.component';
+import { GrnMasterComponent } from './purchase-order/grn-master/grn-master.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -77,6 +80,13 @@ export const routes: Routes = [
       { path: 'PurchaseEntry', component: PurchaseEntryComponent },
       { path: 'PurchaseView', component: PurchaseViewComponent },
       { path: 'PurchaseCancel', component: PurchaseCancelComponent },
+      { path: 'PurchaseOrderEntry', component: PurchsaeOrderEntryComponent },
+      { path: 'PurchaseOrderView', component: PurchsaeOrderViewComponent },
+      { path: 'PurchaseOrderCancel', component: PurchaseCancelComponent },
+      { path: 'GRNEntry', component: GrnMasterComponent },
+
+
+
       { path: '', redirectTo: 'PurchaseEntry', pathMatch: 'full' },
     ],
   },

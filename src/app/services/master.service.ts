@@ -65,6 +65,7 @@ export class MasterService {
   // ================= Supplier =================
   getSuppliers(): Observable<Supplier[]> {
     return this.http.get<Supplier[]>(`${this.baseUrl}/Suppliers`);
+    console.log('Suppliers fetched');
   }
 
   saveSupplier(supplier: Supplier): Observable<any> {
