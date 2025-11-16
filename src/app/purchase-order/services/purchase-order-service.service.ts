@@ -12,9 +12,13 @@ export class PurchaseOrderServiceService {
   private baseUrl = `${environment.apiBaseUrl}/Purchase`;
 
   constructor(private http: HttpClient) {}
+savePurchaseOrder(payload: any): Observable<ApiResponse> {
+  return this.http.post<ApiResponse>(`${this.baseUrl}/purchaseorder`, payload);
+}
+getPurchaseOrders(params: any): Observable<PurchaseOrderEntry[]> {
+  return this.http.get<PurchaseOrderEntry[]>(`${this.baseUrl}/GetPurchaseOrder`, { params });
+}
 
-  savePurchaseOrder(purchaseorder: PurchaseOrderEntry): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.baseUrl}/purchaseorder`, purchaseorder);
-  }
+
 
 }

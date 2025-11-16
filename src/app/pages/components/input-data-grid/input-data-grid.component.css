@@ -1,12 +1,12 @@
 /* ================================
- THEME VARIABLES
+   THEME VARIABLES
 ================================= */
 :root {
-  --color-primary: #1D1160;         /* Focus color (deep purple) */
-  --color-primary-dark: #140C44;    /* Editing / active tone */
+  --color-primary: #1D1160;         
+  --color-primary-dark: #140C44;    
   --color-secondary: #F4A261;
-  --color-text-light: #ffffff;      /* White text */
-  --color-text-dark: #1D1160;       /* Dark text */
+  --color-text-light: #ffffff;      
+  --color-text-dark: #1D1160;       
   --color-bg-white: #F5F6FA;
   --color-bg-light: #ffffff;
   --color-border: #000000;
@@ -16,7 +16,7 @@
 }
 
 /* ================================
-GRID CONTAINER
+   GRID CONTAINER
 ================================= */
 .data-grid-container {
   font-family: 'Poppins', sans-serif;
@@ -25,27 +25,25 @@ GRID CONTAINER
   box-shadow: var(--shadow-soft);
   padding: 8px;
   width: 100%;
- height: 500px; /* Fixed height for scrolling */ 
+  height: 500px;
   overflow: auto;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-border);
-  border-color: #000000 !important;
 }
 
 /* ================================
-🧾 TABLE STYLING
+   TABLE
 ================================= */
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  border-color: #000000 !important;
-  table-layout: fixed; /* ✅ keep column alignment consistent */
+  table-layout: fixed;
 }
 
 /* ================================
-📌 HEADER
+   HEADER
 ================================= */
 th {
   background: #f6f8fe;
@@ -57,39 +55,29 @@ th {
   border-right: 1px solid var(--color-border);
   white-space: nowrap;
   height: 38px;
-  position: sticky;  /* ✅ header stays visible on scroll */
+  position: sticky;
   top: 0;
   z-index: 5;
-  border-color: #000000 !important;
 }
 
 th:last-child {
   border-right: none;
 }
 
-th + th {
-  border-left: 1px solid var(--color-border);
-}
-
 /* ================================
- DATA CELLS
+   DATA CELLS
 ================================= */
 td {
   background-color: var(--color-bg-light);
   color: var(--color-text-dark);
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
-  border-color: #000000 !important;
   padding: 6px 8px;
   text-align: center;
-  vertical-align: middle;
-  height: auto;            
-  min-height: 20px;        /* Base row height */
+  min-height: 20px;
   line-height: 1.4;
-  transition: background-color 0.15s ease, color 0.15s ease, outline-color 0.15s ease;
-  overflow: visible;       /* ✅ allows dropdowns and large text */
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  transition: 0.15s ease;
 }
 
 td:last-child {
@@ -97,123 +85,101 @@ td:last-child {
 }
 
 /* ================================
-✏️ INPUT CELL (UPDATED)
+   INPUTS
 ================================= */
 .cell-input {
   width: 100%;
-  height: auto;
-  min-height: 10px;
   border: none;
   outline: none;
   background: transparent;
-  font-family: inherit;
   font-size: 14px;
   text-align: center;
   color: inherit;
   padding: 4px 6px;
-  box-sizing: border-box;
-  caret-color: auto; /* default cursor color */
 }
-
-/* When editing / focused, show bright caret */
-.cell-input.editing,
-td.focused .cell-input {
-  background-color: var(--color-primary-dark);
-  color: var(--color-text-light);
-  caret-color: #ffffff; /* ✅ visible white caret */
-}
-
 
 /* ================================
-🔷 FOCUSED CELL
+   SELECT (Dropdown FIX)
+================================= */
+td select {
+  width: 100%;
+  height: 30px;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px;
+  padding: 2px;
+  outline: none !important;
+}
+
+/* Options FIX */
+td select option {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Focused cell dropdown FIX */
+td.focused select {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* ================================
+   FOCUSED CELL
 ================================= */
 td.focused {
-  background-color: var(--color-primary) !important; /* Focus back color */
-  color: var(--color-text-light) !important;          /* White text */
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
   outline: 2px solid var(--color-primary-dark);
   outline-offset: -1px;
-  transition: background-color 0.15s ease, outline-color 0.15s ease;
-  z-index: 2;
+  z-index: 9 !important;
 }
 
-/* Make input text white when focused */
 td.focused .cell-input {
-  color: var(--color-text-light);
+  color: var(--color-text-light) !important;
+  caret-color: var(--color-text-light) !important;
 }
 
 /* ================================
-🖱️ HOVER EFFECT
+   HOVER
 ================================= */
 td:not(.focused):hover {
   background-color: #e8eaff;
 }
 
 /* ================================
-📏 RESIZE HANDLE
+   RESIZE HANDLE
 ================================= */
 .resize-handle {
-  display: inline-block;
   width: 6px;
   height: 100%;
   cursor: col-resize;
   position: absolute;
   right: 0;
   top: 0;
-  background: transparent;
   z-index: 10;
 }
 
-th:hover .resize-handle {
-  background: rgba(29, 17, 96, 0.12);
-}
-
 /* ================================
-🧭 SCROLLBAR STYLING
+   READONLY
 ================================= */
-.data-grid-container::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+td.readonly,
+td select:disabled,
+td .cell-input:disabled {
+  background-color: #e6e6e6 !important;
+  color: #333 !important;
+  border: 1px solid #c5c5c5 !important;
 }
-
-.data-grid-container::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-}
-
-.data-grid-container::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-hover);
-}
-
-/* Read-only input styling */
-.cell-input[readonly],
-.cell-input:disabled,
-.cell-select:disabled,
-.cell-checkbox:disabled {
-  background-color: #f2f2f2;
-  color: #777;
-  cursor: not-allowed;
-  border: 1px solid #ddd;
-}
-
-/* Optional: make read-only cells visually distinct */
-td.readonly {
-  background-color: #f9f9f9;
-}
-
 
 /* ================================
-📱 RESPONSIVE IMPROVEMENTS
+   RESPONSIVE
 ================================= */
 @media (max-width: 768px) {
   .table {
     font-size: 13px;
   }
-
   th {
     padding: 6px 8px;
-  }
-
-  .cell-input {
-    padding: 3px 4px;
   }
 }

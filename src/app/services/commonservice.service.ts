@@ -42,6 +42,14 @@ export class CommonserviceService {
     return this.http.get<Branch[]>(`${this.baseUrl}/GetBranchList`);
   }
 
+
+getBranchesByCompany(companyId: number): Observable<Branch[]> {
+  return this.http.get<Branch[]>(
+    `${this.baseUrl}/GetBranchesByCompany?companyId=${companyId}`
+  );
+}
+
+
   // Department
   saveDepartment(department: Department): Observable<number> {
     return this.http.post<number>(

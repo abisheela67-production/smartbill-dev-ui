@@ -1,15 +1,15 @@
 <div class="data-grid-container">
   <table class="table">
+    <!-- HEADER -->
     <thead>
       <tr>
         <th
-          *ngFor="let col of columns; let i = index"
+          *ngFor="let col of columns; let i = index; trackBy: trackByCol"
           [style.width.px]="col.width"
-          [class.no-upload]="!col.allowUploadFill"
-          [title]="!col.allowUploadFill ? 'Upload disabled for this column' : ''"
         >
           <div class="th-content">
             {{ col.header }}
+
             <span
               *ngIf="allowUserToResizeColumns"
               class="resize-handle"
@@ -20,88 +20,91 @@
       </tr>
     </thead>
 
+    <!-- BODY -->
     <tbody>
       <tr
-        *ngFor="let row of data; let r = index"
-        [class.row-focused]="selectionMode === 'FullRowSelect' && focusedCell.row === r"
+        *ngFor="let row of data; let r = index; trackBy: trackByRow"
+        [class.row-focused]="
+          selectionMode === 'FullRowSelect' && focusedCell.row === r
+        "
         (click)="selectionMode === 'FullRowSelect' ? focusCell(r, 0) : null"
       >
         <td
-          *ngFor="let col of columns; let c = index"
+          *ngFor="let col of columns; let c = index; trackBy: trackByCol"
           [class.focused]="focusedCell.row === r && focusedCell.col === c"
-          [class.readonly]="col.readOnly"
-          [class.no-upload]="!col.allowUploadFill"
           (click)="selectionMode !== 'FullRowSelect' ? focusCell(r, c) : null"
         >
           <ng-container [ngSwitch]="col.type">
-            <!-- 🟦 Text -->
+            <!-- TEXT -->
             <input
               *ngSwitchCase="'text'"
               #gridInput
               type="text"
               class="cell-input"
               [(ngModel)]="row[col.field]"
-              [readonly]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              [disabled]="col.readOnly"
-              (click)="$event.stopPropagation()"
-              (focus)="focusCell(r, c)"
-              (keydown)="handleKeyDown($event, r, c)"
+              [readonly]="col.readOnly"
               autocomplete="off"
+              (focus)="focusCell(r, c)"
+               (click)="$event.stopPropagation()"
+              (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- 🔢 Number -->
+            <!-- NUMBER -->
             <input
               *ngSwitchCase="'number'"
               #gridInput
               type="number"
-              class="cell-input number"
+              class="cell-input"
               [(ngModel)]="row[col.field]"
-              [readonly]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              [disabled]="col.readOnly"
+              [readonly]="col.readOnly"
               (click)="$event.stopPropagation()"
+
+              autocomplete="off"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
-              autocomplete="off"
+              (ngModelChange)="onNumberChanged(r, col.field)"
             />
 
-            <!-- 📅 Date -->
+            <!-- DATE -->
             <input
               *ngSwitchCase="'date'"
               #gridInput
               type="date"
               class="cell-input"
               [(ngModel)]="row[col.field]"
-              [readonly]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              [disabled]="col.readOnly"
-              (click)="$event.stopPropagation()"
+              [readonly]="col.readOnly"
               (focus)="focusCell(r, c)"
+               (click)="$event.stopPropagation()"
+
               (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- ☑️ Boolean -->
+            <!-- CHECKBOX -->
             <input
               *ngSwitchCase="'boolean'"
               #gridInput
               type="checkbox"
               class="cell-checkbox"
               [(ngModel)]="row[col.field]"
-              [disabled]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              (click)="$event.stopPropagation()"
               (focus)="focusCell(r, c)"
+               (click)="$event.stopPropagation()"
+
               (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- 🔽 Select -->
+            <!-- SELECT -->
             <select
               *ngSwitchCase="'select'"
               #gridInput
               class="cell-input"
               [(ngModel)]="row[col.field]"
-              [disabled]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              (focus)="focusCell(r, c)"
+              [disabled]="col.readOnly"
+              (click)="$event.stopPropagation()"
+              (focus)="!col.disableMouseFocus && focusCell(r, c)"
               (keydown)="handleSelectKeyDown($event, r, c, gridInput)"
             >
               <option value="">-- Select --</option>
+
               <option
                 *ngFor="let opt of parent[col.options]"
                 [ngValue]="opt[col.optionValue]"
@@ -110,19 +113,18 @@
               </option>
             </select>
 
-            <!-- 🟥 Default -->
+            <!-- DEFAULT -->
             <input
               *ngSwitchDefault
               #gridInput
               type="text"
               class="cell-input"
               [(ngModel)]="row[col.field]"
-              [readonly]="col.readOnly || (col.lockAfterUpload && row._uploaded)"
-              [disabled]="col.readOnly"
+              [readonly]="col.readOnly"
               (click)="$event.stopPropagation()"
+              autocomplete="off"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
-              autocomplete="off"
             />
           </ng-container>
         </td>

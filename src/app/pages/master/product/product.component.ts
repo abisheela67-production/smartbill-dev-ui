@@ -202,14 +202,12 @@ get visibleColumns() {
   return (this.columns || []).filter(col => col.visible);
 }@HostListener('window:keydown', ['$event'])
 handleKeyboardShortcuts(e: KeyboardEvent) {
-  // 🟢 SHIFT + N → Add new product
   if (e.shiftKey && e.key.toLowerCase() === 'n') {
     e.preventDefault();
     this.addNewProduct();
     return;
   }
 
-  // 🟢 SHIFT + S → Save all products
   if (e.shiftKey && e.key.toLowerCase() === 's') {
     e.preventDefault();
     this.saveAllProducts();

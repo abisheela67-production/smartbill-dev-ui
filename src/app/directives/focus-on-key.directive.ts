@@ -7,7 +7,7 @@ import { Directive, HostListener, Input, ElementRef, AfterViewInit } from '@angu
 export class FocusOnKeyDirective implements AfterViewInit {
   @Input('appFocusOnKey') targetId?: string;
   @Input() autoSelectNext: boolean = false;
-  @Input() autoFocus: boolean = false; 
+  @Input() autoFocus: boolean = false;
   @Input() delay: number = 0;
 
   constructor(private el: ElementRef<HTMLElement>) {}
@@ -20,37 +20,91 @@ export class FocusOnKeyDirective implements AfterViewInit {
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
 
-      let targetElement: HTMLElement | null = null;
+    const current = this.el.nativeElement;
 
-      // Use targetId if provided
-      if (this.targetId) {
-        targetElement = document.getElementById(this.targetId);
-      } else {
-        // fallback: next focusable element
-        targetElement = this.getNextFocusable(this.el.nativeElement);
-      }
+    switch (event.key) {
+      case 'Enter':
+        event.preventDefault();
+        this.handleEnterKey(current);
+        break
+      case 'ArrowRight':
+        event.preventDefault();
+        this.focusNext(current);
+        break;
 
-      if (targetElement) this.focusElement(targetElement);
+      case 'ArrowLeft':
+           event.preventDefault();
+        this.focusPrev(current);
+        break;
     }
   }
 
+  // --------------------------
+  // ENTER KEY
+  // --------------------------
+  private handleEnterKey(current: HTMLElement) {
+    let target: HTMLElement | null = null;
+
+    if (this.targetId) {
+      target = document.getElementById(this.targetId);
+    } else {
+      target = this.getNextFocusable(current);
+    }
+
+    if (target) this.focusElement(target);
+  }
+
+  // --------------------------
+  // ARROW DOWN → next focusable
+  // --------------------------
+  private focusNext(current: HTMLElement) {
+    const next = this.getNextFocusable(current);
+    if (next) this.focusElement(next);
+  }
+
+  // --------------------------
+  // ARROW UP → previous focusable
+  // --------------------------
+  private focusPrev(current: HTMLElement) {
+    const list = this.getFocusableElements();
+    const index = list.indexOf(current);
+    if (index > 0) this.focusElement(list[index - 1]);
+  }
+
+  // --------------------------
+  // FOCUS HELPER
+  // --------------------------
   private focusElement(element: HTMLElement) {
     element.focus();
-    if (this.autoSelectNext && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA')) {
-      const inputEl = element as HTMLInputElement | HTMLTextAreaElement;
-      if (!inputEl.readOnly) inputEl.select();
+    if (this.autoSelectNext && (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) {
+      if (!element.readOnly) element.select();
     }
   }
 
+  // --------------------------
+  // ALL FOCUSABLE ELEMENTS
+  // --------------------------
+  private getFocusableElements(): HTMLElement[] {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        `
+        input:not([disabled]):not([type=hidden]),
+        select:not([disabled]),
+        textarea:not([disabled]),
+        button:not([disabled])
+        `
+      )
+    );
+  }
+
+  // --------------------------
+  // NEXT FOCUSABLE
+  // --------------------------
   private getNextFocusable(current: HTMLElement): HTMLElement | null {
-    const focusable = Array.from(document.querySelectorAll<HTMLElement>(
-      'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
-    ));
-    const index = focusable.indexOf(current);
-    if (index >= 0 && index < focusable.length - 1) return focusable[index + 1];
+    const list = this.getFocusableElements();
+    const index = list.indexOf(current);
+    if (index >= 0 && index < list.length - 1) return list[index + 1];
     return null;
   }
 }

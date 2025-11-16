@@ -8,7 +8,6 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
-  SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -20,12 +19,11 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./input-data-grid.component.css'],
 })
 export class InputDataGridComponent implements AfterViewInit {
-  /* =============================
-    DataGridView-Like Properties
-  ==============================*/
+  /* ================================
+      INPUTS
+  ================================= */
   @Input() columns: any[] = [];
   @Input() data: any[] = [];
-  gridData: any[] = [];
 
   @Input() allowUserToAddRows = true;
   @Input() allowUserToDeleteRows = false;
@@ -34,9 +32,9 @@ export class InputDataGridComponent implements AfterViewInit {
   @Input() selectionMode: 'CellSelect' | 'FullRowSelect' = 'CellSelect';
   @Input() parent: any = {};
 
-  /* =============================
-    Events
-  ==============================*/
+  /* ================================
+      OUTPUTS
+  ================================= */
   @Output() cellFocus = new EventEmitter<any>();
   @Output() cellBeginEdit = new EventEmitter<any>();
   @Output() cellEndEdit = new EventEmitter<any>();
@@ -44,10 +42,9 @@ export class InputDataGridComponent implements AfterViewInit {
   @Output() rowAdded = new EventEmitter<any>();
   @Output() rowDeleted = new EventEmitter<any>();
   @Output() columnResized = new EventEmitter<any>();
-
-  /* =============================
-     Internal State
-  ==============================*/
+  /* ================================
+      INTERNAL
+  ================================= */
   @ViewChildren('gridInput') inputs!: QueryList<ElementRef>;
   focusedCell = { row: 0, col: 0 };
   editingCell = { row: -1, col: -1 };
@@ -55,88 +52,48 @@ export class InputDataGridComponent implements AfterViewInit {
   resizingColumn: number | null = null;
   startX: number | null = null;
   startWidth: number | null = null;
-  currentCell: boolean | undefined;
+
+  private rowIdCounter = 0;
 
   ngAfterViewInit() {
-    if (this.data.length) setTimeout(() => this.focusCell(0, 0), 500); // Initial focus on first cell
-  }
-
-  /* ---------------- Helper ---------------- */
-  private focusAndSelect(el: HTMLElement | null) {
-    if (!el) return;
-    el.focus?.();
-
-    const tag = el.tagName?.toLowerCase();
-    if (
-      (tag === 'input' || tag === 'textarea') &&
-      typeof (el as any).select === 'function'
-    ) {
-      (el as any).select();
+    if (this.data.length) {
+      setTimeout(() => this.focusCell(0, 0), 300);
     }
   }
 
-  /* ---------------- Focus & Navigation ---------------- */
-focusCell(row: number, col: number) {
-  if (row < 0 || col < 0) return;
+  /* ================================
+      TRACKBY — prevent re-render
+  ================================= */
+  trackByRow(index: number, row: any) {
+    if (!row._rowId) row._rowId = ++this.rowIdCounter;
+    return row._rowId;
+  }
 
-  // Prevent focusing during hidden modal state
-  const appRoot = document.querySelector('app-root');
-  if (appRoot?.getAttribute('aria-hidden') === 'true') return;
+  trackByCol(index: number, col: any) {
+    return col.field || index;
+  }
 
-  this.focusedCell = { row, col };
-  this.cellFocus.emit({ row, col, field: this.columns[col].field });
+  /* ================================
+      FOCUS + SELECTION
+  ================================= */
+  private focusAndSelect(el: HTMLElement | null) {
+    if (!el) return;
+    el.focus();
+    if ('select' in el) (el as any).select?.();
+  }
+currentCell = { row: 0, col: 0 };
 
+  focusCell(row: number, col: number) {
+    if (row < 0 || col < 0) return;
 
-  const focusHandler = () => {
-    const input = this.getInput(row, col);
-    this.focusAndSelect(input?.nativeElement);
-  };
-
-  const sub = this.inputs?.changes?.subscribe(() => {
-    focusHandler();
-    sub.unsubscribe();
-  });
-
-  // Fallback in case inputs didn’t change
-  setTimeout(focusHandler, 30);
-}
-
-onCellMouseDown(event: MouseEvent, row: number, col: number) {
-  // Prevent Angular from losing focus before it’s reassigned
-  event.stopPropagation();
-
-  // Delay focus logic slightly so Angular has rendered the right cell
-  setTimeout(() => {
-    this.focusCell(row, col);
-  }, 0);
-}
-
-
-  /* ---------------- Editing ---------------- */
-  enableEditing(row: number, col: number) {
-    if (this.readOnly) return;
-
-    this.editingCell = { row, col };
-    this.cellBeginEdit.emit({ row, col });
+    this.focusedCell = { row, col };
+      this.currentCell = { row, col };  
+    this.cellFocus.emit({ row, col, field: this.columns[col].field });
 
     setTimeout(() => {
       const input = this.getInput(row, col);
       this.focusAndSelect(input?.nativeElement);
-    }, 10);
-  }
-
-  disableEditing(row: number, col: number) {
-    if (!this.isEditingCell(row, col)) return;
-
-    const field = this.columns[col].field;
-    const value = this.data[row][field];
-    this.cellEndEdit.emit({ row, col, value });
-    this.cellValueChanged.emit({ row, col, value });
-    this.editingCell = { row: -1, col: -1 };
-  }
-
-  isEditingCell(row: number, col: number): boolean {
-    return this.editingCell.row === row && this.editingCell.col === col;
+    });
   }
 
   getInput(row: number, col: number): ElementRef | null {
@@ -144,124 +101,238 @@ onCellMouseDown(event: MouseEvent, row: number, col: number) {
     const index = row * this.columns.length + col;
     return flat[index] || null;
   }
-  handleKeyDown(event: KeyboardEvent, row: number, col: number) {
-    const key = event.key.toLowerCase();
+
+  /* ================================
+      EDITING
+  ================================= */
+  enableEditing(row: number, col: number) {
+    if (this.readOnly) return;
+
+    this.editingCell = { row, col };
+    this.cellBeginEdit.emit({ row, col });
+
+    setTimeout(() => {
+      this.focusAndSelect(this.getInput(row, col)?.nativeElement);
+    });
+  }
+
+  disableEditing(row: number, col: number) {
+    if (!this.isEditingCell(row, col)) return;
+
+    const field = this.columns[col].field;
+    const value = this.data[row][field];
+
+    this.cellEndEdit.emit({ row, col, value });
+    this.cellValueChanged.emit({ row, col, value });
+
+    this.editingCell = { row: -1, col: -1 };
+  }
+
+  isEditingCell(row: number, col: number) {
+    return this.editingCell.row === row && this.editingCell.col === col;
+  }
+
+  /* ================================
+      KEYBOARD HANDLING
+  ================================= */
+handleKeyDown(event: KeyboardEvent, row: number, col: number) {
+  const key = event.key;
+  const colDef = this.columns[col];
+
+  switch (key) {
+
+    case 'Enter':
+      event.preventDefault();
+
+      // ⭐ Small Grid Open Condition (Restored) ⭐
+      if (colDef.openSmallGrid && this.parent?.showSmallGrid) {
+        this.disableEditing(row, col);
+        this.parent.showSmallGrid(row);
+        return;
+      }
+
+      this.disableEditing(row, col);
+      this.focusNextEditableCell(row, col);
+      return;
+
+    case 'ArrowRight':
+      event.preventDefault();
+      this.focusNextEditableCell(row, col);
+      return;
+
+    case 'ArrowLeft':
+      event.preventDefault();
+      this.focusPrevEditableCell(row, col);
+      return;
+
+    case 'ArrowDown':
+      event.preventDefault();
+      if (row < this.data.length - 1) {
+        this.focusCell(row + 1, col);
+        this.enableEditing(row + 1, col);
+      }
+      return;
+
+    case 'ArrowUp':
+      event.preventDefault();
+      if (row > 0) {
+        this.focusCell(row - 1, col);
+        this.enableEditing(row - 1, col);
+      }
+      return;
+
+    case 'Tab':
+      event.preventDefault();
+      if (event.shiftKey) this.focusPrevEditableCell(row, col);
+      else this.focusNextEditableCell(row, col);
+      return;
+
+
+
+
+    case 'Delete':
+      this.deleteRow(row);
+      return
+    default:
+      if (event.key.length === 1 && !this.isEditingCell(row, col)) {
+        this.enableEditing(row, col);
+        setTimeout(() => {
+          const field = this.columns[col].field;
+          this.data[row][field] = event.key;
+          this.cellValueChanged.emit({ row, col, value: event.key });
+        });
+      }
+      return;
+  }
+}
+@Output() numberChanged = new EventEmitter<{
+  rowIndex: number;
+  field: string;
+}>();
+
+onNumberChanged(rowIndex: number, field: string) {
+  this.numberChanged.emit({ rowIndex, field });
+}
+
+
+
+  /* ================================
+      SELECT KEYDOWN (missing method)
+  ================================= */
+  handleSelectKeyDown(
+    event: KeyboardEvent,
+    row: number,
+    col: number,
+    select: HTMLSelectElement
+  ) {
+    const key = event.key;
 
     switch (key) {
-      case 'arrowright':
-        event.preventDefault();
-        this.focusNextEditableCell(row, col);
-        break;
+      case 'ArrowUp':
+      case 'ArrowDown':
+        event.stopPropagation();
+        return;
 
-      case 'arrowleft':
-        event.preventDefault();
-        this.focusPrevEditableCell(row, col);
-        break;
-
-      case 'arrowdown':
-        event.preventDefault();
-        this.focusNextRowSameColumn(row, col);
-        break;
-
-      case 'arrowup':
-        event.preventDefault();
-        this.focusPrevRowSameColumn(row, col);
-        break;
-
-      case 'delete':
-        event.preventDefault();
-        if (confirm('Delete this row?')) {
-          this.deleteRow(row);
-        }
-        break;
-
-      case 'enter':
+      case 'Enter':
         event.preventDefault();
         this.disableEditing(row, col);
         this.focusNextEditableCell(row, col);
-        break;
+        return;
 
-      case 'tab':
+      case 'Tab':
         event.preventDefault();
         if (event.shiftKey) this.focusPrevEditableCell(row, col);
         else this.focusNextEditableCell(row, col);
-        break;
+        return;
 
-      case 'escape':
+      case 'ArrowLeft':
         event.preventDefault();
-        this.disableEditing(row, col);
-        break;
+        this.focusPrevEditableCell(row, col);
+        return;
+
+      case 'ArrowRight':
+        event.preventDefault();
+        this.focusNextEditableCell(row, col);
+        return;
 
       default:
-        if (event.key.length === 1) this.handleKeyPress(event, row, col);
-        break;
-    }
-  }
-  focusNextRowSameColumn(row: number, col: number) {
-    if (row + 1 < this.data.length) this.focusCell(row + 1, col);
-  }
-
-  focusPrevRowSameColumn(row: number, col: number) {
-    if (row - 1 >= 0) this.focusCell(row - 1, col);
-  }
-  handleCheckboxKeyDown(event: KeyboardEvent, row: number, col: number) {
-    if (event.key === ' ') {
-      event.preventDefault();
-      const field = this.columns[col].field;
-      this.data[row][field] = !this.data[row][field];
-      this.cellValueChanged.emit({ row, col, value: this.data[row][field] });
-    } else {
-      this.handleKeyDown(event, row, col);
+        return;
     }
   }
 
-  focusNextEditableCell(row: number, col: number) {
-    const totalCols = this.columns.length;
+  /* ================================
+      NAVIGATION HELPERS
+  ================================= */
+focusNextEditableCell(row: number, col: number) {
+  const totalCols = this.columns.length;
 
-    for (let c = col + 1; c < totalCols; c++) {
-      if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
-        this.focusCell(row, c);
-        this.enableEditing(row, c);
+  const isEditable = (c: any) =>
+    c.visible && !c.readOnly; // base editable condition
+
+  // ------------------------------
+  // 1) Next editable column in SAME row
+  // ------------------------------
+  for (let c = col + 1; c < totalCols; c++) {
+    if (isEditable(this.columns[c])) {
+      this.focusCell(row, c);
+      this.enableEditing(row, c);
+      return;
+    }
+  }
+
+  // ------------------------------
+  // 2) If all required fields are filled → ADD ROW
+  // ------------------------------
+  if (this.allowUserToAddRows) {
+    if (this.isRowReadyForNext(row)) {
+      this.addRow();
+      return;
+    }
+  }
+
+  // ------------------------------
+  // 3) Move to next row's first editable column
+  // ------------------------------
+  if (row + 1 < this.data.length) {
+    for (let c = 0; c < totalCols; c++) {
+      if (isEditable(this.columns[c])) {
+        this.focusCell(row + 1, c);
+        this.enableEditing(row + 1, c);
         return;
       }
     }
+  }
+}
 
-    if (row + 1 < this.data.length) {
-      for (let c = 0; c < totalCols; c++) {
-        if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
-          this.focusCell(row + 1, c);
-          this.enableEditing(row + 1, c);
-          return;
-        }
-      }
+updateSerialNumbers() {
+  let sno = 1;
+  this.data.forEach(row => {
+    if (row.hasOwnProperty("sno")) {
+      row.sno = sno++;
     }
+  });
+}
 
-    if (this.allowUserToAddRows) {
-      const requiredCols = this.columns.filter(
-        (c) => c.requiredForNextRow && c.visible !== false
-      );
+isRowReadyForNext(rowIndex: number): boolean {
+  const row = this.data[rowIndex];
 
-      const allRequiredFilled = requiredCols.every((col) => {
-        const val = (this.data[row][col.field] || '').toString().trim();
-        return val !== '';
-      });
+  for (const col of this.columns) {
 
-      if (allRequiredFilled) {
-        this.addRow();
-        for (let c = 0; c < totalCols; c++) {
-          if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
-            this.focusCell(this.data.length - 1, c);
-            this.enableEditing(this.data.length - 1, c);
-            return;
-          }
-        }
+    if (col.requiredForNextRow) {
+      const value = row[col.field];
+
+      if (value === null || value === undefined || value === '' || value === 0) {
+        return false; // required field missing
       }
     }
   }
+  return true;
+}
+
 
   focusPrevEditableCell(row: number, col: number) {
     for (let c = col - 1; c >= 0; c--) {
-      if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+      if (!this.columns[c].readOnly) {
         this.focusCell(row, c);
         this.enableEditing(row, c);
         return;
@@ -270,7 +341,7 @@ onCellMouseDown(event: MouseEvent, row: number, col: number) {
 
     if (row > 0) {
       for (let c = this.columns.length - 1; c >= 0; c--) {
-        if (!this.columns[c].readOnly && this.columns[c].visible !== false) {
+        if (!this.columns[c].readOnly) {
           this.focusCell(row - 1, c);
           this.enableEditing(row - 1, c);
           return;
@@ -279,96 +350,64 @@ onCellMouseDown(event: MouseEvent, row: number, col: number) {
     }
   }
 
-  handleSelectKeyDown(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-    select: HTMLSelectElement
-  ) {
-    switch (event.key) {
-      case 'ArrowDown':
-        if (!select.matches(':focus')) select.focus();
-        if (select.selectedIndex < select.options.length - 1) {
-          select.selectedIndex++;
-          select.dispatchEvent(new Event('change'));
-        }
-        event.preventDefault();
-        break;
-
-      case 'ArrowUp':
-        if (select.selectedIndex > 0) {
-          select.selectedIndex--;
-          select.dispatchEvent(new Event('change'));
-        }
-        event.preventDefault();
-        break;
-
-      case 'Enter':
-        this.handleKeyDown(event, rowIndex, colIndex);
-        break;
-
-      case 'Tab':
-        this.handleKeyDown(event, rowIndex, colIndex);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  /* ---------------- Key Press ---------------- */
-  handleKeyPress(event: KeyboardEvent, row: number, col: number) {
-    if (event.key.length === 1 && !this.isEditingCell(row, col)) {
-      this.enableEditing(row, col);
-      setTimeout(() => {
-        const field = this.columns[col].field;
-        this.data[row][field] = event.key;
-        this.cellValueChanged.emit({ row, col, value: event.key });
-      }, 10);
-    }
-  }
-
-  /* ---------------- Row Management ---------------- */
+  /* ================================
+      ADD ROW (NO RENDER SHAKE)
+  ================================= */
   addRow() {
     const newRow: any = {};
-    this.columns.forEach((c) => (newRow[c.field] = ''));
+    this.columns.forEach(c => newRow[c.field] = '');
+
     this.data.push(newRow);
+  this.updateSerialNumbers();   
+
     this.rowAdded.emit(newRow);
+    const r = this.data.length - 1;
+
+    setTimeout(() => {
+      this.focusCell(r, 0);
+      this.enableEditing(r, 0);
+    });
   }
 
+  /* ================================
+      DELETE ROW
+  ================================= */
   deleteRow(row: number) {
     if (row < 0 || row >= this.data.length) return;
 
-    // Remove the row
     this.data.splice(row, 1);
     this.rowDeleted.emit(row);
 
-    // If no rows left, create one new empty row (optional safeguard)
     if (this.data.length === 0 && this.allowUserToAddRows) {
       this.addRow();
-      this.focusCell(0, 0);
       return;
     }
 
-    // Focus next valid row
     const next = Math.min(row, this.data.length - 1);
     this.focusCell(next, 0);
   }
 
-  /* ---------------- Column Resize ---------------- */
+  /* ================================
+      COLUMN RESIZE
+  ================================= */
   startResize(event: MouseEvent, colIndex: number) {
     if (!this.allowUserToResizeColumns) return;
+
     this.resizingColumn = colIndex;
     this.startX = event.pageX;
-    this.startWidth = (event.target as HTMLElement).parentElement!.offsetWidth;
+    this.startWidth =
+      (event.target as HTMLElement).parentElement!.offsetWidth;
+
     document.addEventListener('mousemove', this.resizeMove);
     document.addEventListener('mouseup', this.resizeStop);
   }
 
   resizeMove = (event: MouseEvent) => {
     if (this.resizingColumn === null) return;
+
     const dx = event.pageX - (this.startX ?? 0);
     const newWidth = Math.max(60, (this.startWidth ?? 0) + dx);
+
     const th = document.querySelectorAll('th')[this.resizingColumn];
     if (th) (th as HTMLElement).style.width = `${newWidth}px`;
   };
@@ -376,21 +415,8 @@ onCellMouseDown(event: MouseEvent, row: number, col: number) {
   resizeStop = () => {
     this.columnResized.emit(this.resizingColumn);
     this.resizingColumn = null;
+
     document.removeEventListener('mousemove', this.resizeMove);
     document.removeEventListener('mouseup', this.resizeStop);
   };
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['data']?.currentValue) {
-      this.gridData = [...this.data];
-    }
-  }
-
-  loadData(data: any[]) {
-    this.gridData = [...data];
-  }
-
-
-
-
 }

@@ -1,1 +1,108 @@
-<p>purchsae-order-view works!</p>
+<div class="container mt-3">
+
+  <!-- FILTER PANEL -->
+  <div class="card p-3 mb-3 shadow-sm">
+    <h5 class="mb-3">Search Purchase Orders</h5>
+
+    <div class="row g-3">
+
+      <!-- Company Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Company</label>
+        <select class="form-select"
+                [(ngModel)]="filters.companyId"
+                (change)="onCompanyChange()">
+          <option [ngValue]="null">-- Select Company --</option>
+          <option *ngFor="let c of companies" [ngValue]="c.companyID">
+            {{ c.companyName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Branch Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Branch</label>
+        <select class="form-select"
+                [(ngModel)]="filters.branchId"
+                (change)="onFilterChange()">
+          <option [ngValue]="null">-- Select Branch --</option>
+          <option *ngFor="let b of branches" [ngValue]="b.branchID">
+            {{ b.branchName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Supplier Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Supplier</label>
+        <select class="form-select"
+                [(ngModel)]="filters.supplierId"
+                (change)="onFilterChange()">
+          <option [ngValue]="null">-- Select Supplier --</option>
+          <option *ngFor="let s of suppliers" [ngValue]="s.supplierID">
+            {{ s.supplierName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- PO Date Filter -->
+      <div class="col-md-3">
+        <label class="form-label">PO Date</label>
+        <input type="date"
+               class="form-control"
+               [(ngModel)]="filters.poDate"
+               (change)="onFilterChange()" />
+      </div>
+
+      <!-- Buttons -->
+      <div class="col-md-2 mt-3">
+        <button class="btn btn-primary w-100" (click)="onFilterChange()">Search</button>
+      </div>
+
+      <div class="col-md-2 mt-3">
+        <button class="btn btn-secondary w-100" (click)="resetFilters()">Reset</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULT TABLE -->
+  <div class="card p-3 shadow-sm">
+    <h5 class="mb-3">Purchase Order List</h5>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>POID</th>
+            <th>PONumber</th>
+            <th>Company</th>
+            <th>Branch</th>
+            <th>PO Date</th>
+            <th>Supplier</th>
+            <th>Product</th>
+            <th>Rate</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let po of purchaseOrders">
+            <td>{{ po.poid }}</td>
+            <td>{{ po.poNumber }}</td>
+            <td>{{ po.companyName }}</td>
+            <td>{{ po.branchName }}</td>
+            <td>{{ po.poDate | date }}</td>
+            <td>{{ po.supplierName }}</td>
+            <td>{{ po.productName }}</td>
+            <td>{{ po.poRate }}</td>
+            <td>{{ po.orderedQty }}</td>
+            <td>{{ po.totalAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

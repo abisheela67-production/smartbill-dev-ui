@@ -2,32 +2,66 @@ export interface Company {
   companyID: number;
   companyCode: string;
   companyName: string;
+
   phone: string;
   alternatePhone: string;
   email: string;
   website: string;
+
   addressLine1: string;
   addressLine2: string;
   addressLine3: string;
   addressLine4: string;
+
   city: string;
   state: string;
   country: string;
   pincode: string;
+
   gstNumber: string;
   panNumber: string;
   cinNumber: string;
+
   bankName: string;
+  bankBranch?: string;
   bankAccountNumber: string;
   ifscCode: string;
-  companyLogo: number[] | null; // ✅ changed from string
-  companyImage: number[] | null; // ✅ changed from string
+  swiftCode?: string;
+
+  companyLogo: number[] | null;
+  companyImage: number[] | null;
+
   isActive: boolean;
-  createdByUserID: number;
+
+  createdByUserID: number | null;
   createdSystemName: string;
-  updatedByUserID?: number;
-  updatedSystemName?: string;
+  createdAt?: string | null;
+
+  updatedByUserID?: number | null;
+  updatedSystemName?: string | null;
+  updatedAt?: string | null;
+
+  businessType?: string;
+  businessCategory?: string;
+  businessSubCategory?: string;
+
+  stateName?: string;
+  countryName?: string;
+
+  timeZone?: string;
+  currency?: string;
+  currencySymbol?: string;
+  languageCompany?: string;
+  dateFormat?: string;
+
+  whatsAppNumber?: string;
+  tagline?: string;
+
+  financialYearStart?: string | null;
+  financialYearEnd?: string | null;
+  accountingYear?: string;
 }
+
 export interface Branch {
   branchID: number;
   companyID: number;

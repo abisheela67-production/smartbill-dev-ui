@@ -111,14 +111,14 @@ h5 {
 }
 
 .form-column {
-  flex: 1 1 calc(33.333% - 20px);
+  flex: 1 1 calc(20% - 10px);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .form-column label {
-  font-weight: 600;
+  font-weight: 400;
   color: #555;
 }
 

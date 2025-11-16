@@ -1,52 +1,57 @@
 export interface PurchaseOrderEntry {
-  poid: number;
-  companyID: number;
-  companyName: string;
+  sno: number;
 
-  branchID: number;
-  branchName: string;
+  poid: number | null;
 
-  poNumber: string;
-  poDate: string
+  companyID: number | null;
+  companyName: string | null;
 
-  supplierID: number;
-  supplierName: string;
+  branchID: number | null;
+  branchName: string | null;
 
-  statusID: number;
-  statusName: string;
+  poNumber: string | null;
 
-  totalAmount: number;
-  poRemarks: string;
+  poDate: string | Date | null;
+  expectedDeliveryDate: string | Date | null;
 
-  productID: number;
-  productCode: string;
-  productName: string;
+  supplierID: number | null;
+  supplierName: string | null;
 
-  productCategoryId: number;
-  productCategoryName: string;
+  statusID: number | null;
+  statusName: string | null;
 
-  productSubCategory: number;
-  productSubCategoryName: string;
+  totalAmount: number | null;
+  poRemarks: string | null;
 
-  poRate: number;
-  orderedQty: number;
-  approvedQty: number;
+  productID: number | null;
+  productCode: string | null;
+  productName: string | null;
 
-  expectedDeliveryDate: string; 
-  productRemarks: string;
+  productCategoryId: number | null;
+  productCategoryName: string | null;
+
+  productSubCategory: number | null;
+  productSubCategoryName: string | null;
+
+  poRate: number | null;
+  orderedQty: number | null;
+  approvedQty: number | null;
+
+  productRemarks: string | null;
 
   isActive: boolean;
 
-  createdByUserID: number;
-  createdSystemName: string;
-  createdAt: string; 
-  updatedByUserID: number;
-  updatedSystemName: string;
-  updatedAt: string;
+  createdByUserID: number | null;
+  createdSystemName: string | null;
+  createdAt: Date | null;
 
-  cancelledDate: string;
-  cancelledBy: string;
-  cancelReason: string;
+  updatedByUserID: number | null;
+  updatedSystemName: string | null;
+  updatedAt: Date | null;
 
-  accountingYear: string;
+  cancelledDate: string | null;
+  cancelledBy: string | null;
+  cancelReason: string | null;
+
+  accountingYear: string | null;
 }

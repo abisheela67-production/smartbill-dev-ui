@@ -23,6 +23,12 @@ export interface Category {
   updatedSystemName: string;
   updatedAt: string;
 }
+export interface Status {
+  statusID: number;
+  statusCode: string;
+  statusName: string;
+  description?: string;
+}
 
 export interface Customer {
   customerID: number;
