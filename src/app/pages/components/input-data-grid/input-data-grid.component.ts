@@ -42,6 +42,8 @@ export class InputDataGridComponent implements AfterViewInit {
   @Output() rowAdded = new EventEmitter<any>();
   @Output() rowDeleted = new EventEmitter<any>();
   @Output() columnResized = new EventEmitter<any>();
+  @Output() numberChanged = new EventEmitter<{ rowIndex: number; field: string; value: any }>();
+
   /* ================================
       INTERNAL
   ================================= */
@@ -205,13 +207,11 @@ handleKeyDown(event: KeyboardEvent, row: number, col: number) {
       return;
   }
 }
-@Output() numberChanged = new EventEmitter<{
-  rowIndex: number;
-  field: string;
-}>();
+
 
 onNumberChanged(rowIndex: number, field: string) {
-  this.numberChanged.emit({ rowIndex, field });
+  const value = this.data[rowIndex][field];
+  this.numberChanged.emit({ rowIndex, field, value });
 }
 
 
@@ -302,6 +302,15 @@ focusNextEditableCell(row: number, col: number) {
       }
     }
   }
+}
+formatDate(value: any): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  return d.toISOString().substring(0, 10); // yyyy-MM-dd
+}
+
+onDateChange(value: string, row: any, field: string) {
+  row[field] = value ? new Date(value) : null;
 }
 
 updateSerialNumbers() {

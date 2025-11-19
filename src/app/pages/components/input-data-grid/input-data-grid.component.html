@@ -45,7 +45,7 @@
               [readonly]="col.readOnly"
               autocomplete="off"
               (focus)="focusCell(r, c)"
-               (click)="$event.stopPropagation()"
+              (click)="$event.stopPropagation()"
               (keydown)="handleKeyDown($event, r, c)"
             />
 
@@ -58,7 +58,6 @@
               [(ngModel)]="row[col.field]"
               [readonly]="col.readOnly"
               (click)="$event.stopPropagation()"
-
               autocomplete="off"
               (focus)="focusCell(r, c)"
               (keydown)="handleKeyDown($event, r, c)"
@@ -71,11 +70,11 @@
               #gridInput
               type="date"
               class="cell-input"
-              [(ngModel)]="row[col.field]"
-              [readonly]="col.readOnly"
+              [ngModel]="formatDate(row[col.field])"
+              (ngModelChange)="onDateChange($event, row, col.field)"
+              [disabled]="col.readOnly"
               (focus)="focusCell(r, c)"
-               (click)="$event.stopPropagation()"
-
+              (click)="$event.stopPropagation()"
               (keydown)="handleKeyDown($event, r, c)"
             />
 
@@ -87,8 +86,7 @@
               class="cell-checkbox"
               [(ngModel)]="row[col.field]"
               (focus)="focusCell(r, c)"
-               (click)="$event.stopPropagation()"
-
+              (click)="$event.stopPropagation()"
               (keydown)="handleKeyDown($event, r, c)"
             />
 

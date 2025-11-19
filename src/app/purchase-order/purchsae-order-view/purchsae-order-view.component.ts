@@ -3,7 +3,10 @@ import { PurchaseOrderServiceService } from '../services/purchase-order-service.
 import { CommonserviceService } from '../../services/commonservice.service';
 import { MasterService } from '../../services/master.service';
 import { PurchaseOrderEntry } from '../models/purchase-models';
-import { Company, Branch } from '../../pages/models/common-models/companyMaster';
+import {
+  Company,
+  Branch,
+} from '../../pages/models/common-models/companyMaster';
 import { Supplier } from '../../pages/models/common-models/master-models/master';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +15,7 @@ import { ViewDatatableComponent } from '../../pages/components/view-datatable/vi
 @Component({
   selector: 'app-purchsae-order-view',
   standalone: true,
-  imports: [CommonModule, FormsModule,ViewDatatableComponent],
+  imports: [CommonModule, FormsModule, ViewDatatableComponent],
   templateUrl: './purchsae-order-view.component.html',
   styleUrl: './purchsae-order-view.component.css',
 })
@@ -46,39 +49,37 @@ export class PurchsaeOrderViewComponent implements OnInit {
   // Load Master dropdown data
   // -----------------------------
   loadMasterData() {
-    this.commonService.getCompanies().subscribe((res) => (this.companies = res));
-    this.masterService.getSuppliers().subscribe((res) => (this.suppliers = res));
+    this.commonService
+      .getCompanies()
+      .subscribe((res) => (this.companies = res));
+    this.masterService
+      .getSuppliers()
+      .subscribe((res) => (this.suppliers = res));
   }
 
-  // -----------------------------
-  // COMMON FILTER UPDATER
-  // 🔥 Any filter change calls this
-  // -----------------------------
   onFilterChange() {
-    console.log("Filters changed:", this.filters);
+    console.log('Filters changed:', this.filters);
     this.loadOrders();
   }
-tableColumns = [
-  { field: 'poid',          header: 'POID',         width: 100, resizable: true },
-  { field: 'poNumber',      header: 'PO Number',    width: 100, resizable: true },
-  { field: 'companyName',   header: 'Company',      width: 100, resizable: true },
-  { field: 'branchName',    header: 'Branch',       width: 100, resizable: true },
-  { field: 'poDate',        header: 'PO Date',      width: 100, resizable: true },
-  { field: 'supplierName',  header: 'Supplier',     width: 100, resizable: true },
-  { field: 'productName',   header: 'Product',      width: 100, resizable: true },
-  { field: 'poRate',        header: 'Rate',         width: 100, resizable: true },
-  { field: 'orderedQty',    header: 'Qty',          width: 100, resizable: true },
-  { field: 'totalAmount',   header: 'Total',        width: 100, resizable: true },
-  { field: 'statusName',    header: 'Status',       width: 100, resizable: true }
-];
-
-
+  tableColumns = [
+    { field: 'poid', header: 'POID', width: 100, resizable: true },
+    { field: 'poNumber', header: 'PO Number', width: 100, resizable: true },
+    { field: 'companyName', header: 'Company', width: 100, resizable: true },
+    { field: 'branchName', header: 'Branch', width: 100, resizable: true },
+    { field: 'poDate', header: 'PO Date', width: 100, resizable: true },
+    { field: 'supplierName', header: 'Supplier', width: 100, resizable: true },
+    { field: 'productName', header: 'Product', width: 100, resizable: true },
+    { field: 'poRate', header: 'Rate', width: 100, resizable: true },
+    { field: 'orderedQty', header: 'Qty', width: 100, resizable: true },
+    { field: 'totalAmount', header: 'Total', width: 100, resizable: true },
+    { field: 'statusName', header: 'Status', width: 100, resizable: true },
+  ];
 
   // -----------------------------
   // Company change (special: loads branches)
   // -----------------------------
   onCompanyChange() {
-    console.log("Company changed:", this.filters.companyId);
+    console.log('Company changed:', this.filters.companyId);
 
     this.filters.branchId = null; // Reset Branch
 
@@ -94,16 +95,16 @@ tableColumns = [
       next: (res) => {
         this.branches = res;
         console.log(
-          "Branches loaded:",
+          'Branches loaded:',
           res,
-          "Time:",
+          'Time:',
           (performance.now() - start).toFixed(2),
-          "ms"
+          'ms'
         );
 
         this.onFilterChange();
       },
-      error: (err) => console.log("Failed to load branches:", err),
+      error: (err) => console.log('Failed to load branches:', err),
     });
   }
 
@@ -112,10 +113,10 @@ tableColumns = [
   // -----------------------------
   loadOrders() {
     const params = Object.fromEntries(
-      Object.entries(this.filters).filter(([_, v]) => v !== null && v !== "")
+      Object.entries(this.filters).filter(([_, v]) => v !== null && v !== '')
     );
 
-    console.log("Loading orders with:", params);
+    console.log('Loading orders with:', params);
 
     this.purchaseOrderService
       .getPurchaseOrders(params)
@@ -136,4 +137,14 @@ tableColumns = [
     this.branches = [];
     this.loadOrders();
   }
+
+
+
+
+
+
+
+
+
+  
 }

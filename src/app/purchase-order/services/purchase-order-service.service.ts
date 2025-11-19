@@ -3,22 +3,43 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../config';
 import { PurchaseOrderEntry } from '../models/purchase-models';
-import { ApiResponse } from '../../pages/models/common-models/companyMaster'; 
+import { ApiResponse } from '../../pages/models/common-models/companyMaster';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PurchaseOrderServiceService {
-
   private baseUrl = `${environment.apiBaseUrl}/Purchase`;
 
   constructor(private http: HttpClient) {}
-savePurchaseOrder(payload: any): Observable<ApiResponse> {
-  return this.http.post<ApiResponse>(`${this.baseUrl}/purchaseorder`, payload);
+  savePurchaseOrder(payload: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.baseUrl}/purchaseorder`,
+      payload
+    );
+  }
+
+  getPurchaseOrders(params: any): Observable<PurchaseOrderEntry[]> {
+    return this.http.get<PurchaseOrderEntry[]>(
+      `${this.baseUrl}/GetPurchaseOrder`,
+      { params }
+    );
+  }
+
+  saveGRN(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/grn`, payload);
+  }
+savePurchaseEntry(payload: any[]): Observable<ApiResponse> {
+  return this.http.post<ApiResponse>(
+    `${this.baseUrl}/purchaseentry`,
+    payload
+  );
 }
-getPurchaseOrders(params: any): Observable<PurchaseOrderEntry[]> {
-  return this.http.get<PurchaseOrderEntry[]>(`${this.baseUrl}/GetPurchaseOrder`, { params });
-}
 
 
 
+
+
+
+
+  
 }

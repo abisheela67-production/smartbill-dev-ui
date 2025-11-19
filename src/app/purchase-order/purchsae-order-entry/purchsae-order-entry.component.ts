@@ -669,6 +669,9 @@ onGridRowAdded(e: any) {
 
     row.totalAmount = Number(row.poRate || 0) * Number(row.orderedQty || 0);
   }
+
+
+  
  @HostListener('document:keydown', ['$event'])
 handleKeyEvents(event: KeyboardEvent) {
 
