@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../config';
 import { HttpClient } from '@angular/common/http';  
 import { Observable } from 'rxjs';
-import { Brand, Category, Customer, Cess,Product, Supplier, Tax, Unit, HSN, Service, SubCategory,Status } from './../pages/models/common-models/master-models/master';
+import { Brand, Category, Customer, Cess,Product, Supplier, Tax, Unit, HSN, Service, SubCategory,Status,PaymentMode} from './../pages/models/common-models/master-models/master';
 import forkJoin from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,10 @@ export class MasterService {
   saveBrand(brand: Brand): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Brand`, brand);
   }
-
+  // ================= Payment Mode =================
+  getPaymentModes(): Observable<PaymentMode[]> {
+    return this.http.get<PaymentMode[]>(`${this.baseUrl}/PaymentMode`);
+  }
   // ================= Category =================
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.baseUrl}/Categories`);

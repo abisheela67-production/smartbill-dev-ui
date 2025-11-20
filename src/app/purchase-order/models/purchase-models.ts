@@ -121,3 +121,138 @@ export interface GRNEntry {
   updatedBy: number | string;
   updatedAt: string | Date | null;
 }
+
+
+
+export interface PurchaseEntry {
+
+  purchaseID: number;
+  poNumber: string | null;
+
+  purchaseDate: string | Date | null;
+
+  companyID: number;
+  companyName: string | null;
+
+  branchID: number;
+  branchName: string | null;
+
+  supplierID: number;
+  supplierName: string | null;
+
+  statusID: number;
+
+  invoiceNumber: string | null;
+  invoiceDate: string | Date | null;
+
+  supplierInvoiceNumber: string | null;
+  supplierInvoiceDate: string | Date | null;
+
+  brandID: number;
+  unitID: number;
+  hsnid: number;
+
+  categoryID: number;
+  subCategoryID: number;
+
+  barcode: string | null;
+  productCode: string | null;
+  productName: string | null;
+
+  productRate: number;
+  quantity: number;
+  purchaseRate: number;
+
+  retailPrice: number;
+  wholesalePrice: number;
+  saleRate: number;
+  mrp: number;
+
+  discountAmount: number;
+  discountPercentage: number;
+  inclusiveAmount: number;
+  exclusiveAmount: number;
+
+  gstPercentage: number;
+  gstAmount: number;
+
+  cgstRate: number;
+  cgstAmount: number;
+  sgstRate: number;
+  sgstAmount: number;
+  igstRate: number;
+  igstAmount: number;
+
+  cessRate: number;
+  cessAmount: number;
+
+  taxableValue: number;
+  isGSTInclusive: boolean;
+
+  orderedQuantity: number;
+  receivedQuantity: number;
+  returnedQuantity: number;
+  remainingQuantity: number;
+
+  openingStock: number;
+  reorderLevel: number;
+  currentStock: number;
+
+  color: string | null;
+  size: string | null;
+  weight: number;
+  volume: number;
+  material: string | null;
+  finishType: string | null;
+  shadeCode: string | null;
+  capacity: string | null;
+  modelNumber: string | null;
+
+  expiryDate: string | Date | null;
+  isService: boolean;
+
+  statusName: string | null;
+
+  totalAmount: number;
+  taxAmount: number;
+  grandTotal: number;
+
+  remarks: string | null;
+
+  isActive: boolean;
+
+  createdByUserID: number;
+  createdSystemName: string | null;
+  createdAt: string | Date | null;
+
+  updatedByUserID: number;
+  updatedSystemName: string | null;
+  updatedAt: string | Date | null;
+
+  grnNumber: string | null;
+  grnDate: string | Date | null;
+
+  poid: number;
+  poDetailID: number;
+
+  grnRemarks: string | null;
+  isGRNApproved: boolean;
+
+  approvedByUserID: number;
+  approvedAt: string | Date | null;
+
+  paymentMode: string | null;
+  paidDays: number;
+
+  manufacturingDate: string | Date | null;
+
+  taxType: string | null;
+
+  secondaryUnitID: number;
+
+  cancelledDate: string | Date | null;
+  cancelledBy: string | null;
+  cancelReason: string | null;
+
+  accountingYear: string | null;
+}

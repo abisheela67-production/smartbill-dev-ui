@@ -11,6 +11,23 @@ export interface Brand {
   updatedAt: string;
 }
 
+
+export interface PaymentMode {
+  paymentModeID: number;
+  paymentModeName: string;
+  paymentType: string | null;
+  description: string | null;
+  isActive: boolean;
+
+  createdByUserID: number;
+  createdSystemName: string | null;
+  createdAt: Date;
+
+  updatedByUserID?: number | null;
+  updatedSystemName?: string | null;
+  updatedAt?: Date | null;
+}
+
 export interface Category {
   categoryID: number;
   categoryName: string;

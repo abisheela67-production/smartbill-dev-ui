@@ -1,0 +1,23 @@
+.page-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.page-back-btn {
+  min-width: 110px;
+}
+
+.validation-text {
+  margin-top: 10px;
+  color: #d9534f;
+  font-weight: 500;
+}

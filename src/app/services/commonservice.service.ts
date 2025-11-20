@@ -34,6 +34,7 @@ export class CommonserviceService {
     );
   }
 
+
   saveBranch(branch: Branch): Observable<number> {
     return this.http.post<number>(`${this.baseUrl}/PostBranchMaster`, branch);
   }
@@ -42,13 +43,11 @@ export class CommonserviceService {
     return this.http.get<Branch[]>(`${this.baseUrl}/GetBranchList`);
   }
 
-
-getBranchesByCompany(companyId: number): Observable<Branch[]> {
-  return this.http.get<Branch[]>(
-    `${this.baseUrl}/GetBranchesByCompany?companyId=${companyId}`
-  );
-}
-
+  getBranchesByCompany(companyId: number): Observable<Branch[]> {
+    return this.http.get<Branch[]>(
+      `${this.baseUrl}/GetBranchesByCompany?companyId=${companyId}`
+    );
+  }
 
   // Department
   saveDepartment(department: Department): Observable<number> {
@@ -78,9 +77,6 @@ getBranchesByCompany(companyId: number): Observable<Branch[]> {
     return this.http.get<User[]>(`${this.baseUrl}/GetUserList`);
   }
 
-
-
-  
   // === User Permission APIs ===
 
   savePermission(permission: UserPermission): Observable<number> {
@@ -119,10 +115,5 @@ getBranchesByCompany(companyId: number): Observable<Branch[]> {
   /** Optional: check if user is admin */
   isAdmin(): boolean {
     return this.getCurrentUserRole().toLowerCase() === 'admin';
- 
- 
-  
   }
-
-  
 }

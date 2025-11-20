@@ -1,11 +1,7 @@
-<div class="layout-container">
-  <!-- 🔹 Fixed header with nav -->
-  <app-default-header></app-default-header>
+<app-default-header *ngIf="!hideHeader"></app-default-header>
 
-  <main class="layout-content">
-    <router-outlet></router-outlet>
-  </main>
+<main class="layout-content" [class.fullscreen]="hideHeader">
+  <router-outlet></router-outlet>
+</main>
 
-  <!-- 🔹 Optional footer -->
-  <app-default-footer></app-default-footer>
-</div>
+<app-default-footer *ngIf="!hideHeader"></app-default-footer>

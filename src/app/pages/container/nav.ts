@@ -46,7 +46,7 @@ export const NAV_ITEMS: NavItem[] = [
 {
     label: 'Purchase',
     children: [
-      { label: 'Purchase Entry', route: '/Purchase/PurchaseEntry' },
+      { label: 'Purchase Entry', route: '/Purchase/PurchaseEntry'  },
       { label: 'Purchase View', route: '/Purchase/PurchaseView' },
       { label: 'Purchase Cancel', route: '/Purchase/PurchaseCancel'},
       { label: 'Purchase Order Entry', route: '/Purchase/PurchaseOrderEntry' },

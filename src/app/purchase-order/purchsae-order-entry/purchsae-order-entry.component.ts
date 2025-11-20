@@ -85,7 +85,6 @@ export class PurchsaeOrderEntryComponent {
   accountingYear: any;
   validationLabel = '';
 
-
   // Column Definition
   columns = [
     {
@@ -204,7 +203,12 @@ export class PurchsaeOrderEntryComponent {
       readOnly: true,
     },
 
-    { field: 'productRemarks', header: 'REMARKS', type: 'text', visible: false },
+    {
+      field: 'productRemarks',
+      header: 'REMARKS',
+      type: 'text',
+      visible: false,
+    },
 
     {
       field: 'companyID',
@@ -237,10 +241,15 @@ export class PurchsaeOrderEntryComponent {
       optionValue: 'statusID',
       visible: true,
       readOnly: true,
-
     },
 
-    { field: 'isActive', header: 'ACTIVE', type: 'boolean', visible: true, readOnly: true },
+    {
+      field: 'isActive',
+      header: 'ACTIVE',
+      type: 'boolean',
+      visible: true,
+      readOnly: true,
+    },
     {
       field: 'poRemarks',
       header: 'PO REMARKS',
@@ -291,147 +300,106 @@ export class PurchsaeOrderEntryComponent {
     }, 300);
   }
 
+  savePurchaseOrder(): void {
+    // 1️⃣ Validate headers
+    if (!this.validateHeaderFields()) return;
 
+    // 2️⃣ Ensure rows are present
+    if (this.purchaseOrderEntries.length === 0) {
+      this.swall.warning('Warning', 'No products to save!');
+      return;
+    }
 
-savePurchaseOrder(): void {
-
-  // 1️⃣ Validate headers
-  if (!this.validateHeaderFields()) return;
-
-  // 2️⃣ Ensure rows are present
-  if (this.purchaseOrderEntries.length === 0) {
-    this.swall.warning("Warning", "No products to save!");
-    return;
-  }
-
-  // 3️⃣ Validate rows
-  const invalidRows = this.purchaseOrderEntries.filter(r =>
-    !r.productID ||
-    !r.productName ||
-    !r.productCode ||
-    !r.productCategoryId ||
-    !r.productSubCategory ||
-    !r.poRate || Number(r.poRate) <= 0 ||
-    !r.orderedQty || Number(r.orderedQty) <= 0 ||
-    !r.totalAmount || Number(r.totalAmount) <= 0
-  );
-
-  if (invalidRows.length > 0) {
-    this.swall.warning(
-      "Validation",
-      `Please fill required fields in ${invalidRows.length} row(s)`
+    // 3️⃣ Validate rows
+    const invalidRows = this.purchaseOrderEntries.filter(
+      (r) =>
+        !r.productID ||
+        !r.productName ||
+        !r.productCode ||
+        !r.productCategoryId ||
+        !r.productSubCategory ||
+        !r.poRate ||
+        Number(r.poRate) <= 0 ||
+        !r.orderedQty ||
+        Number(r.orderedQty) <= 0 ||
+        !r.totalAmount ||
+        Number(r.totalAmount) <= 0
     );
-    return;
-  }
 
-  const userId = this.commonService.getCurrentUserId();
-  let success = 0;
-  let failed = 0;
+    if (invalidRows.length > 0) {
+      this.swall.warning(
+        'Validation',
+        `Please fill required fields in ${invalidRows.length} row(s)`
+      );
+      return;
+    }
 
-  // 4️⃣ Loop through each row and send one request per row
-  this.purchaseOrderEntries.forEach((r, idx) => {
+    const userId = this.commonService.getCurrentUserId();
+    let success = 0;
+    let failed = 0;
 
-    const po: any = {
+    // 4️⃣ Loop through each row and send one request per row
+    this.purchaseOrderEntries.forEach((r, idx) => {
+      const po: any = {
+        POID: 0,
+        CompanyID: this.selectedCompanyId,
+        BranchID: this.selectedBranchId,
+        SupplierID: this.selectedSupplierId,
+        PODate: this.selectedPoDate,
+        ExpectedDeliveryDate: this.selectedExpDeliveryDate,
+        StatusID: 3,
+        AccountingYear: this.accountingYear,
+        CreatedByUserID: userId,
+        UpdatedByUserID: userId,
+        CreatedSystemName: 'AngularApp',
+        UpdatedSystemName: 'AngularApp',
+        IsActive: true,
 
-  POID: 0,
-  CompanyID: this.selectedCompanyId,
-  BranchID: this.selectedBranchId,
-  SupplierID: this.selectedSupplierId,
-  PODate: this.selectedPoDate,
-  ExpectedDeliveryDate: this.selectedExpDeliveryDate,
-  StatusID: 3,
-  AccountingYear: this.accountingYear,
-  CreatedByUserID: userId,
-  UpdatedByUserID: userId,
-  CreatedSystemName: "AngularApp",
-  UpdatedSystemName: "AngularApp",
-  IsActive: true,
+        // DETAIL LINES WITH PASCAL CASE
+        ProductID: r.productID,
+        ProductCode: r.productCode,
+        ProductName: r.productName,
+        ProductCategoryId: r.productCategoryId,
+        ProductSubCategory: r.productSubCategory,
 
-  // DETAIL LINES WITH PASCAL CASE
-  ProductID: r.productID,
-  ProductCode: r.productCode,
-  ProductName: r.productName,
-  ProductCategoryId: r.productCategoryId,
-  ProductSubCategory: r.productSubCategory,
+        PORate: Number(r.poRate) || 0,
+        OrderedQty: Number(r.orderedQty) || 0,
+        ApprovedQty: Number(r.approvedQty) || 0,
+        TotalAmount: Number(r.totalAmount) || 0,
 
-  PORate: Number(r.poRate) || 0,
-  OrderedQty: Number(r.orderedQty) || 0,
-  ApprovedQty: Number(r.approvedQty) || 0,
-  TotalAmount: Number(r.totalAmount) || 0,
+        ProductRemarks: r.productRemarks || null,
+        PoRemarks: r.poRemarks || null,
+      };
 
-  ProductRemarks: r.productRemarks || null,
-  PoRemarks: r.poRemarks || null
+      // DEBUG — SHOW EXACT JSON SENT TO API
+      console.log('ROW SENT TO API:', po);
 
+      this.purchaseOrderService.savePurchaseOrder(po).subscribe({
+        next: (res) => {
+          console.log('API RESPONSE:', res);
+          success++;
+        },
+        error: (err) => {
+          console.error('API ERROR:', err);
+          failed++;
+        },
+        complete: () => {
+          // When all rows are processed
+          if (success + failed === this.purchaseOrderEntries.length) {
+            this.swall.success(
+              'Save Completed',
+              `${success} row(s) saved successfully, ${failed} failed.`
+            );
 
-};
-
-
-    // DEBUG — SHOW EXACT JSON SENT TO API
-    console.log("ROW SENT TO API:", po);
-
-    this.purchaseOrderService.savePurchaseOrder(po).subscribe({
-      next: (res) => {
-        console.log("API RESPONSE:", res);
-        success++;
-      },
-      error: (err) => {
-        console.error("API ERROR:", err);
-        failed++;
-      },
-      complete: () => {
-
-        // When all rows are processed
-        if (success + failed === this.purchaseOrderEntries.length) {
-          this.swall.success(
-            "Save Completed",
-            `${success} row(s) saved successfully, ${failed} failed.`
-          );
-
-          // Refresh or clear grid
-          if (failed === 0) {
-            this.purchaseOrderEntries = [];
+            // Refresh or clear grid
+            if (failed === 0) {
+              this.purchaseOrderEntries = [];
+            }
           }
-        }
-      }
-    });
-
-  }); // end foreach
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        },
+      });
+    }); // end foreach
+  }
 
   // LOAD MASTER DROPDOWNS
   loadDropdowns(): void {
@@ -504,15 +472,14 @@ savePurchaseOrder(): void {
   ];
 
   // OPEN PRODUCT SMALL GRID
-showSmallGrid(rowIndex: number) {
-  this.activeProductRow = rowIndex;
+  showSmallGrid(rowIndex: number) {
+    this.activeProductRow = rowIndex;
 
-  this.smallGridData = [...this.products];
-  this.smallGridVisible = true;
+    this.smallGridData = [...this.products];
+    this.smallGridVisible = true;
 
-  this.cd.detectChanges(); 
-}
-
+    this.cd.detectChanges();
+  }
 
   private newProduct(): PurchaseOrderEntry {
     return {
@@ -583,7 +550,6 @@ showSmallGrid(rowIndex: number) {
     this.applyTopSelectionsToRow(newProd);
   }
 
-
   updateSerialNumbers() {
     this.purchaseOrderEntries.forEach((row, index) => {
       row.sno = index + 1;
@@ -597,8 +563,8 @@ showSmallGrid(rowIndex: number) {
     row.poDate = this.selectedPoDate ?? null;
     row.expectedDeliveryDate = this.selectedExpDeliveryDate ?? null;
     row.accountingYear = this.accountingYear ?? null;
-      row.statusID = 3;            
-  row.isActive = true; 
+    row.statusID = 3;
+    row.isActive = true;
   }
 
   validateRowForNext(row: any): boolean {
@@ -626,15 +592,13 @@ showSmallGrid(rowIndex: number) {
     }
     return true;
   }
-onGridRowAdded(e: any) {
-  const newRow = e; // because rowAdded emits only newRow
+  onGridRowAdded(e: any) {
+    const newRow = e; // because rowAdded emits only newRow
 
-  // 1️⃣ Apply all top dropdown values
-  this.applyTopSelectionsToRow(newRow);
+    this.applyTopSelectionsToRow(newRow);
 
-  // 2️⃣ Update S.NO
-  this.updateSerialNumbers();
-}
+    this.updateSerialNumbers();
+  }
 
   validateHeaderFields(): boolean {
     if (!this.validateRequired('Company', this.selectedCompanyId)) return false;
@@ -651,7 +615,7 @@ onGridRowAdded(e: any) {
   onProductSelected(product: Product) {
     if (this.activeProductRow !== null) {
       const row = this.purchaseOrderEntries[this.activeProductRow];
-  row.productID = product.productID;   // ✅ IMPORTANT (missing earlier)
+      row.productID = product.productID; 
       row.productCode = product.productCode;
       row.productName = product.productName;
       row.productCategoryId = product.categoryID ?? null;
@@ -662,7 +626,6 @@ onGridRowAdded(e: any) {
     setTimeout(() => this.grid.focusCell(this.activeProductRow!, 7), 50);
   }
 
-  // RATE * QTY → TOTAL
   onGridNumberChanged(event: any) {
     const { rowIndex } = event;
     const row = this.purchaseOrderEntries[rowIndex];
@@ -670,63 +633,59 @@ onGridRowAdded(e: any) {
     row.totalAmount = Number(row.poRate || 0) * Number(row.orderedQty || 0);
   }
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyEvents(event: KeyboardEvent) {
+    // ============================
+    // 1) CLOSE SMALL GRID ON ESC
+    // ============================
+    if (event.key === 'Escape') {
+      event.preventDefault();
 
-  
- @HostListener('document:keydown', ['$event'])
-handleKeyEvents(event: KeyboardEvent) {
+      // If small grid is open → CLOSE IT
+      if (this.smallGridVisible) {
+        this.smallGridVisible = false;
+      }
+      // If small grid is closed → OPEN IT (toggle)
+      else {
+        if (this.activeProductRow !== null) {
+          this.showSmallGrid(this.activeProductRow);
+        }
+      }
 
-  // ============================
-  // 1) CLOSE SMALL GRID ON ESC
-  // ============================
-if (event.key === 'Escape') {
-  event.preventDefault();
-
-  // If small grid is open → CLOSE IT
-  if (this.smallGridVisible) {
-    this.smallGridVisible = false;
-  }
-  // If small grid is closed → OPEN IT (toggle)
-  else {
-    if (this.activeProductRow !== null) {
-      this.showSmallGrid(this.activeProductRow);
-    }
-  }
-
-  return;
-}
-
-  // ============================
-  // 2) ADD ROW (Shift + N)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 'n') {
-    event.preventDefault();
-
-    // 1) Validate HEADER before row creation
-    if (!this.validateHeaderFields()) {
       return;
     }
 
-    // 2) First row → allow
-    if (this.purchaseOrderEntries.length === 0) {
+    // ============================
+    // 2) ADD ROW (Shift + N)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 'n') {
+      event.preventDefault();
+
+      // 1) Validate HEADER before row creation
+      if (!this.validateHeaderFields()) {
+        return;
+      }
+
+      // 2) First row → allow
+      if (this.purchaseOrderEntries.length === 0) {
+        this.addNewProduct();
+        return;
+      }
+
+      // 3) Validate last row
+      const last = this.purchaseOrderEntries.length - 1;
+      const row = this.purchaseOrderEntries[last];
+
+      if (!this.validateRowForNext(row)) {
+        this.swall.warning(
+          'Validation',
+          'Please fill Product, Rate, Qty & Amount before adding new row.'
+        );
+        return;
+      }
+
+      // 4) Add new row
       this.addNewProduct();
-      return;
     }
-
-    // 3) Validate last row
-    const last = this.purchaseOrderEntries.length - 1;
-    const row = this.purchaseOrderEntries[last];
-
-    if (!this.validateRowForNext(row)) {
-      this.swall.warning(
-        'Validation',
-        'Please fill Product, Rate, Qty & Amount before adding new row.'
-      );
-      return;
-    }
-
-    // 4) Add new row
-    this.addNewProduct();
   }
-}
-
 }

@@ -77,7 +77,7 @@ export const routes: Routes = [
     path: 'Purchase',
     component: DefaultLayoutComponent,
     children: [
-      { path: 'PurchaseEntry', component: PurchaseEntryComponent },
+     { path: 'PurchaseEntry', component: PurchaseEntryComponent, data: { hideHeader: true } },
       { path: 'PurchaseView', component: PurchaseViewComponent },
       { path: 'PurchaseCancel', component: PurchaseCancelComponent },
       { path: 'PurchaseOrderEntry', component: PurchsaeOrderEntryComponent },
