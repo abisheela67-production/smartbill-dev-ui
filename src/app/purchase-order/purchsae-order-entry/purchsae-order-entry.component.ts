@@ -615,7 +615,7 @@ export class PurchsaeOrderEntryComponent {
   onProductSelected(product: Product) {
     if (this.activeProductRow !== null) {
       const row = this.purchaseOrderEntries[this.activeProductRow];
-      row.productID = product.productID; 
+      row.productID = product.productID;
       row.productCode = product.productCode;
       row.productName = product.productName;
       row.productCategoryId = product.categoryID ?? null;

@@ -95,7 +95,7 @@ export const routes: Routes = [
     path: 'Sales',
     component: DefaultLayoutComponent,
     children: [
-      { path: 'SalesEntry', component: SalesEntryComponent },
+      { path: 'SalesEntry', component: SalesEntryComponent,data: { hideHeader: true }},
       { path: 'SalesView', component: SalesViewComponent },
       { path: 'SalesCancel', component: SalesEditComponent },
       { path: '', redirectTo: 'SalesEntry', pathMatch: 'full' },

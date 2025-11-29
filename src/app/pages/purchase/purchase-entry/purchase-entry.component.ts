@@ -42,7 +42,7 @@ import {
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { GroupBoxComponent } from '../../../shared/group-box/group-box.component';
 import { Router } from '@angular/router';
-
+import { PurchaseOrderServiceService } from '../../../purchase-order/services/purchase-order-service.service';
 @Component({
   selector: 'app-purchase-entry',
   imports: [
@@ -77,6 +77,16 @@ export class PurchaseEntryComponent {
   purchaseEntries: PurchaseEntry[] = [];
 
   smallGridData: Product[] = [];
+  totalGrossAmount: number = 0;
+  totalDiscAmount: number = 0;
+  totalTaxableAmount: number = 0;
+  totalGstAmount: number = 0;
+  totalCessAmount: number = 0;
+  totalNetAmount: number = 0;
+  totalInvoiceAmount: number = 0;
+  totalPaidAmount: number = 0;
+  totalBalanceAmount: number = 0;
+  totalRoundOff: number = 0;
 
   // Flags
   smallGridVisible = false;
@@ -232,6 +242,7 @@ export class PurchaseEntryComponent {
       header: 'Product Name',
       type: 'text',
       openSmallGrid: true,
+      requiredForNextRow: true,
       visible: true,
     },
 
@@ -241,19 +252,20 @@ export class PurchaseEntryComponent {
       type: 'number',
       visible: false,
     },
-    { field: 'quantity', header: 'Quantity', type: 'number', visible: true },
 
     {
       field: 'purchaseRate',
       header: 'Purchase Rate',
       type: 'number',
       visible: true,
+      requiredForNextRow: true,
     },
     {
       field: 'retailPrice',
       header: 'Retail Price',
       type: 'number',
       visible: true,
+      requiredForNextRow: true,
     },
     {
       field: 'wholesalePrice',
@@ -261,6 +273,15 @@ export class PurchaseEntryComponent {
       type: 'number',
       visible: false,
     },
+    {
+      field: 'quantity',
+      header: 'Quantity',
+      type: 'number',
+      visible: true,
+
+      requiredForNextRow: true,
+    },
+
     { field: 'saleRate', header: 'Sale Rate', type: 'number', visible: false },
     { field: 'mrp', header: 'MRP', type: 'number', visible: true },
 
@@ -289,12 +310,20 @@ export class PurchaseEntryComponent {
       visible: false,
     },
 
-    { field: 'gstPercentage', header: 'GST %', type: 'number', visible: false },
+    {
+      field: 'gstPercentage',
+      header: 'GST %',
+      type: 'number',
+      visible: true,
+
+      readOnly: true,
+    },
     {
       field: 'gstAmount',
       header: 'GST Amount',
       type: 'number',
-      visible: false,
+      visible: true,
+      readOnly: true,
     },
 
     { field: 'cgstRate', header: 'CGST %', type: 'number', visible: false },
@@ -573,6 +602,7 @@ export class PurchaseEntryComponent {
   constructor(
     private masterService: MasterService,
     private commonService: CommonserviceService,
+    private purchaseOrderService: PurchaseOrderServiceService,
     private swall: SweetAlertService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
@@ -588,18 +618,19 @@ export class PurchaseEntryComponent {
     if (companyId) {
       this.selectedCompanyId = companyId;
       this.loadProducts(companyId);
+      this.loadNextInvoiceNo();
     }
   }
 
   // LOAD PRODUCTS
-loadProducts(companyId: number) {
-  this.masterService.getProducts(companyId).subscribe((res) => {
-    setTimeout(() => {
-      this.products = res ?? [];
-      this.smallGridData = [...this.products];
+  loadProducts(companyId: number) {
+    this.masterService.getProducts(companyId).subscribe((res) => {
+      setTimeout(() => {
+        this.products = res ?? [];
+        this.smallGridData = [...this.products];
+      });
     });
-  });
-}
+  }
 
   goBack() {
     this.router.navigate(['/Purchase/PurchaseOrderView']);
@@ -645,6 +676,7 @@ loadProducts(companyId: number) {
 
   // GRID HEADER UPDATE (TEMPLATE CALLS THIS)
   applyTopSelectionsToGrid() {
+    this.loadNextInvoiceNo();
     this.purchaseOrderEntries.forEach((row) =>
       this.applyTopSelectionsToRow(row)
     );
@@ -672,6 +704,22 @@ loadProducts(companyId: number) {
         this.applyTopSelectionsToGrid();
       });
   }
+
+  loadNextInvoiceNo() {
+    const companyId = this.selectedCompanyId ?? 0;
+    const branchId = this.selectedBranchId ? String(this.selectedBranchId) : '';
+
+    this.purchaseOrderService.getNextPONumber(companyId, branchId).subscribe({
+      next: (poNumber: string) => {
+        console.log('API Returned:', poNumber);
+        this.invoiceNo = poNumber;
+      },
+      error: (err) => {
+        console.error('PO Number API Error:', err);
+      },
+    });
+  }
+
   // PRODUCT SELECTED
   onProductSelected(product: Product) {
     if (this.activeProductRow !== null) {
@@ -680,21 +728,43 @@ loadProducts(companyId: number) {
       row.productName = product.productName;
       row.categoryID = product.categoryID ?? null;
       row.subCategoryID = product.subCategoryID ?? null;
+      row.gstPercentage = product.taxableValue ?? null;
     }
 
     this.smallGridVisible = false;
     setTimeout(() => this.grid.focusCell(this.activeProductRow!, 3), 50);
   }
+  fillMasterNames(row: PurchaseEntry): PurchaseEntry {
+    return {
+      ...row,
+
+      companyName:
+        this.companies.find((c) => c.companyID === row.companyID)
+          ?.companyName ?? null,
+
+      branchName:
+        this.branches.find((b) => b.branchID === row.branchID)?.branchName ??
+        null,
+
+      supplierName:
+        this.suppliers.find((s) => s.supplierID === row.supplierID)
+          ?.supplierName ?? null,
+    };
+  }
 
   onGridNumberChanged(event: any) {
-    const { rowIndex } = event;
-    const row = this.purchaseOrderEntries[rowIndex];
+    const { rowIndex, field } = event;
+    const row = this.purchaseEntries[rowIndex];
+    if (!row) return;
 
-    row.totalAmount = Number(row.poRate || 0) * Number(row.orderedQty || 0);
+    if (['purchaseRate', 'quantity', 'gstPercentage'].includes(field)) {
+      this.calculateRowTotals(row);
+      this.calculateOverallTotals(); // <—— ADD THIS
+    }
   }
 
   onGridRowAdded(e: any) {
-    const newRow = e; // because rowAdded emits only newRow
+    const newRow = e;
 
     this.applyTopSelectionsToRow(newRow);
 
@@ -702,23 +772,21 @@ loadProducts(companyId: number) {
   }
   updateSerialNumbers() {
     this.purchaseEntries.forEach((row, index) => {
-      row.sno = index+1;
+      row.sno = index + 1;
     });
   }
-  validateRowForNext(row: any): boolean {
+  validateRowForNext(row: PurchaseEntry): boolean {
     if (!row) return false;
 
     if (!row.productName || !row.productCode) return false;
 
-    if (!row.poRate || Number(row.poRate) <= 0) return false;
+    if (!row.categoryID || row.categoryID === 0) return false;
+    if (!row.subCategoryID || row.subCategoryID === 0) return false;
 
-    if (!row.orderedQty || Number(row.orderedQty) <= 0) return false;
-
+    if (!row.purchaseRate || Number(row.purchaseRate) <= 0) return false;
+    if (!row.retailPrice || Number(row.retailPrice) <= 0) return false;
+    if (!row.quantity || Number(row.quantity) <= 0) return false;
     if (!row.totalAmount || Number(row.totalAmount) <= 0) return false;
-
-    if (!row.productCategoryId) return false;
-
-    if (!row.productSubCategory) return false;
 
     return true;
   }
@@ -737,13 +805,20 @@ loadProducts(companyId: number) {
       return false;
     if (!this.validateRequired('Accounting Year', this.accountingYear))
       return false;
+    if (!this.validateRequired('Invoice Date ', this.selectedInvoiceDate))
+      return false;
+    if (!this.validateRequired('Supplier Invoice No ', this.supplierInvoiceNo))
+      return false;
+    if (!this.validateRequired('Invoice No ', this.invoiceNo)) return false;
+    if (!this.validateRequired('PayMode ', this.selectedPaymentMode))
+      return false;
 
     return true;
   }
 
   private newProduct(): PurchaseEntry {
     return {
-      sno :0,
+      sno: 0,
       purchaseID: 0,
 
       poNumber: null,
@@ -872,6 +947,16 @@ loadProducts(companyId: number) {
       cancelReason: null,
 
       accountingYear: this.accountingYear ?? null,
+      totalGrossAmount: 0,
+      totalDiscAmount: 0,
+      totalTaxableAmount: 0,
+      totalGstAmount: 0,
+      totalCessAmount: 0,
+      totalNetAmount: 0,
+      totalInvoiceAmount: 0,
+      totalPaidAmount: 0,
+      totalBalanceAmount: 0,
+      totalRoundOff: 0,
     };
   }
 
@@ -883,80 +968,292 @@ loadProducts(companyId: number) {
     this.updateSerialNumbers();
     this.grid.focusCell(0, 2);
   }
+  cleanNumericFields(row: any) {
+    const numericFields = [
+      'purchaseRate',
+      'retailPrice',
+      'wholesalePrice',
+      'saleRate',
+      'mrp',
+      'quantity',
+      'gstPercentage',
+      'gstAmount',
+      'cgstRate',
+      'cgstAmount',
+      'sgstRate',
+      'sgstAmount',
+      'taxableValue',
+      'totalAmount',
+      'totalGstAmount',
+      'totalNetAmount',
+      'totalInvoiceAmount',
+    ];
+
+    numericFields.forEach((f) => {
+      const v = row[f];
+      row[f] =
+        v === null || v === undefined || v === '' || isNaN(v) ? 0 : Number(v);
+    });
+  }
+
+  buildSavePayload(): PurchaseEntry[] {
+    return this.purchaseEntries.map((row) => {
+      const cleaned = { ...row };
+      this.cleanNumericFields(cleaned);
+
+      const named = this.fillMasterNames(cleaned);
+
+      return {
+        ...named,
+
+        poNumber: this.invoiceNo || null,
+
+        purchaseDate: this.selectedInvoiceDate ?? null,
+        companyID: this.selectedCompanyId ?? 0,
+
+        branchID: this.selectedBranchId ?? 0,
+        supplierID: this.selectedSupplierId ?? 0,
+
+        invoiceNumber: this.invoiceNo ?? null,
+        supplierInvoiceNumber: this.supplierInvoiceNo ?? null,
+        accountingYear: this.accountingYear,
+        paymentMode: this.selectedPaymentMode ?? null,
+
+        totalGrossAmount: this.totalGrossAmount,
+        totalDiscAmount: this.totalDiscAmount,
+        totalTaxableAmount: this.totalTaxableAmount,
+        totalGstAmount: this.totalGstAmount,
+        totalCessAmount: this.totalCessAmount,
+        totalNetAmount: this.totalNetAmount,
+        totalInvoiceAmount: this.totalInvoiceAmount,
+        totalPaidAmount: this.totalPaidAmount,
+        totalBalanceAmount: this.totalBalanceAmount,
+        totalRoundOff: this.totalRoundOff,
+      };
+    });
+  }
+
+  savePurchase() {
+    // Basic validation
+    if (!this.validateHeaderFields()) return;
+
+    if (this.purchaseEntries.length === 0) {
+      this.swall.warning(
+        'Validation',
+        'Please add at least one row in the grid.'
+      );
+      return;
+    }
+
+    // Build API payload
+    const payload = this.buildSavePayload();
+
+    // Call API
+    this.purchaseOrderService.savePurchaseEntry(payload).subscribe({
+      next: (res) => {
+        console.log('API RESPONSE:', res);
+
+        if (res.success) {
+          this.swall.success('Success', 'Purchase Entry Saved Successfully!');
+          this.resetForm();
+        } else {
+          this.swall.error('WARNING', res.message || 'Error saving purchase.');
+        }
+      },
+      error: (err) => {
+        console.error(' API ERROR:', err);
+
+        this.swall.error('Error', 'Failed to save purchase entry.');
+      },
+    });
+  }
+  resetForm() {
+    // Clear header
+    this.invoiceNo = '';
+    this.supplierInvoiceNo = '';
+    this.selectedInvoiceDate = null;
+    this.selectedSupplierId = null;
+    this.selectedBranchId = null;
+    this.selectedPaymentMode = null;
+
+    this.totalBalanceAmount = 0;
+    this.totalPaidAmount = 0;
+    this.totalTaxableAmount = 0;
+    this.totalGrossAmount = 0;
+    this.totalDiscAmount = 0;
+    this.totalTaxableAmount = 0;
+    this.totalGstAmount = 0;
+    this.totalCessAmount = 0;
+    this.totalNetAmount = 0;
+    this.totalInvoiceAmount = 0;
+
+    // Clear grid
+    this.purchaseEntries = [];
+    this.loadNextInvoiceNo();
+    // Force UI refresh
+    this.cd.detectChanges();
+  }
+
   // OPEN PRODUCT SMALL GRID
-showSmallGrid(rowIndex: number) {
-  this.activeProductRow = rowIndex;
+  showSmallGrid(rowIndex: number) {
+    this.activeProductRow = rowIndex;
 
-  setTimeout(() => {
-    this.smallGridData = [...this.products];
-    this.smallGridVisible = true;
-  });
-}
-
+    setTimeout(() => {
+      this.smallGridData = [...this.products];
+      this.smallGridVisible = true;
+    });
+  }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyEvents(event: KeyboardEvent) {
+
+    
+  // ============================
+  // SAVE PURCHASE (Shift + S)
+  // ============================
+  if (event.shiftKey && event.key.toLowerCase() === 's') {
+    event.preventDefault();
+    this.savePurchase();
+    return;
+  }
+
+  // ============================
+  // FOCUS PAID AMOUNT (Shift + T)
+  // ============================
+  if (event.shiftKey && event.key.toLowerCase() === 't') {
+    event.preventDefault();
+
+    const paidInput = document.getElementById(
+      'paidAmountInput'
+    ) as HTMLInputElement;
+
+    if (paidInput) {
+      paidInput.focus();
+      paidInput.select();
+    }
+    return;
+  }
     // ============================
-    // 1) CLOSE SMALL GRID ON ESC
+    // 1) CLOSE / TOGGLE SMALL GRID (ESC)
     // ============================
     if (event.key === 'Escape') {
       event.preventDefault();
 
-      // If small grid is open → CLOSE IT
       if (this.smallGridVisible) {
-        this.smallGridVisible = false;
-      }
-      // If small grid is closed → OPEN IT (toggle)
-      else {
+        this.smallGridVisible = false; // Close
+      } else {
         if (this.activeProductRow !== null) {
-          this.showSmallGrid(this.activeProductRow);
+          this.showSmallGrid(this.activeProductRow); // Open again
         }
       }
-
       return;
     }
+
     // ============================
     // 2) ADD ROW (Shift + N)
     // ============================
     if (event.shiftKey && event.key.toLowerCase() === 'n') {
       event.preventDefault();
 
-      // 1) Validate HEADER before row creation
+      // (1) Validate header before allowing row add
       if (!this.validateHeaderFields()) {
         return;
       }
 
-      // 2) First row → allow
-      if (this.purchaseOrderEntries.length === 0) {
+      // (2) If no rows exist, just add a new one
+      if (this.purchaseEntries.length === 0) {
         this.addNewProduct();
+        setTimeout(() => {
+          this.grid.focusCell(0, 2);
+        }, 50);
         return;
       }
 
-      // 3) Validate last row
-      const last = this.purchaseOrderEntries.length - 1;
-      const row = this.purchaseOrderEntries[last];
+      // (3) Validate last row before allowing new row
+      const lastIndex = this.purchaseEntries.length - 1;
+      const lastRow = this.purchaseEntries[lastIndex];
 
-      if (!this.validateRowForNext(row)) {
+      if (!this.validateRowForNext(lastRow)) {
         this.swall.warning(
-          'Validation',
-          'Please fill Product, Rate, Qty & Amount before adding new row.'
+          'Validation Required',
+          'Please fill Product, Category, Subcategory, Purchase Rate, Retail Price, Quantity & Amount before adding a new row.'
         );
         return;
       }
 
-      // 4) Add new row
+      // (4) Add new row
       this.addNewProduct();
+
+      // (5) Auto focus first editable column in new row
+      const newIndex = this.purchaseEntries.length - 1;
+      setTimeout(() => {
+        this.grid.focusCell(newIndex, 2); // Product Name column
+      }, 50);
+
+ 
     }
   }
 
+  calculateRowTotals(row: PurchaseEntry) {
+    const rate = Number(row.purchaseRate || 0);
+    const qty = Number(row.quantity || 0);
+    const gst = Number(row.gstPercentage || 0);
 
-  
+    // Base value
+    row.taxableValue = rate * qty;
+
+    // GST amount
+    row.gstAmount = (row.taxableValue * gst) / 100;
+
+    // CGST / SGST split
+    row.cgstRate = gst / 2;
+    row.sgstRate = gst / 2;
+    row.igstRate = 0;
+
+    row.cgstAmount = (row.taxableValue * row.cgstRate) / 100;
+    row.sgstAmount = (row.taxableValue * row.sgstRate) / 100;
+
+    // Total including GST
+    row.totalAmount = row.taxableValue + row.gstAmount;
+  }
+  calculateOverallTotals() {
+    this.totalGrossAmount = 0;
+    this.totalDiscAmount = 0;
+    this.totalTaxableAmount = 0;
+    this.totalGstAmount = 0;
+    this.totalCessAmount = 0;
+    this.totalNetAmount = 0;
+    this.totalInvoiceAmount = 0;
+    this.totalPaidAmount = 0;
+    this.totalBalanceAmount = 0;
+
+    for (const row of this.purchaseEntries) {
+      this.totalGrossAmount += Number(row.taxableValue || 0);
+      this.totalDiscAmount += Number(row.discountAmount || 0);
+      this.totalTaxableAmount += Number(row.taxableValue || 0);
+      this.totalGstAmount += Number(row.gstAmount || 0);
+      this.totalCessAmount += Number(row.cessAmount || 0);
+      this.totalNetAmount += Number(row.totalAmount || 0);
+      this.totalInvoiceAmount += Number(row.totalAmount || 0);
+      this.totalBalanceAmount += Number(row.totalAmount || 0);
+
+      this.totalPaidAmount = Number(this.totalPaidAmount || 0);
+    }
+    this.totalBalanceAmount =
+      this.totalInvoiceAmount - (this.totalPaidAmount || 0);
+  }
+  onPaidAmountChanged() {
+    this.totalPaidAmount = Number(this.totalPaidAmount || 0);
+
+    // Correct Balance Calculation:
+    this.totalBalanceAmount = this.totalInvoiceAmount - this.totalPaidAmount;
+  }
+
   ngAfterViewInit() {
     setTimeout(() => {
       if (this.grid && this.purchaseEntries.length > 0) {
-        this.grid.focusCell(0, 4);
+        this.grid.focusCell(0, 2);
       }
     }, 300);
   }
-
 }

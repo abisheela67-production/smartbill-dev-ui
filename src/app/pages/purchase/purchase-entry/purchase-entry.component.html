@@ -63,7 +63,6 @@
         </select>
       </div>
 
-      <!-- Invoice Date -->
       <div class="form-field">
         <div class="form-field">
           <label>Invoice No</label>
@@ -72,6 +71,8 @@
             [(ngModel)]="invoiceNo"
             appFocusOnKey
             targetId="invoiceNo"
+            disabled
+            readonly
           />
         </div>
       </div>
@@ -116,8 +117,7 @@
       <!-- SAVE BUTTON CELL -->
       <div class="form-field save-field">
         <button class="save-btn">New</button>
-
-        <button class="save-btn">Save</button>
+        <button class="save-btn" (click)="savePurchase()">Save</button>
       </div>
     </div>
 
@@ -138,33 +138,131 @@
       ></app-small-grid>
     </div>
   </div>
-   <div class="grid-container">
- <!-- Main Editable Grid -->
-  <app-input-data-grid
-    [columns]="visibleColumns"
-    [data]="purchaseEntries"
-    (numberChanged)="onGridNumberChanged($event)"
-    (rowAdded)="onGridRowAdded($event)"
-    [parent]="{
-      branches: branches,
-      companies: companies,
-      categories: categories,
-      subCategories: subCategories,
-      brands: brands,
-      units: units,
-      hsnCodes: hsnCodes,
-      taxes: taxes,
-      cesses: cesses,
-      suppliers: suppliers,
-      statuses: statuses,
-      showSmallGrid: showSmallGrid.bind(this)
-    }"
-    selectionMode="FullRowSelect"
-    [allowUserToAddRows]="true"
-    [allowUserToDeleteRows]="true"
-    [allowUserToResizeColumns]="true"
-  ></app-input-data-grid>
-   </div>
+  <div class="grid-container">
+    <!-- Main Editable Grid -->
+    <app-input-data-grid
+      [columns]="visibleColumns"
+      [data]="purchaseEntries"
+      (numberChanged)="onGridNumberChanged($event)"
+      (rowAdded)="onGridRowAdded($event)"
+      [parent]="{
+        branches: branches,
+        companies: companies,
+        categories: categories,
+        subCategories: subCategories,
+        brands: brands,
+        units: units,
+        hsnCodes: hsnCodes,
+        taxes: taxes,
+        cesses: cesses,
+        suppliers: suppliers,
+        statuses: statuses,
+        showSmallGrid: showSmallGrid.bind(this)
+      }"
+      selectionMode="FullRowSelect"
+      [allowUserToAddRows]="true"
+      [allowUserToDeleteRows]="true"
+      [allowUserToResizeColumns]="true"
+    ></app-input-data-grid>
+  </div>
+</div>
+<!-- ============================
+      TOTAL SUMMARY SECTION
+============================= -->
+<div class="total-summary">
+  <div class="total-row">
+    <label>Gross Amount</label>
+    <input
+      type="number"
+      [value]="totalGrossAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
 
- 
+  <div class="total-row">
+    <label>Discount Amount</label>
+    <input
+      type="number"
+      [value]="totalDiscAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>Taxable Amount</label>
+    <input
+      type="number"
+      [value]="totalTaxableAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>GST Amount</label>
+    <input
+      type="number"
+      [value]="totalGstAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>CESS Amount</label>
+    <input
+      type="number"
+      [value]="totalCessAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>Net Amount</label>
+    <input
+      type="number"
+      [value]="totalNetAmount"
+      readonly
+      class="total-input"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>Total Invoice</label>
+    <input
+      type="number"
+      [value]="totalInvoiceAmount"
+      readonly
+      class="total-input highlight"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>Paid Amount</label>
+    <input
+      id="paidAmountInput"
+      type="number"
+      [(ngModel)]="totalPaidAmount"
+      (ngModelChange)="onPaidAmountChanged()"
+      class="textno"
+      appFocusOnKey
+    />
+  </div>
+  <div class="total-row">
+    <label>Balance Amount</label>
+    <input
+      type="number"
+      [value]="totalBalanceAmount"
+      readonly
+      class="total-input highlight-red"
+    />
+  </div>
+
+  <div class="total-row">
+    <label>Round Off</label>
+    <input type="number" [value]="totalRoundOff" readonly class="total-input" />
+  </div>
 </div>

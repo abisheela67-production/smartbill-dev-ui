@@ -42,3 +42,56 @@
 .popup-close-btn:hover {
   opacity: 1;
 }
+
+.total-summary {
+  width: 320px;
+  padding: 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #fafafa;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+.total-row {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-row label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.total-input {
+  width: 140px;
+  text-align: right;
+  padding: 4px 6px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.highlight {
+  background: #e7f7ff;
+  font-weight: bold;
+}
+
+.highlight-red {
+  background: #ffe7e7;
+  font-weight: bold;
+  color: #b00000;
+}
+
+
+.textno{
+  width: 140px;
+  text-align: right;
+height: 30px;
+
+}

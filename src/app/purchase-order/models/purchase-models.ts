@@ -63,7 +63,6 @@ export interface PurchaseOrderEntry {
   accountingYear: string | null;
 }
 export interface GRNEntry {
-
   grnEntryID: number;
   grnNumber: string;
   grnDate: string | Date;
@@ -122,10 +121,7 @@ export interface GRNEntry {
   updatedAt: string | Date | null;
 }
 
-
-
 export interface PurchaseEntry {
-
   sno: number;
 
   purchaseID: number;
@@ -155,6 +151,9 @@ export interface PurchaseEntry {
   hsnid: number;
 
   categoryID: number;
+
+
+
   subCategoryID: number;
 
   barcode: string | null;
@@ -175,7 +174,7 @@ export interface PurchaseEntry {
   inclusiveAmount: number;
   exclusiveAmount: number;
 
-  gstPercentage: number;
+  gstPercentage: number | null;
   gstAmount: number;
 
   cgstRate: number;
@@ -233,9 +232,8 @@ export interface PurchaseEntry {
 
   grnNumber: string | null;
   grnDate: string | Date | null;
-poid: number | null;
-poDetailID: number | null;
-
+  poid: number | null;
+  poDetailID: number | null;
 
   grnRemarks: string | null;
   isGRNApproved: boolean;
@@ -257,4 +255,15 @@ poDetailID: number | null;
   cancelReason: string | null;
 
   accountingYear: string | null;
+
+  totalGrossAmount: number;
+  totalDiscAmount: number;
+  totalTaxableAmount: number;
+  totalGstAmount: number;
+  totalCessAmount: number;
+  totalNetAmount: number;
+  totalInvoiceAmount: number;
+  totalPaidAmount: number;
+  totalBalanceAmount: number;
+  totalRoundOff: number;
 }
