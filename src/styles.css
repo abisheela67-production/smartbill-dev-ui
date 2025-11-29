@@ -1342,6 +1342,14 @@ button,
 }
 .btn-elevated:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+
+
+
+
+
+
+
 }/* ========================================================
    📄 FULL FORM LAYOUT — (Purchase / Sales / GRN / PO)
    PROFESSIONAL + CLEAN + UNIFORM
@@ -1350,9 +1358,9 @@ button,
 /* Main page wrapper */
 .page-layout {
   width: 100%;
-  max-width: 1600px;
+  height: 100%;
   margin: 0 auto;
-  padding: 0 25px 20px 25px; /* No top padding */
+  padding: 10px;
   box-sizing: border-box;
 }
 
@@ -1367,22 +1375,19 @@ button,
 }
 
 .page-layout .page-title {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.0rem;
+  font-weight: 500;
+  padding-right: 100px;
   color: var(--color-primary);
-  white-space: nowrap;
 }
 
 /* Back Button */
 .page-layout .page-back-btn {
-  min-width: 120px;
   padding: 8px 16px;
   border: 2px solid var(--color-primary);
   color: var(--color-primary);
   background: transparent;
-  border-radius: 6px;
   font-weight: 600;
-  transition: 0.25s ease;
 }
 
 .page-layout .page-back-btn:hover {
@@ -1395,7 +1400,7 @@ button,
 ======================================================== */
 .page-layout .form-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 0px;
   padding: 25px;
   margin-bottom: 25px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -1403,9 +1408,8 @@ button,
 
 /* Section title */
 .page-layout .form-section-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 18px;
+  font-size: 1.5rem;
+  font-weight: 500;
   color: var(--color-primary);
 }
 
@@ -1415,7 +1419,7 @@ button,
 .page-layout .form-grid-4 {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(4, minmax(230px, 1fr));
+  grid-template-columns: repeat(5, minmax(10px, 1fr));
   gap: 24px 28px;
 }
 
@@ -1427,7 +1431,7 @@ button,
 
 /* Labels */
 .page-layout .form-field label {
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 6px;
   color: #444;
 }
@@ -1437,7 +1441,7 @@ button,
 .page-layout .form-field select {
   width: 100%;
   padding: 10px 12px;
-  border-radius: 6px;
+  border-radius: 0px;
   border: 1px solid var(--color-border);
   background: #fff;
   transition: 0.25s ease;
@@ -1458,7 +1462,7 @@ button,
 }
 
 /* ========================================================
-   🔘 FORM ACTIONS (e.g., Save Button)
+  FORM ACTIONS (e.g., Save Button)
 ======================================================== */
 .page-layout .form-actions {
   text-align: right;
@@ -1501,4 +1505,36 @@ button,
 ======================================================== */
 .layout-content .page-layout {
   margin-top: 0 !important;
+}/* ========================================================
+   INLINE SAVE BUTTON (GRID CELL)
+======================================================== */
+
+.page-layout .form-field.save-field {
+  display: flex;
+  flex-direction: row;      /* Horizontal buttons */
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;                /* space between buttons */
+}
+
+.page-layout .save-btn {
+  padding: 10px 24px;
+  border-radius: 4px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.page-layout .save-btn:hover {
+  opacity: 0.9;
+}
+.page-layout .form-field.save-field {
+  grid-column: 5 / 6;     /* force button group into column 5 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
 }

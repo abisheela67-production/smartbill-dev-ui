@@ -428,4 +428,20 @@ isRowReadyForNext(rowIndex: number): boolean {
     document.removeEventListener('mousemove', this.resizeMove);
     document.removeEventListener('mouseup', this.resizeStop);
   };
+
+emitCellValueChanged(row: number, col: number, value: any) {
+  const field = this.columns[col].field;   // <-- CRITICAL
+  this.cellValueChanged.emit({ row, col, field, value });
+}
+onSelectChanged(row: number, col: number, field: string, value: any) {
+  this.cellValueChanged.emit({
+    row,
+    col,
+    value: Number(value)
+  });
+}
+
+
+
+
 }

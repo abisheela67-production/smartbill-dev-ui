@@ -90,7 +90,7 @@
               (keydown)="handleKeyDown($event, r, c)"
             />
 
-            <!-- SELECT -->
+           
             <select
               *ngSwitchCase="'select'"
               #gridInput
@@ -111,6 +111,7 @@
               </option>
             </select>
 
+            
             <!-- DEFAULT -->
             <input
               *ngSwitchDefault

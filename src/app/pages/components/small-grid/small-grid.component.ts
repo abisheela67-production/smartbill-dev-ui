@@ -32,13 +32,13 @@ export class SmallGridComponent implements AfterViewInit {
   filteredData: any[] = [];
   highlightedIndex: number = 0;
 
-  ngAfterViewInit() {
+ngAfterViewInit() {
+  setTimeout(() => {
     this.filteredData = [...this.data];
+    this.searchInput?.nativeElement?.focus();
+  });
+}
 
-    setTimeout(() => {
-      this.searchInput?.nativeElement?.focus();
-    }, 50);
-  }
 
   filterData() {
     this.filteredData = this.data.filter(item =>

@@ -126,6 +126,8 @@ export interface GRNEntry {
 
 export interface PurchaseEntry {
 
+  sno: number;
+
   purchaseID: number;
   poNumber: string | null;
 
@@ -231,9 +233,9 @@ export interface PurchaseEntry {
 
   grnNumber: string | null;
   grnDate: string | Date | null;
+poid: number | null;
+poDetailID: number | null;
 
-  poid: number;
-  poDetailID: number;
 
   grnRemarks: string | null;
   isGRNApproved: boolean;

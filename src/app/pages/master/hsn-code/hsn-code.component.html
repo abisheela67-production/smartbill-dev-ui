@@ -5,38 +5,78 @@
       <div class="form-container p-4">
         <h2>HSN Master</h2>
         <form #hsnForm="ngForm">
-
+          <!-- Tax Select -->
+          <div class="form-column mb-3">
+            <label for="taxID" class="required">Select Tax</label>
+            <select
+              id="taxID"
+              class="form-control"
+              [(ngModel)]="hsn.taxID"
+              name="taxID"
+              required
+            >
+              <option value="0" disabled>Select Tax</option>
+              <option *ngFor="let t of taxes" [value]="t.taxID">
+                {{ t.taxName }} ({{ t.taxRate }}%)
+              </option>
+            </select>
+          </div>
           <!-- HSN Code -->
           <div class="form-column mb-3">
             <label for="hsnCode" class="required">HSN Code</label>
-            <input type="text" id="hsnCode" class="form-control" [(ngModel)]="hsn.hsnCode" name="hsnCode" required />
+            <input
+              type="text"
+              id="hsnCode"
+              class="form-control"
+              [(ngModel)]="hsn.hsnCode"
+              name="hsnCode"
+              required
+            />
           </div>
 
           <!-- HSN Name -->
           <div class="form-column mb-3">
             <label for="description" class="required">HSN Name</label>
-            <input type="text" id="description" class="form-control" [(ngModel)]="hsn.description" name="description" required />
-          </div>
-
-          <!-- Tax Select -->
-          <div class="form-column mb-3">
-            <label for="taxID" class="required">Select Tax</label>
-            <select id="taxID" class="form-control" [(ngModel)]="hsn.taxID" name="taxID" required>
-              <option value="0" disabled>Select Tax</option>
-              <option *ngFor="let t of taxes" [value]="t.taxID">{{ t.taxName }} ({{ t.taxRate }}%)</option>
-            </select>
+            <input
+              type="text"
+              id="description"
+              class="form-control"
+              [(ngModel)]="hsn.description"
+              name="description"
+              required
+            />
           </div>
 
           <!-- Active Toggle -->
           <div class="form-check form-switch mb-3">
-            <input type="checkbox" class="form-check-input" id="isActive" [(ngModel)]="hsn.isActive" name="isActive"/>
-            <label class="form-check-label" for="isActive">{{ hsn.isActive ? 'Active' : 'Inactive' }}</label>
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="isActive"
+              [(ngModel)]="hsn.isActive"
+              name="isActive"
+            />
+            <label class="form-check-label" for="isActive">{{
+              hsn.isActive ? "Active" : "Inactive"
+            }}</label>
           </div>
 
           <!-- Buttons -->
           <div class="d-flex gap-2">
-            <button type="button" class="btn btn-primary flex-fill" (click)="saveOrUpdateHSN()">{{ hsn.hsnid ? 'Update' : 'Save' }}</button>
-            <button type="button" class="btn btn-outline flex-fill" (click)="resetHSN()">Reset</button>
+            <button
+              type="button"
+              class="btn btn-primary flex-fill"
+              (click)="saveOrUpdateHSN()"
+            >
+              {{ hsn.hsnid ? "Update" : "Save" }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline flex-fill"
+              (click)="resetHSN()"
+            >
+              Reset
+            </button>
           </div>
         </form>
       </div>
@@ -56,20 +96,36 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let h of hsns; let i = index" [class.table-warning]="hsn.hsnid === h.hsnid">
+          <tr
+            *ngFor="let h of hsns; let i = index"
+            [class.table-warning]="hsn.hsnid === h.hsnid"
+          >
             <td>{{ i + 1 }}</td>
             <td>{{ h.hsnCode }}</td>
             <td>{{ h.description }}</td>
-<td>{{ getTaxName(h.taxID) }}</td>
+            <td>{{ getTaxName(h.taxID) }}</td>
 
-
-            <td><span class="badge" [ngClass]="h.isActive ? 'bg-success' : 'bg-danger'">{{ h.isActive ? 'Active' : 'Inactive' }}</span></td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="h.isActive ? 'bg-success' : 'bg-danger'"
+                >{{ h.isActive ? "Active" : "Inactive" }}</span
+              >
+            </td>
             <td class="text-center">
-              <button class="btn btn-sm" (click)="editHSN(h)"><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn btn-sm" (click)="deleteHSN(h)"><i class="bi bi-trash-fill"></i></button>
+              <button class="btn btn-sm" (click)="editHSN(h)">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              <button class="btn btn-sm" (click)="deleteHSN(h)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </td>
           </tr>
-          <tr *ngIf="hsns.length === 0"><td colspan="6" class="text-center text-muted">No HSN names found.</td></tr>
+          <tr *ngIf="hsns.length === 0">
+            <td colspan="6" class="text-center text-muted">
+              No HSN names found.
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

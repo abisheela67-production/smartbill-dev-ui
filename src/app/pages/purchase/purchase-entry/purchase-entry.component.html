@@ -2,20 +2,12 @@
      FULL PAGE WRAPPER
 ============================ -->
 <div class="page-layout">
-  <!-- 🔙 BACK + PAGE TITLE -->
-  <div class="page-header-bar">
+  <div class="form-section">
     <button class="btn btn-outline page-back-btn" (click)="goBack()">
       ← Back
     </button>
-    <h2 class="page-title">Purchase Order Entry</h2>
-  </div>
 
-  <!-- ============================
-         PURCHASE ORDER HEADER
-  ============================= -->
-  <div class="form-section">
-    <span class="form-section-title">Purchase Order Header</span>
-
+    <span class="form-section-title">Purchase Entry</span>
     <div class="form-grid-4">
       <!-- Accounting Year -->
       <div class="form-field">
@@ -71,28 +63,17 @@
         </select>
       </div>
 
-      <!-- Purchase Date -->
-      <div class="form-field">
-        <label class="required">Purchase Date</label>
-        <input
-          type="date"
-          [(ngModel)]="selectedPurchaseDate"
-          (ngModelChange)="applyTopSelectionsToGrid()"
-          appFocusOnKey
-          targetId="purchaseDate"
-        />
-      </div>
-
       <!-- Invoice Date -->
       <div class="form-field">
-        <label>Invoice Date</label>
-        <input
-          type="date"
-          [(ngModel)]="selectedInvoiceDate"
-          (ngModelChange)="applyTopSelectionsToGrid()"
-          appFocusOnKey
-          targetId="invoiceDate"
-        />
+        <div class="form-field">
+          <label>Invoice No</label>
+          <input
+            type="text"
+            [(ngModel)]="invoiceNo"
+            appFocusOnKey
+            targetId="invoiceNo"
+          />
+        </div>
       </div>
 
       <!-- Payment Mode -->
@@ -111,12 +92,13 @@
 
       <!-- Invoice No -->
       <div class="form-field">
-        <label>Invoice No</label>
+        <label>Invoice Date</label>
         <input
-          type="text"
-          [(ngModel)]="invoiceNo"
+          type="date"
+          [(ngModel)]="selectedInvoiceDate"
+          (ngModelChange)="applyTopSelectionsToGrid()"
           appFocusOnKey
-          targetId="invoiceNo"
+          targetId="invoiceDate"
         />
       </div>
 
@@ -130,6 +112,13 @@
           targetId="supplierInvoiceNo"
         />
       </div>
+
+      <!-- SAVE BUTTON CELL -->
+      <div class="form-field save-field">
+        <button class="save-btn">New</button>
+
+        <button class="save-btn">Save</button>
+      </div>
     </div>
 
     <!-- Validation -->
@@ -137,19 +126,6 @@
       {{ validationLabel }}
     </div>
 
-    <!-- Save Button -->
-    <div class="form-actions">
-      <button class="btn btn-primary">Save Purchase Order</button>
-    </div>
-  </div>
-
-  <!-- ============================
-            PURCHASE GRID
-  ============================= -->
-  <div class="form-section">
-    <span class="form-section-title">Purchase Order Items</span>
-
-    <!-- Small Popup Grid -->
     <div class="popup-grid" *ngIf="smallGridVisible">
       <button class="popup-close-btn" (click)="smallGridVisible = false">
         ✕
@@ -161,31 +137,34 @@
         (rowSelected)="onProductSelected($event)"
       ></app-small-grid>
     </div>
-
-    <!-- Main Editable Grid -->
-    <app-input-data-grid
-      [columns]="visibleColumns"
-      [data]="purchaseOrderEntries"
-      (numberChanged)="onGridNumberChanged($event)"
-      (rowAdded)="onGridRowAdded($event)"
-      [parent]="{
-        branches: branches,
-        companies: companies,
-        categories: categories,
-        subCategories: subCategories,
-        brands: brands,
-        units: units,
-        hsnCodes: hsnCodes,
-        taxes: taxes,
-        cesses: cesses,
-        suppliers: suppliers,
-        statuses: statuses,
-        showSmallGrid: showSmallGrid.bind(this)
-      }"
-      selectionMode="FullRowSelect"
-      [allowUserToAddRows]="true"
-      [allowUserToDeleteRows]="true"
-      [allowUserToResizeColumns]="true"
-    ></app-input-data-grid>
   </div>
+   <div class="grid-container">
+ <!-- Main Editable Grid -->
+  <app-input-data-grid
+    [columns]="visibleColumns"
+    [data]="purchaseEntries"
+    (numberChanged)="onGridNumberChanged($event)"
+    (rowAdded)="onGridRowAdded($event)"
+    [parent]="{
+      branches: branches,
+      companies: companies,
+      categories: categories,
+      subCategories: subCategories,
+      brands: brands,
+      units: units,
+      hsnCodes: hsnCodes,
+      taxes: taxes,
+      cesses: cesses,
+      suppliers: suppliers,
+      statuses: statuses,
+      showSmallGrid: showSmallGrid.bind(this)
+    }"
+    selectionMode="FullRowSelect"
+    [allowUserToAddRows]="true"
+    [allowUserToDeleteRows]="true"
+    [allowUserToResizeColumns]="true"
+  ></app-input-data-grid>
+   </div>
+
+ 
 </div>
