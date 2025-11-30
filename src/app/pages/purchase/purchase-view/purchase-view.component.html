@@ -48,16 +48,7 @@
       </select>
     </div>
 
-    <!-- PO Date Filter -->
-    <div class="form-column">
-      <label class="form-label">PO Date</label>
-      <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="filters.poDate"
-        (change)="onFilterChange()"
-      />
-    </div>
+  
 
   </div>
 
@@ -70,7 +61,7 @@
 
 <!-- RESULT TABLE -->
 <div class="card p-3 shadow-sm mt-4">
-  <h5 class="mb-3">Purchase Order List</h5>
+  <h5 class="mb-3">Purchase Stock List</h5>
 
   <app-view-datatable
     [columns]="tableColumns"

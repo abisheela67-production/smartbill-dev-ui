@@ -151,9 +151,6 @@ export interface PurchaseEntry {
   hsnid: number;
 
   categoryID: number;
-
-
-
   subCategoryID: number;
 
   barcode: string | null;
@@ -266,4 +263,8 @@ export interface PurchaseEntry {
   totalPaidAmount: number;
   totalBalanceAmount: number;
   totalRoundOff: number;
+  quantityPurchased: number | null;
+  quantitySold: number | null;
+  quantityReturned: number | null;
+  
 }

@@ -6,18 +6,17 @@ import { PurchaseOrderServiceService } from '../../../purchase-order/services/pu
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { MasterService } from '../../../services/master.service';
 import { Supplier } from '../../models/common-models/master-models/master';
-import { Company,Branch } from '../../models/common-models/companyMaster';
+import { Company, Branch } from '../../models/common-models/companyMaster';
 import { PurchaseEntry } from '../../../purchase-order/models/purchase-models';
-
 
 @Component({
   selector: 'app-purchase-view',
-imports: [CommonModule, FormsModule, ViewDatatableComponent],
+  imports: [CommonModule, FormsModule, ViewDatatableComponent],
   templateUrl: './purchase-view.component.html',
-  styleUrl: './purchase-view.component.css'
+  styleUrl: './purchase-view.component.css',
 })
 export class PurchaseViewComponent {
-purchaseEntry: PurchaseEntry[] = [];
+  purchaseEntry: PurchaseEntry[] = [];
 
   companies: Company[] = [];
   branches: Branch[] = [];
@@ -53,23 +52,21 @@ purchaseEntry: PurchaseEntry[] = [];
       .subscribe((res) => (this.suppliers = res));
   }
 
-
   onFilterChange() {
     console.log('Filters changed:', this.filters);
     this.loadOrders();
   }
   tableColumns = [
-    { field: 'poid', header: 'POID', width: 100, resizable: true },
-    { field: 'poNumber', header: 'PO Number', width: 100, resizable: true },
     { field: 'companyName', header: 'Company', width: 100, resizable: true },
-    { field: 'branchName', header: 'Branch', width: 100, resizable: true },
-    { field: 'poDate', header: 'PO Date', width: 100, resizable: true },
-    { field: 'supplierName', header: 'Supplier', width: 100, resizable: true },
+    { field: 'productCode', header: 'Product Code', width: 100, resizable: true },
+
     { field: 'productName', header: 'Product', width: 100, resizable: true },
-    { field: 'poRate', header: 'Rate', width: 100, resizable: true },
-    { field: 'orderedQty', header: 'Qty', width: 100, resizable: true },
-    { field: 'totalAmount', header: 'Total', width: 100, resizable: true },
-    { field: 'statusName', header: 'Status', width: 100, resizable: true },
+
+    { field: 'quantityPurchased', header: 'Pur Qty', width: 100, resizable: true },
+    { field: 'quantitySold', header: 'Sold Qty', width: 100, resizable: true },
+    
+    
+
   ];
 
   // -----------------------------
@@ -134,5 +131,4 @@ purchaseEntry: PurchaseEntry[] = [];
     this.branches = [];
     this.loadOrders();
   }
-
 }

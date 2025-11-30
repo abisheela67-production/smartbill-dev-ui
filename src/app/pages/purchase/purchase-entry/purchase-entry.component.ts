@@ -957,6 +957,10 @@ export class PurchaseEntryComponent {
       totalPaidAmount: 0,
       totalBalanceAmount: 0,
       totalRoundOff: 0,
+
+      quantityPurchased: 0,
+      quantitySold: 0,
+      quantityReturned: 0,
     };
   }
 
@@ -1106,33 +1110,31 @@ export class PurchaseEntryComponent {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyEvents(event: KeyboardEvent) {
-
-    
-  // ============================
-  // SAVE PURCHASE (Shift + S)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 's') {
-    event.preventDefault();
-    this.savePurchase();
-    return;
-  }
-
-  // ============================
-  // FOCUS PAID AMOUNT (Shift + T)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 't') {
-    event.preventDefault();
-
-    const paidInput = document.getElementById(
-      'paidAmountInput'
-    ) as HTMLInputElement;
-
-    if (paidInput) {
-      paidInput.focus();
-      paidInput.select();
+    // ============================
+    // SAVE PURCHASE (Shift + S)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 's') {
+      event.preventDefault();
+      this.savePurchase();
+      return;
     }
-    return;
-  }
+
+    // ============================
+    // FOCUS PAID AMOUNT (Shift + T)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 't') {
+      event.preventDefault();
+
+      const paidInput = document.getElementById(
+        'paidAmountInput'
+      ) as HTMLInputElement;
+
+      if (paidInput) {
+        paidInput.focus();
+        paidInput.select();
+      }
+      return;
+    }
     // ============================
     // 1) CLOSE / TOGGLE SMALL GRID (ESC)
     // ============================
@@ -1189,8 +1191,6 @@ export class PurchaseEntryComponent {
       setTimeout(() => {
         this.grid.focusCell(newIndex, 2); // Product Name column
       }, 50);
-
- 
     }
   }
 
