@@ -1,6 +1,7 @@
 .small-grid-container {
   margin-top: 10px;
   width: 520px;
+  height:270px;
   background: white;
   border: 1px solid #ccc;
   padding: 5px;
@@ -8,7 +9,7 @@
 }
 
 .small-grid-scroll {
-  max-height: calc(4 * 32px + 10px);
+  max-height: calc(6 * 32px + 10px);
   overflow-y: auto;
   border: 1px solid #ddd;
 }

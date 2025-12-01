@@ -271,7 +271,7 @@ export class PurchaseEntryComponent {
       field: 'wholesalePrice',
       header: 'Wholesale Price',
       type: 'number',
-      visible: false,
+      visible: true,
     },
     {
       field: 'quantity',
@@ -633,7 +633,7 @@ export class PurchaseEntryComponent {
   }
 
   goBack() {
-    this.router.navigate(['/Purchase/PurchaseOrderView']);
+    this.router.navigate(['/Purchase/PurchaseView']);
   }
 
   // LOAD MASTER DROPDOWNS

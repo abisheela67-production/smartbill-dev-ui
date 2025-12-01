@@ -1,74 +1,181 @@
-<div>
-  <label>Select Page Size:</label>
-  <select [(ngModel)]="selectedPageSize">
-    <option *ngFor="let size of pageSizes" [value]="size">{{size.toUpperCase()}}</option>
-  </select>
-  <button (click)="downloadPDF()">Download PDF</button>
-</div>
-
-<div id="invoicePDF" class="invoice-container">
-  <div class="header">
-    <img [src]="company.logo" alt="Logo" class="logo">
-    <div>
-      <h2>{{company.name}}</h2>
-      <p>{{company.address}}</p>
-      <p>GSTIN: {{company.gstin}}</p>
+<header class="pos-header">
+  <!-- LEFT AREA -->
+  <div class="header-left">
+    <!-- Bag Icon -->
+    <div class="icon-btn">
+      <i class="ri-shopping-bag-3-line"></i>
     </div>
-    <div class="invoice-info">
-      <h1>Tax Invoice</h1>
-      <p>Invoice No: {{invoice.number}}</p>
-      <p>Date: {{invoice.date | date:'dd-MMM-yyyy'}}</p>
-      <p>Place of Supply: {{invoice.placeOfSupply}}</p>
+
+    <!-- Company Dropdown -->
+    <select
+      [(ngModel)]="selectedCompanyId"
+      (ngModelChange)="onCompanyChange($event)"
+      appFocusOnKey
+      targetId="companyName"
+      [autoFocus]="true"
+    >
+      <option *ngFor="let c of companies" [value]="c.companyID">
+        {{ c.companyName }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="selectedBranchId" appFocusOnKey targetId="branchName">
+      <option [ngValue]="null">-- Select Branch --</option>
+      <option *ngFor="let b of branches" [value]="b.branchID">
+        {{ b.branchName }}
+      </option>
+    </select>
+  </div>
+
+  <!-- CENTER SEARCH BAR -->
+  <div class="header-center">SmartBillPro</div>
+
+  <!-- RIGHT CONTROLS -->
+  <div class="header-right">
+    <!-- Hotkey Button -->
+    <div class="segmented">
+      <button
+        [class.active]="gstType === 'IN_STATE'"
+        (click)="gstType = 'IN_STATE'"
+      >
+        POS MODE
+      </button>
+
+      <button
+        [class.active]="gstType === 'OTHER_STATE'"
+        (click)="gstType = 'OTHER_STATE'"
+      >
+        HOTKEY MODE
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="pos-wrapper">
+  <div class="pos-left">
+    <div class="billing-gst-row">
+      <!-- Billing Type -->
+      <div class="segmented">
+        <button
+          [class.active]="billingType === 'RETAIL'"
+          (click)="billingType = 'RETAIL'"
+        >
+          RETAIL
+        </button>
+
+        <button
+          [class.active]="billingType === 'WHOLESALE'"
+          (click)="billingType = 'WHOLESALE'"
+        >
+          WHOLESALE
+        </button>
+      </div>
+
+      <div class="segmented">
+        <button
+          [class.active]="gstType === 'IN_STATE'"
+          (click)="gstType = 'IN_STATE'"
+        >
+          IN-STATE
+        </button>
+
+        <button
+          [class.active]="gstType === 'OTHER_STATE'"
+          (click)="gstType = 'OTHER_STATE'"
+        >
+          OTHER STATE
+        </button>
+      </div>
+    </div>
+
+    <!-- Product List Table -->
+    <div class="product-table">
+      <div class="popup-grid" *ngIf="smallGridVisible">
+        <app-small-grid
+          [columns]="productGridColumns"
+          [data]="smallGridData"
+        ></app-small-grid>
+      </div>
+      <div class="big-grid">
+        <app-input-data-grid
+          [columns]="visibleColumns"
+          [data]="salesEntries"
+          (numberChanged)="onGridNumberChanged($event)"
+          (rowAdded)="onGridRowAdded($event)"
+          [parent]="{
+            branches: branches,
+            companies: companies,
+            categories: categories,
+            subCategories: subCategories,
+            brands: brands,
+            units: units,
+            hsnCodes: hsnCodes,
+            taxes: taxes,
+            cesses: cesses,
+            suppliers: suppliers,
+            statuses: statuses,
+            showSmallGrid: showSmallGrid.bind(this)
+          }"
+          selectionMode="FullRowSelect"
+          [allowUserToAddRows]="true"
+          [allowUserToDeleteRows]="true"
+          [allowUserToResizeColumns]="true"
+        ></app-input-data-grid>
+      </div>
     </div>
   </div>
 
-  <div class="customer-info">
-    <h3>Bill To:</h3>
-    <p>{{customer.name}}</p>
-    <p>{{customer.address}}</p>
-    <p>GSTIN: {{customer.gstin}}</p>
-  </div>
+  <!-- RIGHT SIDE -->
+  <div class="pos-right">
+    <!-- BILL TABS -->
+    <div class="bill-tabs">
+      <button class="active">Bill 1</button>
+      <button class="add-tab">+</button>
+    </div>
 
-  <table class="items-table">
-    <thead>
-      <tr>
-        <th>S.No</th>
-        <th>Description</th>
-        <th>HSN/SAC</th>
-        <th>Qty</th>
-        <th>Unit</th>
-        <th>Rate</th>
-        <th>Taxable Value</th>
-        <th>GST %</th>
-        <th>Cess %</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of invoice.items; let i = index">
-        <td>{{i+1}}</td>
-        <td>{{item.name}}</td>
-        <td>{{item.hsn}}</td>
-        <td>{{item.quantity}}</td>
-        <td>{{item.unit}}</td>
-        <td>{{item.rate | currency}}</td>
-        <td>{{item.quantity * item.rate | currency}}</td>
-        <td>{{item.gst}}</td>
-        <td>{{item.cess}}</td>
-        <td>{{(item.quantity*item.rate)+(item.quantity*item.rate*item.gst/100)+(item.quantity*item.rate*item.cess/100) | currency}}</td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- BILLING OPTIONS CARD -->
+    <div class="billing-card">
+      <div class="customer-row">
+        <label>Customer</label>
+        <select>
+          <option>Walk-in Customer -</option>
+        </select>
 
-  <div class="summary">
-    <p>Subtotal: {{getSubtotal() | currency}}</p>
-    <p>Total GST: {{getGSTTotal() | currency}}</p>
-    <p>Total Cess: {{getCessTotal() | currency}}</p>
-    <p><strong>Grand Total: {{getGrandTotal() | currency}}</strong></p>
-  </div>
+        <label>Customer GSTIN</label>
+        <input type="text" placeholder="Optional" />
+      </div>
+    </div>
 
-  <div class="footer">
-    <p>Bank Details: {{company.bankDetails}}</p>
-    <p>Authorized Signatory</p>
+    <!-- CART SECTION -->
+    <div class="cart-section">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <!-- TOTALS -->
+    <div class="bill-summary">
+      <div class="row"><span>Gross Amt:</span> <span>0.00</span></div>
+      <div class="row discount"><span>Discount:</span> <span>- 0.00</span></div>
+      <div class="row"><span>Taxable Amt:</span> <span>0.00</span></div>
+      <div class="row"><span>GST:</span> <span>+ 0.00</span></div>
+    </div>
+
+    <!-- INVOICE TOTAL -->
+    <h2 class="invoice-total">INVOICE TOTAL <span>₹0.00</span></h2>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button class="hold-btn">⏱ HOLD</button>
+
+      <button class="complete-sale-btn">✓ COMPLETE SALE</button>
+    </div>
   </div>
 </div>
