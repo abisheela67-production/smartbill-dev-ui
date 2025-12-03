@@ -587,8 +587,8 @@ export class PurchaseEntryComponent {
 
   // SMALL GRID COLUMNS (USED IN TEMPLATE)
   productGridColumns = [
-    { field: 'productCode', header: 'Product Code' },
-    { field: 'productName', header: 'Product Name' },
+    { field: 'productCode', header: 'Product Code', visible: true },
+    { field: 'productName', header: 'Product Name', visible: true },
   ];
   selectedPaymentMode: any;
   invoiceNo: any;

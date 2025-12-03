@@ -1,3 +1,37 @@
+
+export interface BusinessType {
+  businessTypeID: number;
+  companyID: number | null;
+  businessTypeName: string;
+  description: string;
+  isActive: boolean;
+  createdBy: string | null;
+  createdDate: string;
+  updatedBy: string | null;
+  updatedDate: string | null;
+  createdSystemName: string;
+}
+export interface GstTransactionType {
+  gstTransactionTypeID: number;
+  transactionTypeName: string;
+  description: string;
+  isActive: boolean;
+  createdBy: string | null;
+  createdDate: string;
+  updatedBy: string | null;
+  updatedDate: string | null;
+  createdSystemName: string;
+}
+
+
+
+
+
+
+
+
+
+
 export interface ProductStockPrice {
 
   sno: number;

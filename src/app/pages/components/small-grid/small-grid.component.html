@@ -1,6 +1,5 @@
 <div class="small-grid-container">
 
-  <!-- 🔍 SEARCH BOX -->
   <input
     type="text"
     #searchInput
@@ -11,16 +10,22 @@
     (keydown)="handleKey($event)"
   />
 
-  <!-- 🔥 SCROLL CONTAINER -->
   <div class="small-grid-scroll" #scrollContainer>
-
     <table class="small-grid">
+
+      <!-- ================= HEADER ================= -->
       <thead>
         <tr>
-          <th *ngFor="let col of columns">{{ col.header }}</th>
+          <th
+            *ngFor="let col of columns"
+            [hidden]="!col.visible"
+          >
+            {{ col.header }}
+          </th>
         </tr>
       </thead>
 
+      <!-- ================= BODY ================= -->
       <tbody>
         <tr
           #rowItem
@@ -28,10 +33,15 @@
           [class.active]="highlightedIndex === i"
           (click)="onRowClick(row)"
         >
-          <td *ngFor="let col of columns">{{ row[col.field] }}</td>
+          <td
+            *ngFor="let col of columns"
+            [hidden]="!col.visible"
+          >
+            {{ row[col.field] }}
+          </td>
         </tr>
       </tbody>
-    </table>
 
+    </table>
   </div>
 </div>

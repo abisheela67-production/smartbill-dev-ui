@@ -23,6 +23,7 @@
       <option [ngValue]="null">-- Select Branch --</option>
       <option *ngFor="let b of branches" [value]="b.branchID">
         {{ b.branchName }}
+        
       </option>
     </select>
   </div>
@@ -34,19 +35,18 @@
   <div class="header-right">
     <!-- Hotkey Button -->
     <div class="segmented">
-      <button
-        [class.active]="gstType === 'IN_STATE'"
-        (click)="gstType = 'IN_STATE'"
-      >
-        POS MODE
-      </button>
+      <div class="segmented">
+        <button [class.active]="billMode === 'POS'" (click)="billMode = 'POS'">
+          POS MODE
+        </button>
 
-      <button
-        [class.active]="gstType === 'OTHER_STATE'"
-        (click)="gstType = 'OTHER_STATE'"
-      >
-        HOTKEY MODE
-      </button>
+        <button
+          [class.active]="billMode === 'HOTKEY'"
+          (click)="billMode = 'HOTKEY'"
+        >
+          HOTKEY MODE
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -54,37 +54,49 @@
 <div class="pos-wrapper">
   <div class="pos-left">
     <div class="billing-gst-row">
-      <!-- Billing Type -->
-      <div class="segmented">
-        <button
-          [class.active]="billingType === 'RETAIL'"
-          (click)="billingType = 'RETAIL'"
-        >
-          RETAIL
-        </button>
+      <!-- BUSINESS TYPE -->
+      <div class="radio-card">
+        <div class="card-title">Business Type</div>
 
-        <button
-          [class.active]="billingType === 'WHOLESALE'"
-          (click)="billingType = 'WHOLESALE'"
-        >
-          WHOLESALE
-        </button>
+        <div class="radio-group">
+          <label class="radio-item" *ngFor="let bt of businessTypes">
+            <input
+              type="radio"
+              name="businessType"
+              [value]="bt"
+              [(ngModel)]="selectedBusinessType"
+              (change)="onBusinessTypeChanged()"
+            />
+            <span>{{ bt.businessTypeName }}</span>
+          </label>
+        </div>
       </div>
 
-      <div class="segmented">
-        <button
-          [class.active]="gstType === 'IN_STATE'"
-          (click)="gstType = 'IN_STATE'"
-        >
-          IN-STATE
-        </button>
+      <!-- GST TYPE -->
+      <div class="radio-card">
+        <div class="card-title">GST Type</div>
 
-        <button
-          [class.active]="gstType === 'OTHER_STATE'"
-          (click)="gstType = 'OTHER_STATE'"
-        >
-          OTHER STATE
-        </button>
+        <div class="radio-group">
+          <label class="radio-item" *ngFor="let gst of gstTypesList">
+            <input
+              type="radio"
+              name="gstType"
+              [value]="gst"
+              [(ngModel)]="selectedGstType"
+            />
+            <span>{{ gst.transactionTypeName }}</span>
+          </label>
+        </div>
+      </div>
+      <!-- Invoice No -->
+      <div class="form-field">
+        <label>Invoice Date</label>
+        <input
+          type="date"
+          [(ngModel)]="selectedInvoiceDate"
+          appFocusOnKey
+          targetId="invoiceDate"
+        />
       </div>
     </div>
 
@@ -94,6 +106,7 @@
         <app-small-grid
           [columns]="productGridColumns"
           [data]="smallGridData"
+           (rowSelected)="onProductSelected($event)"
         ></app-small-grid>
       </div>
       <div class="big-grid">
@@ -129,8 +142,17 @@
   <div class="pos-right">
     <!-- BILL TABS -->
     <div class="bill-tabs">
-      <button class="active">Bill 1</button>
-      <button class="add-tab">+</button>
+      <!-- ACTIVE BILL BUTTONS -->
+      <button
+        *ngFor="let tab of billTabs; let i = index"
+        [class.active]="activeBillIndex === i"
+        (click)="switchBill(i)"
+      >
+        {{ tab.name }}
+      </button>
+
+      <!-- ADD NEW BILL -->
+      <button class="add-tab" (click)="nextBill()">+</button>
     </div>
 
     <!-- BILLING OPTIONS CARD -->

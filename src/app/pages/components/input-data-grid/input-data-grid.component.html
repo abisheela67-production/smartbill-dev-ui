@@ -55,6 +55,7 @@
               #gridInput
               type="number"
               class="cell-input"
+               appInputRestrict="number"
               [(ngModel)]="row[col.field]"
               [readonly]="col.readOnly"
               (click)="$event.stopPropagation()"

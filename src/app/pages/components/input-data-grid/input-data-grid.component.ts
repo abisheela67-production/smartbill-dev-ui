@@ -10,11 +10,12 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { InputRestrictDirective } from '../../../directives/input-restrict.directive';
 @Component({
   selector: 'app-input-data-grid',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,  InputRestrictDirective
+  ],
   templateUrl: './input-data-grid.component.html',
   styleUrls: ['./input-data-grid.component.css'],
 })
@@ -146,7 +147,6 @@ handleKeyDown(event: KeyboardEvent, row: number, col: number) {
     case 'Enter':
       event.preventDefault();
 
-      // ⭐ Small Grid Open Condition (Restored) ⭐
       if (colDef.openSmallGrid && this.parent?.showSmallGrid) {
         this.disableEditing(row, col);
         this.parent.showSmallGrid(row);
