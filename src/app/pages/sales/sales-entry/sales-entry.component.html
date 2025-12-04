@@ -1,9 +1,7 @@
 <header class="pos-header">
-  <!-- LEFT AREA -->
   <div class="header-left">
-    <!-- Bag Icon -->
     <div class="icon-btn">
-      <i class="ri-shopping-bag-3-line"></i>
+      <lucide-icon name="ShoppingCart"></lucide-icon>
     </div>
 
     <!-- Company Dropdown -->
@@ -23,7 +21,6 @@
       <option [ngValue]="null">-- Select Branch --</option>
       <option *ngFor="let b of branches" [value]="b.branchID">
         {{ b.branchName }}
-        
       </option>
     </select>
   </div>
@@ -31,66 +28,87 @@
   <!-- CENTER SEARCH BAR -->
   <div class="header-center">SmartBillPro</div>
 
-  <!-- RIGHT CONTROLS -->
   <div class="header-right">
-    <!-- Hotkey Button -->
-    <div class="segmented">
-      <div class="segmented">
-        <button [class.active]="billMode === 'POS'" (click)="billMode = 'POS'">
-          POS MODE
-        </button>
+    <div class="mode-switch">
+      <button
+        class="mode-btn"
+        [class.active]="billMode === 'POS'"
+        (click)="billMode = 'POS'"
+      >
+        POS MODE
+      </button>
 
-        <button
-          [class.active]="billMode === 'HOTKEY'"
-          (click)="billMode = 'HOTKEY'"
-        >
-          HOTKEY MODE
-        </button>
-      </div>
+      <button
+        class="mode-btn"
+        [class.active]="billMode === 'HOTKEY'"
+        (click)="billMode = 'HOTKEY'"
+      >
+        HOTKEY MODE
+      </button>
     </div>
   </div>
 </header>
 
 <div class="pos-wrapper">
   <div class="pos-left">
-    <div class="billing-gst-row">
-      <!-- BUSINESS TYPE -->
-      <div class="radio-card">
-        <div class="card-title">Business Type</div>
+    <div class="shortcut-bar">
+      <div class="skey"><span>F1</span> Add</div>
+      <div class="sep">|</div>
 
-        <div class="radio-group">
-          <label class="radio-item" *ngFor="let bt of businessTypes">
-            <input
-              type="radio"
-              name="businessType"
-              [value]="bt"
-              [(ngModel)]="selectedBusinessType"
-              (change)="onBusinessTypeChanged()"
-            />
-            <span>{{ bt.businessTypeName }}</span>
-          </label>
+      <div class="skey"><span>F4</span> Payment</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>F5</span> Qty</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>Shift+N</span> Next</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>Shift+S</span> Save</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>ESC</span> Popup</div>
+    </div>
+
+    <div class="billing-gst-row">
+      <!-- BILLING TYPE -->
+      <div class="toggle-card">
+        <div class="card-title">Billing Type</div>
+        <div class="toggle-pill">
+          <button
+            class="pill-btn"
+            *ngFor="let bt of businessTypes"
+            [class.active]="
+              selectedBusinessType?.businessTypeID === bt.businessTypeID
+            "
+            (click)="selectBusinessType(bt.businessTypeID)"
+          >
+            {{ bt.businessTypeName.toUpperCase() }}
+          </button>
         </div>
       </div>
 
       <!-- GST TYPE -->
-      <div class="radio-card">
+      <div class="toggle-card">
         <div class="card-title">GST Type</div>
-
-        <div class="radio-group">
-          <label class="radio-item" *ngFor="let gst of gstTypesList">
-            <input
-              type="radio"
-              name="gstType"
-              [value]="gst"
-              [(ngModel)]="selectedGstType"
-            />
-            <span>{{ gst.transactionTypeName }}</span>
-          </label>
+        <div class="toggle-pill">
+          <button
+            class="pill-btn"
+            *ngFor="let gst of gstTypesList"
+            [class.active]="
+              selectedGstType?.gstTransactionTypeID === gst.gstTransactionTypeID
+            "
+            (click)="selectGstType(gst.gstTransactionTypeID)"
+          >
+            {{ gst.transactionTypeName.toUpperCase() }}
+          </button>
         </div>
       </div>
-      <!-- Invoice No -->
-      <div class="form-field">
-        <label>Invoice Date</label>
+
+      <!-- INVOICE DATE -->
+      <div class="toggle-card">
+        <div class="card-title">Invoice Date</div>
+
         <input
           type="date"
           [(ngModel)]="selectedInvoiceDate"
@@ -100,40 +118,61 @@
       </div>
     </div>
 
-    <!-- Product List Table -->
-    <div class="product-table">
-      <div class="popup-grid" *ngIf="smallGridVisible">
-        <app-small-grid
-          [columns]="productGridColumns"
-          [data]="smallGridData"
-           (rowSelected)="onProductSelected($event)"
-        ></app-small-grid>
+    <div *ngIf="billMode === 'POS'" class="pos-mode-view">
+      <!-- Category Filter Row -->
+      <div class="category-row">
+        <button class="cat-btn active">All</button>
+        <button class="cat-btn">Fruits</button>
+        <button class="cat-btn">Dairy</button>
+        <button class="cat-btn">Bakery</button>
+        <button class="cat-btn">Vegetables</button>
+        <button class="cat-btn">Meat</button>
       </div>
-      <div class="big-grid">
-        <app-input-data-grid
-          [columns]="visibleColumns"
-          [data]="salesEntries"
-          (numberChanged)="onGridNumberChanged($event)"
-          (rowAdded)="onGridRowAdded($event)"
-          [parent]="{
-            branches: branches,
-            companies: companies,
-            categories: categories,
-            subCategories: subCategories,
-            brands: brands,
-            units: units,
-            hsnCodes: hsnCodes,
-            taxes: taxes,
-            cesses: cesses,
-            suppliers: suppliers,
-            statuses: statuses,
-            showSmallGrid: showSmallGrid.bind(this)
-          }"
-          selectionMode="FullRowSelect"
-          [allowUserToAddRows]="true"
-          [allowUserToDeleteRows]="true"
-          [allowUserToResizeColumns]="true"
-        ></app-input-data-grid>
+
+      <!-- PRODUCT GRID -->
+      <div class="product-grid">
+        <div class="product-card" *ngFor="let p of dummyProducts">
+          <img [src]="p.image" alt="{{ p.name }}" />
+          <div class="p-name">{{ p.name }}</div>
+          <div class="p-price">₹{{ p.price }}</div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="billMode === 'HOTKEY'" class="hotkey-mode-view">
+      <div class="product-table">
+        <div class="popup-grid" *ngIf="smallGridVisible">
+          <app-small-grid
+            [columns]="productGridColumns"
+            [data]="smallGridData"
+            (rowSelected)="onProductSelected($event)"
+          ></app-small-grid>
+        </div>
+        <div class="big-grid">
+          <app-input-data-grid
+            [columns]="visibleColumns"
+            [data]="salesEntries"
+            (numberChanged)="onGridNumberChanged($event)"
+            (rowAdded)="onGridRowAdded($event)"
+            [parent]="{
+              branches: branches,
+              companies: companies,
+              categories: categories,
+              subCategories: subCategories,
+              brands: brands,
+              units: units,
+              hsnCodes: hsnCodes,
+              taxes: taxes,
+              cesses: cesses,
+              suppliers: suppliers,
+              statuses: statuses,
+              showSmallGrid: showSmallGrid.bind(this)
+            }"
+            selectionMode="FullRowSelect"
+            [allowUserToAddRows]="true"
+            [allowUserToDeleteRows]="true"
+            [allowUserToResizeColumns]="true"
+          ></app-input-data-grid>
+        </div>
       </div>
     </div>
   </div>
@@ -157,30 +196,119 @@
 
     <!-- BILLING OPTIONS CARD -->
     <div class="billing-card">
-      <div class="customer-row">
-        <label>Customer</label>
-        <select>
-          <option>Walk-in Customer -</option>
-        </select>
+<div class="customer-row">
+  <div class="form-group">
+    <label>Customer</label>
+    <select [(ngModel)]="selectedCustomerId">
+      <option [ngValue]="null">Walk-in Customer</option>
+      <option *ngFor="let c of customers" [value]="c.customerID">
+        {{ c.customerName }} - {{ c.city || "" }}
+      </option>
+    </select>
+  </div>
 
-        <label>Customer GSTIN</label>
-        <input type="text" placeholder="Optional" />
-      </div>
+  <div class="form-group">
+    <label>Customer GSTIN</label>
+    <input
+      type="text"
+      [(ngModel)]="customerGSTIN"
+      placeholder="Optional"
+      maxlength="15"
+    />
+  </div>
+</div>
+
     </div>
 
     <!-- CART SECTION -->
-    <div class="cart-section">
-      <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-      </table>
+<div class="payment-box">
+
+  <h3 class="payment-title">Payment Method</h3>
+
+  <div class="payment-modes">
+    <button 
+      class="pay-btn" 
+      [class.active]="selectedPayment === 'CASH'"
+      (click)="selectedPayment = 'CASH'"
+    >Cash</button>
+
+    <button 
+      class="pay-btn"
+      [class.active]="selectedPayment === 'CARD'"
+      (click)="selectedPayment = 'CARD'"
+    >Card</button>
+
+    <button 
+      class="pay-btn"
+      [class.active]="selectedPayment === 'UPI'"
+      (click)="selectedPayment = 'UPI'"
+    >UPI</button>
+
+    <button 
+      class="pay-btn"
+      [class.active]="selectedPayment === 'MIXED'"
+      (click)="selectedPayment = 'MIXED'"
+    >Mixed</button>
+  </div>
+
+  <!-- ---------------- CASH ---------------- -->
+  <div *ngIf="selectedPayment === 'CASH'" class="pay-panel">
+    <label>Cash Received</label>
+    <input type="number" [(ngModel)]="cashAmount" placeholder="Enter cash value" />
+  </div>
+
+  <!-- ---------------- CARD ---------------- -->
+  <div *ngIf="selectedPayment === 'CARD'" class="pay-panel">
+    <label>Card Amount</label>
+    <input type="number" [(ngModel)]="cardAmount" placeholder="Enter card amount" />
+  </div>
+
+  <!-- ---------------- UPI ---------------- -->
+  <div *ngIf="selectedPayment === 'UPI'" class="pay-panel">
+    <label>UPI Amount</label>
+    <input type="number" [(ngModel)]="upiAmount" placeholder="Enter UPI amount" />
+
+    <label>UPI Ref No</label>
+    <input type="text" [(ngModel)]="upiRef" placeholder="Transaction Ref No" />
+  </div>
+
+  <!-- ---------------- MIXED ---------------- -->
+  <div *ngIf="selectedPayment === 'MIXED'" class="pay-panel">
+    <div class="mixed-row">
+      <label>Cash</label>
+      <input type="number" [(ngModel)]="cashAmount" placeholder="0" />
     </div>
+
+    <div class="mixed-row">
+      <label>Card</label>
+      <input type="number" [(ngModel)]="cardAmount" placeholder="0" />
+    </div>
+
+    <div class="mixed-row">
+      <label>UPI</label>
+      <input type="number" [(ngModel)]="upiAmount" placeholder="0" />
+    </div>
+  </div>
+
+  <div class="payment-summary">
+    <div>
+      <span>Invoice Total:</span>
+      <strong>₹ {{ totalInvoiceAmount | number : '1.2-2' }}</strong>
+    </div>
+    <div>
+      <span>Paid Amount:</span>
+      <strong>₹ {{ getPaidAmount() }}</strong>
+    </div>
+    <div>
+      <span>Balance:</span>
+      <strong class="bal">₹ {{ getBalanceAmount() }}</strong>
+    </div>
+  </div>
+
+  <button class="complete-btn">Complete Payment</button>
+
+</div>
+
 
     <!-- TOTALS -->
     <div class="bill-summary">

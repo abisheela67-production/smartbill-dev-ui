@@ -27,6 +27,7 @@ import {
   Supplier,
   PaymentMode,
 } from '../../models/common-models/master-models/master';
+import { Customer } from '../../models/common-models/master-models/master';
 
 import { BusinessType, GstTransactionType } from '../models/sales-model';
 import { forkJoin, of } from 'rxjs';
@@ -34,6 +35,7 @@ import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive'
 import { SalesService } from '../sales.service';
 import { SmallGridComponent } from '../../components/small-grid/small-grid.component';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
+import { IconsModule } from '../../../shared/icons.module';
 
 @Component({
   selector: 'app-sales-entry',
@@ -44,6 +46,7 @@ import { InputDataGridComponent } from '../../components/input-data-grid/input-d
     FocusOnKeyDirective,
     SmallGridComponent,
     InputDataGridComponent,
+    IconsModule,
   ],
   templateUrl: './sales-entry.component.html',
   styleUrls: ['./sales-entry.component.css'],
@@ -77,8 +80,11 @@ export class SalesEntryComponent {
   salesEntries: SalesInvoice[] = [];
 
   // CUSTOMER INFO
-  customer: string = 'Walk-in Customer';
-  customerGST: string = '';
+  selectedCustomerId: number | null = null;
+  customerGSTIN: string = '';
+
+  customers: Customer[] = [];
+
   smallGridData: ProductStockPrice[] = [];
 
   totalGrossAmount: number = 0;
@@ -95,7 +101,7 @@ export class SalesEntryComponent {
   gstTypesList: GstTransactionType[] = [];
   selectedInvoiceDate: any;
 
-  billMode: 'POS' | 'HOTKEY' = 'POS'; // default
+  billMode: 'POS' | 'HOTKEY' = 'HOTKEY'; // default
   selectedPaymentMode: any;
 
   selectedBusinessType: BusinessType | null = null;
@@ -286,6 +292,7 @@ export class SalesEntryComponent {
     this.loadDropdowns();
     this.loadBusinessTypes();
     this.loadGstTypes();
+    this.loadCustomers();
 
     const companyId = this.authService.companyId;
 
@@ -354,6 +361,13 @@ export class SalesEntryComponent {
           this.selectedGstType = defaultGst;
         }
       }
+    });
+  }
+
+  loadCustomers() {
+    this.masterService.getCustomers().subscribe({
+      next: (res) => (this.customers = res ?? []),
+      error: () => this.swall.error('Error', 'Failed to load customers!'),
     });
   }
 
@@ -732,6 +746,26 @@ export class SalesEntryComponent {
   validateHeaderFields(): boolean {
     if (!this.validateRequired('Company', this.selectedCompanyId)) return false;
 
+    if (
+      !this.validateRequired(
+        'Business Type',
+        this.selectedBusinessType?.businessTypeID
+      )
+    )
+      return false;
+
+    // GST TYPE
+    if (
+      !this.validateRequired(
+        'GST Type',
+        this.selectedGstType?.gstTransactionTypeID
+      )
+    )
+      return false;
+
+    if (!this.validateRequired('Invoice Date', this.selectedInvoiceDate))
+      return false;
+
     return true;
   }
 
@@ -776,7 +810,6 @@ export class SalesEntryComponent {
       }
       return;
     }
-
 
     if (event.shiftKey && event.key.toLowerCase() === 'n') {
       event.preventDefault();
@@ -836,4 +869,61 @@ export class SalesEntryComponent {
     if (!row.netAmount || Number(row.netAmount) <= 0) return false;
     return true;
   }
+
+  dummyProducts = [
+    {
+      name: 'Apple',
+      price: 50,
+      image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce',
+    },
+    {
+      name: 'Banana',
+      price: 10,
+      image: 'https://images.unsplash.com/photo-1574226516831-e1dff420e42e',
+    },
+    {
+      name: 'Milk (1L)',
+      price: 30,
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b',
+    },
+    {
+      name: 'Eggs (dozen)',
+      price: 60,
+      image: 'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d',
+    },
+  ];
+  dummyHotkeys = [
+    { key: 'F1', label: 'Add Product' },
+    { key: 'F2', label: 'Search Item' },
+    { key: 'F3', label: 'Customer' },
+    { key: 'F4', label: 'Payment' },
+    { key: 'F5', label: 'Quantity' },
+    { key: 'F6', label: 'Discount' },
+  ];
+  selectBusinessType(typeId: number) {
+    this.selectedBusinessType =
+      this.businessTypes.find((x) => x.businessTypeID === typeId) || null;
+
+    this.onBusinessTypeChanged(); // refresh product rates
+  }
+  selectGstType(typeId: number) {
+    this.selectedGstType =
+      this.gstTypesList.find((x) => x.gstTransactionTypeID === typeId) || null;
+  }
+
+  selectedPayment: string = 'CASH';
+
+cashAmount = 0;
+cardAmount = 0;
+upiAmount = 0;
+upiRef = '';
+
+getPaidAmount() {
+  return (this.cashAmount || 0) + (this.cardAmount || 0) + (this.upiAmount || 0);
+}
+
+getBalanceAmount() {
+  return Number(this.totalInvoiceAmount) - Number(this.getPaidAmount());
+}
+
 }
