@@ -1,4 +1,17 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 export interface BusinessType {
   businessTypeID: number;
   companyID: number | null;

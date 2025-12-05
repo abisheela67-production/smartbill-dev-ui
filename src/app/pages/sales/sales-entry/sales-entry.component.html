@@ -51,24 +51,7 @@
 
 <div class="pos-wrapper">
   <div class="pos-left">
-    <div class="shortcut-bar">
-      <div class="skey"><span>F1</span> Add</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>F4</span> Payment</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>F5</span> Qty</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>Shift+N</span> Next</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>Shift+S</span> Save</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>ESC</span> Popup</div>
-    </div>
+ 
 
     <div class="billing-gst-row">
       <!-- BILLING TYPE -->
@@ -175,29 +158,66 @@
         </div>
       </div>
     </div>
+
+       <div class="shortcut-bar">
+      <div class="skey"><span>F1</span> Add</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>F4</span> Payment</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>F5</span> Qty</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>Shift+N</span> Next</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>Shift+S</span> Save</div>
+      <div class="sep">|</div>
+
+      <div class="skey"><span>ESC</span> Popup</div>
+    </div>
   </div>
 
   <!-- RIGHT SIDE -->
   <div class="pos-right">
-    <!-- BILL TABS -->
     <div class="bill-tabs">
-      <!-- ACTIVE BILL BUTTONS -->
-      <button
+      <div
+        class="bill-tab"
         *ngFor="let tab of billTabs; let i = index"
         [class.active]="activeBillIndex === i"
         (click)="switchBill(i)"
       >
         {{ tab.name }}
-      </button>
 
-      <!-- ADD NEW BILL -->
-      <button class="add-tab" (click)="nextBill()">+</button>
+        <!-- CLOSE / DELETE BUTTON -->
+        <span class="close-btn" (click)="removeBill(i, $event)">✕</span>
+      </div>
+
+      <button class="add-bill-btn" (click)="nextBill()">+</button>
     </div>
 
     <!-- BILLING OPTIONS CARD -->
+
     <div class="billing-card">
-<div class="customer-row">
-  <div class="form-group">
+<div class="bill-horizontal-box">
+
+  <div class="h-item">
+    <label>AC Year</label>
+    <span class="value">{{ accountingYear }}</span>
+  </div>
+
+  <div class="h-item">
+    <label>Bill No.</label>
+    <span class="value">{{ billNumber || "B24-0003" }}</span>
+  </div>
+
+  <div class="h-item">
+    <label>Bill Date</label>
+    <span class="value">{{ selectedInvoiceDate | date : "dd/MM/yyyy" }}</span>
+  </div>
+
+  <div class="h-item">
     <label>Customer</label>
     <select [(ngModel)]="selectedCustomerId">
       <option [ngValue]="null">Walk-in Customer</option>
@@ -207,125 +227,217 @@
     </select>
   </div>
 
-  <div class="form-group">
+  <div class="h-item">
     <label>Customer GSTIN</label>
-    <input
-      type="text"
-      [(ngModel)]="customerGSTIN"
-      placeholder="Optional"
-      maxlength="15"
-    />
+    <input type="text" [(ngModel)]="customerGSTIN" placeholder="Optional" maxlength="15" />
   </div>
+
 </div>
+
+
+
 
     </div>
 
     <!-- CART SECTION -->
-<div class="payment-box">
+    <div class="payment-box">
+      <div class="total-summary-box">
+        <div class="total-grid">
+          <!-- Column 1 -->
+          <div class="col">
+            <div class="total-row">
+              <label>Gross Amount</label>
+              <input
+                type="text"
+                [value]="totalGrossAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-  <h3 class="payment-title">Payment Method</h3>
+            <div class="total-row">
+              <label>Discount Amount</label>
+              <input
+                type="text"
+                [value]="totalDiscAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-  <div class="payment-modes">
-    <button 
-      class="pay-btn" 
-      [class.active]="selectedPayment === 'CASH'"
-      (click)="selectedPayment = 'CASH'"
-    >Cash</button>
+            <div class="total-row">
+              <label>Taxable Amount</label>
+              <input
+                type="text"
+                [value]="totalTaxableAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-    <button 
-      class="pay-btn"
-      [class.active]="selectedPayment === 'CARD'"
-      (click)="selectedPayment = 'CARD'"
-    >Card</button>
+            <div class="total-row">
+              <label>Total Invoice</label>
+              <input
+                type="text"
+                class="blue"
+                [value]="totalInvoiceAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-    <button 
-      class="pay-btn"
-      [class.active]="selectedPayment === 'UPI'"
-      (click)="selectedPayment = 'UPI'"
-    >UPI</button>
+            <div class="total-row">
+              <label>Balance Amount</label>
+              <input
+                type="text"
+                class="red"
+                [value]="totalBalanceAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
+          </div>
 
-    <button 
-      class="pay-btn"
-      [class.active]="selectedPayment === 'MIXED'"
-      (click)="selectedPayment = 'MIXED'"
-    >Mixed</button>
-  </div>
+          <!-- Column 2 -->
+          <div class="col">
+            <div class="total-row">
+              <label>GST Amount</label>
+              <input
+                type="text"
+                [value]="totalGstAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-  <!-- ---------------- CASH ---------------- -->
-  <div *ngIf="selectedPayment === 'CASH'" class="pay-panel">
-    <label>Cash Received</label>
-    <input type="number" [(ngModel)]="cashAmount" placeholder="Enter cash value" />
-  </div>
+            <div class="total-row">
+              <label>CESS Amount</label>
+              <input
+                type="text"
+                [value]="totalCessAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-  <!-- ---------------- CARD ---------------- -->
-  <div *ngIf="selectedPayment === 'CARD'" class="pay-panel">
-    <label>Card Amount</label>
-    <input type="number" [(ngModel)]="cardAmount" placeholder="Enter card amount" />
-  </div>
+            <div class="total-row">
+              <label>Net Amount</label>
+              <input
+                type="text"
+                [value]="totalNetAmount | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-  <!-- ---------------- UPI ---------------- -->
-  <div *ngIf="selectedPayment === 'UPI'" class="pay-panel">
-    <label>UPI Amount</label>
-    <input type="number" [(ngModel)]="upiAmount" placeholder="Enter UPI amount" />
+            <div class="total-row">
+              <label>Paid Amount</label>
+              <input
+                type="text"
+                [value]="getPaidAmount() | number : '1.2-2'"
+                readonly
+              />
+            </div>
 
-    <label>UPI Ref No</label>
-    <input type="text" [(ngModel)]="upiRef" placeholder="Transaction Ref No" />
-  </div>
+            <div class="total-row">
+              <label>Round Off</label>
+              <input
+                type="text"
+                [value]="totalRoundOff | number : '1.2-2'"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3 class="payment-title">Payment Method</h3>
 
-  <!-- ---------------- MIXED ---------------- -->
-  <div *ngIf="selectedPayment === 'MIXED'" class="pay-panel">
-    <div class="mixed-row">
-      <label>Cash</label>
-      <input type="number" [(ngModel)]="cashAmount" placeholder="0" />
-    </div>
+      <div class="payment-modes">
 
-    <div class="mixed-row">
-      <label>Card</label>
-      <input type="number" [(ngModel)]="cardAmount" placeholder="0" />
-    </div>
+        <button
+          class="pay-btn"
+          [class.active]="selectedPayment === 'CASH'"
+          (click)="selectedPayment = 'CASH'"
+        >
+          Cash
+        </button>
 
-    <div class="mixed-row">
-      <label>UPI</label>
-      <input type="number" [(ngModel)]="upiAmount" placeholder="0" />
-    </div>
-  </div>
+        <button
+          class="pay-btn"
+          [class.active]="selectedPayment === 'CARD'"
+          (click)="selectedPayment = 'CARD'"
+        >
+          Card
+        </button>
 
-  <div class="payment-summary">
-    <div>
-      <span>Invoice Total:</span>
-      <strong>₹ {{ totalInvoiceAmount | number : '1.2-2' }}</strong>
-    </div>
-    <div>
-      <span>Paid Amount:</span>
-      <strong>₹ {{ getPaidAmount() }}</strong>
-    </div>
-    <div>
-      <span>Balance:</span>
-      <strong class="bal">₹ {{ getBalanceAmount() }}</strong>
-    </div>
-  </div>
+        <button
+          class="pay-btn"
+          [class.active]="selectedPayment === 'UPI'"
+          (click)="selectedPayment = 'UPI'"
+        >
+          UPI
+        </button>
 
-  <button class="complete-btn">Complete Payment</button>
+        <button
+          class="pay-btn"
+          [class.active]="selectedPayment === 'MIXED'"
+          (click)="selectedPayment = 'MIXED'"
+        >
+          Mixed
+        </button>
+      </div>
 
-</div>
+      <!-- ---------------- CASH ---------------- -->
+      <div *ngIf="selectedPayment === 'CASH'" class="pay-panel">
+        <label>Cash Received</label>
+        <input
+          type="number"
+          [(ngModel)]="cashAmount"
+          placeholder="Enter cash value"
+        />
+      </div>
 
+      <!-- ---------------- CARD ---------------- -->
+      <div *ngIf="selectedPayment === 'CARD'" class="pay-panel">
+        <label>Card Amount</label>
+        <input
+          type="number"
+          [(ngModel)]="cardAmount"
+          placeholder="Enter card amount"
+        />
+      </div>
 
-    <!-- TOTALS -->
-    <div class="bill-summary">
-      <div class="row"><span>Gross Amt:</span> <span>0.00</span></div>
-      <div class="row discount"><span>Discount:</span> <span>- 0.00</span></div>
-      <div class="row"><span>Taxable Amt:</span> <span>0.00</span></div>
-      <div class="row"><span>GST:</span> <span>+ 0.00</span></div>
-    </div>
+      <!-- ---------------- UPI ---------------- -->
+      <div *ngIf="selectedPayment === 'UPI'" class="pay-panel upi-one-row">
+        <div class="upi-box">
+          <label>UPI Amount</label>
+          <input
+            type="number"
+            [(ngModel)]="upiAmount"
+            placeholder="Enter UPI amount"
+          />
+        </div>
 
-    <!-- INVOICE TOTAL -->
-    <h2 class="invoice-total">INVOICE TOTAL <span>₹0.00</span></h2>
+        <div class="upi-box">
+          <label>UPI Ref No</label>
+          <input
+            type="text"
+            [(ngModel)]="upiRef"
+            placeholder="Transaction Ref No"
+          />
+        </div>
+      </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="action-buttons">
-      <button class="hold-btn">⏱ HOLD</button>
+      <div *ngIf="selectedPayment === 'MIXED'" class="pay-panel mixed-one-row">
+        <div class="mix-box">
+          <label>Cash</label>
+          <input type="number" [(ngModel)]="cashAmount" placeholder="0" />
+        </div>
 
-      <button class="complete-sale-btn">✓ COMPLETE SALE</button>
+        <div class="mix-box">
+          <label>Card</label>
+          <input type="number" [(ngModel)]="cardAmount" placeholder="0" />
+        </div>
+
+        <div class="mix-box">
+          <label>UPI</label>
+          <input type="number" [(ngModel)]="upiAmount" placeholder="0" />
+        </div>
+      </div>
+
+      <button class="complete-btn">Complete Payment</button>
     </div>
   </div>
 </div>

@@ -28,7 +28,6 @@ import {
   PaymentMode,
 } from '../../models/common-models/master-models/master';
 import { Customer } from '../../models/common-models/master-models/master';
-
 import { BusinessType, GstTransactionType } from '../models/sales-model';
 import { forkJoin, of } from 'rxjs';
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
@@ -36,6 +35,47 @@ import { SalesService } from '../sales.service';
 import { SmallGridComponent } from '../../components/small-grid/small-grid.component';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
 import { IconsModule } from '../../../shared/icons.module';
+
+export interface BillTab {
+  id: number; // Unique internal tab ID
+  name: string; // Tab name: "Bill 1", "Bill 2"
+
+  // ===== BILL INFO =====
+  billNumber: string;
+  invoiceDate: Date | string;
+  accountingYear: string;
+
+  // ===== CUSTOMER INFO =====
+  selectedCustomerId: number | null;
+  customerGSTIN: string;
+
+  // ===== PAYMENT INFO =====
+  selectedPayment: 'CASH' | 'CARD' | 'UPI' | 'MIXED';
+
+  cashAmount: number;
+  cardAmount: number;
+  upiAmount: number;
+  upiRef: string;
+
+  // ===== SALES ROWS =====
+  salesEntries: SalesInvoice[];
+
+  // ===== STORED TOTALS =====
+  totals: BillTotals;
+}
+
+export interface BillTotals {
+  totalGrossAmount: number;
+  totalDiscAmount: number;
+  totalTaxableAmount: number;
+  totalGstAmount: number;
+  totalCessAmount: number;
+  totalNetAmount: number;
+  totalInvoiceAmount: number;
+  totalPaidAmount: number;
+  totalBalanceAmount: number;
+  totalRoundOff: number;
+}
 
 @Component({
   selector: 'app-sales-entry',
@@ -74,7 +114,7 @@ export class SalesEntryComponent {
   products: ProductStockPrice[] = [];
   productList: ProductStockPrice[] = [];
   activeProductRow: number | null = null;
-
+  billNumber: string = '';
   // Flags
   smallGridVisible = false;
   salesEntries: SalesInvoice[] = [];
@@ -97,7 +137,9 @@ export class SalesEntryComponent {
   totalPaidAmount: number = 0;
   totalBalanceAmount: number = 0;
   totalRoundOff: number = 0;
+
   businessTypes: BusinessType[] = [];
+
   gstTypesList: GstTransactionType[] = [];
   selectedInvoiceDate: any;
 
@@ -216,14 +258,14 @@ export class SalesEntryComponent {
       field: 'gstPercentage',
       header: 'GST %',
       type: 'number',
-      visible: false,
+      visible: true,
       readOnly: true,
     },
     {
       field: 'gstAmount',
       header: 'GST ₹',
       type: 'number',
-      visible: false,
+      visible: true,
       readOnly: true,
     },
     { field: 'cgstRate', header: 'CGST %', type: 'number', visible: false },
@@ -312,6 +354,7 @@ export class SalesEntryComponent {
       row.productName = product.productName;
       row.retailPrice = product.retailPrice;
       row.wholesalePrice = product.wholesalePrice;
+      row.gstPercentage =product.gstPercentage
 
       if (this.selectedBusinessType?.businessTypeID === 1) {
         row.saleRate = product.retailPrice; // Retail
@@ -568,49 +611,38 @@ export class SalesEntryComponent {
     this.totalCessAmount = 0;
     this.totalNetAmount = 0;
     this.totalInvoiceAmount = 0;
-    this.totalPaidAmount = 0;
-    this.totalBalanceAmount = 0;
 
     for (const row of this.salesEntries) {
-      this.totalGrossAmount += Number(row.totalSaleRate || 0);
+      this.totalGrossAmount += Number(row.grossAmount || 0);
       this.totalDiscAmount += Number(row.discountAmount || 0);
-      this.totalTaxableAmount += Number(row.totalSaleRate || 0);
+      this.totalTaxableAmount += Number(row.taxableAmount || 0);
       this.totalGstAmount += Number(row.gstAmount || 0);
       this.totalCessAmount += Number(row.cessAmount || 0);
-      this.totalNetAmount += Number(row.totalSaleRate || 0);
-      this.totalInvoiceAmount += Number(row.totalSaleRate || 0);
-      this.totalBalanceAmount += Number(row.totalSaleRate || 0);
-
-      this.totalPaidAmount = Number(this.totalPaidAmount || 0);
+      this.totalNetAmount += Number(row.netAmount || 0);
     }
-    this.totalBalanceAmount =
-      this.totalInvoiceAmount - (this.totalPaidAmount || 0);
-  }
 
-  nextBill() {
-    // Create next bill index
-    const newBillNo = this.billTabs.length + 1;
+    this.totalInvoiceAmount = this.totalNetAmount;
+    this.totalPaidAmount = this.cashAmount + this.cardAmount + this.upiAmount;
+    this.totalBalanceAmount = this.totalInvoiceAmount - this.totalPaidAmount;
 
-    // Push new bill
-    this.billTabs.push({
-      id: newBillNo,
-      name: `Bill ${newBillNo}`,
-      salesEntries: [],
-      totals: {},
-    });
+    if (!this.billTabs || this.billTabs.length === 0) return;
 
-    // Switch to new bill
-    this.activeBillIndex = this.billTabs.length - 1;
+    const index = this.activeBillIndex ?? 0;
 
-    // Reset UI for this new bill
-    this.salesEntries = [];
-    this.totalGrossAmount = 0;
-    this.totalInvoiceAmount = 0;
-  }
+    if (index < 0 || index >= this.billTabs.length) return;
 
-  switchBill(i: number) {
-    this.activeBillIndex = i;
-    this.salesEntries = this.billTabs[i].salesEntries;
+    const tab = this.billTabs[index];
+
+    tab.totals.totalGrossAmount = this.totalGrossAmount;
+    tab.totals.totalDiscAmount = this.totalDiscAmount;
+    tab.totals.totalTaxableAmount = this.totalTaxableAmount;
+    tab.totals.totalGstAmount = this.totalGstAmount;
+    tab.totals.totalCessAmount = this.totalCessAmount;
+    tab.totals.totalNetAmount = this.totalNetAmount;
+    tab.totals.totalInvoiceAmount = this.totalInvoiceAmount;
+    tab.totals.totalPaidAmount = this.totalPaidAmount;
+    tab.totals.totalBalanceAmount = this.totalBalanceAmount;
+    tab.totals.totalRoundOff = this.totalRoundOff;
   }
 
   private newProduct(): SalesInvoice {
@@ -913,17 +945,170 @@ export class SalesEntryComponent {
 
   selectedPayment: string = 'CASH';
 
-cashAmount = 0;
-cardAmount = 0;
-upiAmount = 0;
-upiRef = '';
+  cashAmount = 0;
+  cardAmount = 0;
+  upiAmount = 0;
+  upiRef = '';
 
-getPaidAmount() {
-  return (this.cashAmount || 0) + (this.cardAmount || 0) + (this.upiAmount || 0);
-}
+  getPaidAmount() {
+    return (
+      (this.cashAmount || 0) + (this.cardAmount || 0) + (this.upiAmount || 0)
+    );
+  }
 
-getBalanceAmount() {
-  return Number(this.totalInvoiceAmount) - Number(this.getPaidAmount());
-}
+  getBalanceAmount() {
+    return Number(this.totalInvoiceAmount) - Number(this.getPaidAmount());
+  }
+  removeBill(index: number, event: Event) {
+    event.stopPropagation();
 
+    this.billTabs.splice(index, 1);
+
+    // No tabs left → create a fresh bill
+    if (this.billTabs.length === 0) {
+      this.nextBill();
+      return;
+    }
+
+    // If removed tab is the active one → switch to previous tab
+    if (index === this.activeBillIndex) {
+      this.activeBillIndex = Math.min(index, this.billTabs.length - 1);
+      this.loadBillToScreen(this.activeBillIndex);
+      return;
+    }
+
+    // If removed before active index → shift active index left
+    if (this.activeBillIndex !== undefined && index < this.activeBillIndex) {
+      this.activeBillIndex--;
+    }
+  }
+  nextBill() {
+    // ⭐ FIX: billTabs must exist before using length
+    if (!this.billTabs) {
+      this.billTabs = [];
+    }
+
+    const newBillNo = this.billTabs.length + 1;
+
+    const newTab: BillTab = {
+      id: newBillNo,
+      name: `Bill ${newBillNo}`,
+
+      billNumber: `B24-000${newBillNo}`,
+      invoiceDate: this.selectedInvoiceDate || new Date(),
+      accountingYear: this.accountingYear,
+
+      selectedCustomerId: null,
+      customerGSTIN: '',
+
+      selectedPayment: 'CASH',
+      cashAmount: 0,
+      cardAmount: 0,
+      upiAmount: 0,
+      upiRef: '',
+
+      salesEntries: [],
+
+      totals: {
+        totalGrossAmount: 0,
+        totalDiscAmount: 0,
+        totalTaxableAmount: 0,
+        totalGstAmount: 0,
+        totalCessAmount: 0,
+        totalNetAmount: 0,
+        totalInvoiceAmount: 0,
+        totalPaidAmount: 0,
+        totalBalanceAmount: 0,
+        totalRoundOff: 0,
+      },
+    };
+
+    this.billTabs.push(newTab);
+    this.activeBillIndex = this.billTabs.length - 1;
+
+    this.loadBillToScreen(this.activeBillIndex);
+  }
+
+  switchBill(i: number) {
+    this.saveBillFromScreen();
+    this.activeBillIndex = i;
+    this.loadBillToScreen(i);
+  }
+
+  loadBillToScreen(index: number) {
+    const tab = this.billTabs[index];
+
+    if (!tab) return;
+
+    // BILL INFO
+    this.billNumber = tab.billNumber;
+    this.selectedInvoiceDate = tab.invoiceDate;
+    this.accountingYear = tab.accountingYear;
+
+    // CUSTOMER
+    this.selectedCustomerId = tab.selectedCustomerId;
+    this.customerGSTIN = tab.customerGSTIN;
+
+    // PAYMENT INFO
+    this.selectedPayment = tab.selectedPayment;
+    this.cashAmount = tab.cashAmount;
+    this.cardAmount = tab.cardAmount;
+    this.upiAmount = tab.upiAmount;
+    this.upiRef = tab.upiRef;
+
+    // SALES ENTRIES
+    this.salesEntries = [...tab.salesEntries];
+
+    // TOTALS
+    const t = tab.totals;
+    this.totalGrossAmount = t.totalGrossAmount;
+    this.totalDiscAmount = t.totalDiscAmount;
+    this.totalTaxableAmount = t.totalTaxableAmount;
+    this.totalGstAmount = t.totalGstAmount;
+    this.totalCessAmount = t.totalCessAmount;
+    this.totalNetAmount = t.totalNetAmount;
+    this.totalInvoiceAmount = t.totalInvoiceAmount;
+    this.totalPaidAmount = t.totalPaidAmount;
+    this.totalBalanceAmount = t.totalBalanceAmount;
+    this.totalRoundOff = t.totalRoundOff;
+  }
+
+  saveBillFromScreen() {
+    if (this.activeBillIndex == null) return;
+
+    const tab = this.billTabs[this.activeBillIndex];
+
+    // BILL INFO
+    tab.billNumber = this.billNumber;
+    tab.invoiceDate = this.selectedInvoiceDate;
+    tab.accountingYear = this.accountingYear;
+
+    // CUSTOMER
+    tab.selectedCustomerId = this.selectedCustomerId;
+    tab.customerGSTIN = this.customerGSTIN;
+
+    // PAYMENT INFO
+    tab.selectedPayment = this.selectedPayment;
+    tab.cashAmount = this.cashAmount;
+    tab.cardAmount = this.cardAmount;
+    tab.upiAmount = this.upiAmount;
+    tab.upiRef = this.upiRef;
+
+    // SALES ROWS
+    tab.salesEntries = [...this.salesEntries];
+
+    // TOTALS
+    tab.totals = {
+      totalGrossAmount: this.totalGrossAmount,
+      totalDiscAmount: this.totalDiscAmount,
+      totalTaxableAmount: this.totalTaxableAmount,
+      totalGstAmount: this.totalGstAmount,
+      totalCessAmount: this.totalCessAmount,
+      totalNetAmount: this.totalNetAmount,
+      totalInvoiceAmount: this.totalInvoiceAmount,
+      totalPaidAmount: this.totalPaidAmount,
+      totalBalanceAmount: this.totalBalanceAmount,
+      totalRoundOff: this.totalRoundOff,
+    };
+  }
 }
