@@ -3,26 +3,6 @@
     <div class="icon-btn">
       <lucide-icon name="ShoppingCart"></lucide-icon>
     </div>
-
-    <!-- Company Dropdown -->
-    <select
-      [(ngModel)]="selectedCompanyId"
-      (ngModelChange)="onCompanyChange($event)"
-      appFocusOnKey
-      targetId="companyName"
-      [autoFocus]="true"
-    >
-      <option *ngFor="let c of companies" [value]="c.companyID">
-        {{ c.companyName }}
-      </option>
-    </select>
-
-    <select [(ngModel)]="selectedBranchId" appFocusOnKey targetId="branchName">
-      <option [ngValue]="null">-- Select Branch --</option>
-      <option *ngFor="let b of branches" [value]="b.branchID">
-        {{ b.branchName }}
-      </option>
-    </select>
   </div>
 
   <!-- CENTER SEARCH BAR -->
@@ -51,13 +31,35 @@
 
 <div class="pos-wrapper">
   <div class="pos-left">
- 
+    <div class="bill-horizontal-box">
+      <!-- COMPANY -->
+      <div class="h-item">
+        <label>Company</label>
+        <select
+          [(ngModel)]="selectedCompanyId"
+          (ngModelChange)="onCompanyChange($event)"
+        >
+          <option *ngFor="let c of companies" [value]="c.companyID">
+            {{ c.companyName }}
+          </option>
+        </select>
+      </div>
 
-    <div class="billing-gst-row">
+      <!-- BRANCH -->
+      <div class="h-item">
+        <label>Branch</label>
+        <select [(ngModel)]="selectedBranchId">
+          <option [ngValue]="null">-- Select Branch --</option>
+          <option *ngFor="let b of branches" [value]="b.branchID">
+            {{ b.branchName }}
+          </option>
+        </select>
+      </div>
+
       <!-- BILLING TYPE -->
-      <div class="toggle-card">
-        <div class="card-title">Billing Type</div>
-        <div class="toggle-pill">
+      <div class="h-item">
+        <label>Billing Type</label>
+        <div class="toggle-pill small">
           <button
             class="pill-btn"
             *ngFor="let bt of businessTypes"
@@ -66,15 +68,15 @@
             "
             (click)="selectBusinessType(bt.businessTypeID)"
           >
-            {{ bt.businessTypeName.toUpperCase() }}
+            {{ bt.businessTypeName }}
           </button>
         </div>
       </div>
 
       <!-- GST TYPE -->
-      <div class="toggle-card">
-        <div class="card-title">GST Type</div>
-        <div class="toggle-pill">
+      <div class="h-item">
+        <label>GST Type</label>
+        <div class="toggle-pill small">
           <button
             class="pill-btn"
             *ngFor="let gst of gstTypesList"
@@ -83,99 +85,90 @@
             "
             (click)="selectGstType(gst.gstTransactionTypeID)"
           >
-            {{ gst.transactionTypeName.toUpperCase() }}
+            {{ gst.transactionTypeName }}
           </button>
         </div>
       </div>
-
-      <!-- INVOICE DATE -->
-      <div class="toggle-card">
-        <div class="card-title">Invoice Date</div>
-
-        <input
-          type="date"
-          [(ngModel)]="selectedInvoiceDate"
-          appFocusOnKey
-          targetId="invoiceDate"
-        />
-      </div>
     </div>
 
-    <div *ngIf="billMode === 'POS'" class="pos-mode-view">
-      <!-- Category Filter Row -->
-      <div class="category-row">
-        <button class="cat-btn active">All</button>
-        <button class="cat-btn">Fruits</button>
-        <button class="cat-btn">Dairy</button>
-        <button class="cat-btn">Bakery</button>
-        <button class="cat-btn">Vegetables</button>
-        <button class="cat-btn">Meat</button>
-      </div>
+    <div class="big-grid-card">
+      <div *ngIf="billMode === 'POS'" class="pos-mode-view">
+        <!-- Category Filter Row -->
+        <div class="category-row">
+          <button class="cat-btn active">All</button>
+          <button class="cat-btn">Fruits</button>
+          <button class="cat-btn">Dairy</button>
+          <button class="cat-btn">Bakery</button>
+          <button class="cat-btn">Vegetables</button>
+          <button class="cat-btn">Meat</button>
+        </div>
 
-      <!-- PRODUCT GRID -->
-      <div class="product-grid">
-        <div class="product-card" *ngFor="let p of dummyProducts">
-          <img [src]="p.image" alt="{{ p.name }}" />
-          <div class="p-name">{{ p.name }}</div>
-          <div class="p-price">₹{{ p.price }}</div>
+        <!-- PRODUCT GRID -->
+        <div class="product-grid">
+          <div class="product-card" *ngFor="let p of dummyProducts">
+            <img [src]="p.image" alt="{{ p.name }}" />
+            <div class="p-name">{{ p.name }}</div>
+            <div class="p-price">₹{{ p.price }}</div>
+          </div>
         </div>
       </div>
-    </div>
-    <div *ngIf="billMode === 'HOTKEY'" class="hotkey-mode-view">
-      <div class="product-table">
-        <div class="popup-grid" *ngIf="smallGridVisible">
-          <app-small-grid
-            [columns]="productGridColumns"
-            [data]="smallGridData"
-            (rowSelected)="onProductSelected($event)"
-          ></app-small-grid>
-        </div>
-        <div class="big-grid">
-          <app-input-data-grid
-            [columns]="visibleColumns"
-            [data]="salesEntries"
-            (numberChanged)="onGridNumberChanged($event)"
-            (rowAdded)="onGridRowAdded($event)"
-            [parent]="{
-              branches: branches,
-              companies: companies,
-              categories: categories,
-              subCategories: subCategories,
-              brands: brands,
-              units: units,
-              hsnCodes: hsnCodes,
-              taxes: taxes,
-              cesses: cesses,
-              suppliers: suppliers,
-              statuses: statuses,
-              showSmallGrid: showSmallGrid.bind(this)
-            }"
-            selectionMode="FullRowSelect"
-            [allowUserToAddRows]="true"
-            [allowUserToDeleteRows]="true"
-            [allowUserToResizeColumns]="true"
-          ></app-input-data-grid>
+
+      <div *ngIf="billMode === 'HOTKEY'" class="hotkey-mode-view">
+        <div class="product-table">
+          <div class="popup-grid" *ngIf="smallGridVisible">
+            <app-small-grid
+              [columns]="productGridColumns"
+              [data]="smallGridData"
+              (rowSelected)="onProductSelected($event)"
+            ></app-small-grid>
+          </div>
+          <div class="big-grid">
+            <app-input-data-grid
+              [columns]="visibleColumns"
+              [data]="salesEntries"
+              (numberChanged)="onGridNumberChanged($event)"
+              (rowAdded)="onGridRowAdded($event)"
+              [parent]="{
+                branches: branches,
+                companies: companies,
+                categories: categories,
+                subCategories: subCategories,
+                brands: brands,
+                units: units,
+                hsnCodes: hsnCodes,
+                taxes: taxes,
+                cesses: cesses,
+                suppliers: suppliers,
+                statuses: statuses,
+                showSmallGrid: showSmallGrid.bind(this)
+              }"
+              selectionMode="FullRowSelect"
+              [allowUserToAddRows]="true"
+              [allowUserToDeleteRows]="true"
+              [allowUserToResizeColumns]="true"
+            ></app-input-data-grid>
+          </div>
         </div>
       </div>
-    </div>
+      <!-- Shortcut Bar -->
+      <div class="shortcut-bar pos-shortcuts">
+        <div class="skey"><span>F1</span> Add</div>
+        <div class="sep">|</div>
 
-       <div class="shortcut-bar">
-      <div class="skey"><span>F1</span> Add</div>
-      <div class="sep">|</div>
+        <div class="skey"><span>F4</span> Payment</div>
+        <div class="sep">|</div>
 
-      <div class="skey"><span>F4</span> Payment</div>
-      <div class="sep">|</div>
+        <div class="skey"><span>F5</span> Qty</div>
+        <div class="sep">|</div>
 
-      <div class="skey"><span>F5</span> Qty</div>
-      <div class="sep">|</div>
+        <div class="skey"><span>Shift+N</span> Next</div>
+        <div class="sep">|</div>
 
-      <div class="skey"><span>Shift+N</span> Next</div>
-      <div class="sep">|</div>
+        <div class="skey"><span>Shift+S</span> Save</div>
+        <div class="sep">|</div>
 
-      <div class="skey"><span>Shift+S</span> Save</div>
-      <div class="sep">|</div>
-
-      <div class="skey"><span>ESC</span> Popup</div>
+        <div class="skey"><span>ESC</span> Popup</div>
+      </div>
     </div>
   </div>
 
@@ -200,244 +193,201 @@
     <!-- BILLING OPTIONS CARD -->
 
     <div class="billing-card">
-<div class="bill-horizontal-box">
-
-  <div class="h-item">
-    <label>AC Year</label>
-    <span class="value">{{ accountingYear }}</span>
-  </div>
-
-  <div class="h-item">
-    <label>Bill No.</label>
-    <span class="value">{{ billNumber || "B24-0003" }}</span>
-  </div>
-
-  <div class="h-item">
-    <label>Bill Date</label>
-    <span class="value">{{ selectedInvoiceDate | date : "dd/MM/yyyy" }}</span>
-  </div>
-
-  <div class="h-item">
-    <label>Customer</label>
-    <select [(ngModel)]="selectedCustomerId">
-      <option [ngValue]="null">Walk-in Customer</option>
-      <option *ngFor="let c of customers" [value]="c.customerID">
-        {{ c.customerName }} - {{ c.city || "" }}
-      </option>
-    </select>
-  </div>
-
-  <div class="h-item">
-    <label>Customer GSTIN</label>
-    <input type="text" [(ngModel)]="customerGSTIN" placeholder="Optional" maxlength="15" />
-  </div>
-
-</div>
-
-
-
-
-    </div>
-
-    <!-- CART SECTION -->
-    <div class="payment-box">
-      <div class="total-summary-box">
-        <div class="total-grid">
-          <!-- Column 1 -->
-          <div class="col">
-            <div class="total-row">
-              <label>Gross Amount</label>
-              <input
-                type="text"
-                [value]="totalGrossAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Discount Amount</label>
-              <input
-                type="text"
-                [value]="totalDiscAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Taxable Amount</label>
-              <input
-                type="text"
-                [value]="totalTaxableAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Total Invoice</label>
-              <input
-                type="text"
-                class="blue"
-                [value]="totalInvoiceAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Balance Amount</label>
-              <input
-                type="text"
-                class="red"
-                [value]="totalBalanceAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-          </div>
-
-          <!-- Column 2 -->
-          <div class="col">
-            <div class="total-row">
-              <label>GST Amount</label>
-              <input
-                type="text"
-                [value]="totalGstAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>CESS Amount</label>
-              <input
-                type="text"
-                [value]="totalCessAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Net Amount</label>
-              <input
-                type="text"
-                [value]="totalNetAmount | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Paid Amount</label>
-              <input
-                type="text"
-                [value]="getPaidAmount() | number : '1.2-2'"
-                readonly
-              />
-            </div>
-
-            <div class="total-row">
-              <label>Round Off</label>
-              <input
-                type="text"
-                [value]="totalRoundOff | number : '1.2-2'"
-                readonly
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <h3 class="payment-title">Payment Method</h3>
-
-      <div class="payment-modes">
-
-        <button
-          class="pay-btn"
-          [class.active]="selectedPayment === 'CASH'"
-          (click)="selectedPayment = 'CASH'"
-        >
-          Cash
-        </button>
-
-        <button
-          class="pay-btn"
-          [class.active]="selectedPayment === 'CARD'"
-          (click)="selectedPayment = 'CARD'"
-        >
-          Card
-        </button>
-
-        <button
-          class="pay-btn"
-          [class.active]="selectedPayment === 'UPI'"
-          (click)="selectedPayment = 'UPI'"
-        >
-          UPI
-        </button>
-
-        <button
-          class="pay-btn"
-          [class.active]="selectedPayment === 'MIXED'"
-          (click)="selectedPayment = 'MIXED'"
-        >
-          Mixed
-        </button>
-      </div>
-
-      <!-- ---------------- CASH ---------------- -->
-      <div *ngIf="selectedPayment === 'CASH'" class="pay-panel">
-        <label>Cash Received</label>
-        <input
-          type="number"
-          [(ngModel)]="cashAmount"
-          placeholder="Enter cash value"
-        />
-      </div>
-
-      <!-- ---------------- CARD ---------------- -->
-      <div *ngIf="selectedPayment === 'CARD'" class="pay-panel">
-        <label>Card Amount</label>
-        <input
-          type="number"
-          [(ngModel)]="cardAmount"
-          placeholder="Enter card amount"
-        />
-      </div>
-
-      <!-- ---------------- UPI ---------------- -->
-      <div *ngIf="selectedPayment === 'UPI'" class="pay-panel upi-one-row">
-        <div class="upi-box">
-          <label>UPI Amount</label>
-          <input
-            type="number"
-            [(ngModel)]="upiAmount"
-            placeholder="Enter UPI amount"
-          />
+      <div class="bill-horizontal-box">
+        <div class="h-item">
+          <label>AC Year</label>
+          <span class="value">{{ accountingYear }}</span>
         </div>
 
-        <div class="upi-box">
-          <label>UPI Ref No</label>
+        <div class="h-item">
+          <label>Bill No.</label>
+          <span class="value">{{ billNumber || "B24-0003" }}</span>
+        </div>
+
+        <div class="h-item">
+          <label>Customer</label>
+          <select [(ngModel)]="selectedCustomerId">
+            <option [ngValue]="null">Walk-in Customer</option>
+            <option *ngFor="let c of customers" [value]="c.customerID">
+              {{ c.customerName }} - {{ c.city || "" }}
+            </option>
+          </select>
+        </div>
+
+        <div class="h-item">
+          <label>Customer GSTIN</label>
           <input
             type="text"
-            [(ngModel)]="upiRef"
-            placeholder="Transaction Ref No"
+            [(ngModel)]="customerGSTIN"
+            placeholder="Optional"
+            maxlength="15"
           />
         </div>
       </div>
+    </div>
 
-      <div *ngIf="selectedPayment === 'MIXED'" class="pay-panel mixed-one-row">
-        <div class="mix-box">
-          <label>Cash</label>
-          <input type="number" [(ngModel)]="cashAmount" placeholder="0" />
+    <!-- PAYMENT SECTION - SIDE BY SIDE 
+     
+        <div class="total-row">
+          <label>Total Invoice</label>
+          <input type="text" class="blue" [value]="totalInvoiceAmount | number:'1.2-2'" readonly />
         </div>
 
-        <div class="mix-box">
-          <label>Card</label>
-          <input type="number" [(ngModel)]="cardAmount" placeholder="0" />
+        <div class="total-row">
+          <label>Balance Amount</label>
+          <input type="text" class="red" [value]="totalBalanceAmount | number:'1.2-2'" readonly />
+        </div>
+         <div class="total-row">
+          <label>Paid Amount</label>
+          <input type="text" [value]="getPaidAmount() | number:'1.2-2'" readonly />
         </div>
 
-        <div class="mix-box">
-          <label>UPI</label>
-          <input type="number" [(ngModel)]="upiAmount" placeholder="0" />
+    
+
+-->
+    <div class="payment-side-wrapper">
+      <!-- LEFT SUMMARY -->
+      <div class="summary-box">
+        <div class="total-grid">
+          <div class="total-row">
+            <label>Gross Amount</label
+            ><input [value]="totalGrossAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>Discount Amount</label
+            ><input [value]="totalDiscAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>Taxable Amount</label
+            ><input [value]="totalTaxableAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>GST Amount</label
+            ><input [value]="totalGstAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>CESS Amount</label
+            ><input [value]="totalCessAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>Net Amount</label
+            ><input [value]="totalNetAmount | number : '1.2-2'" readonly />
+          </div>
+          <div class="total-row">
+            <label>Round Off</label
+            ><input [value]="totalRoundOff | number : '1.2-2'" readonly />
+          </div>
         </div>
       </div>
 
-      <button class="complete-btn">Complete Payment</button>
+      <!-- RIGHT PAYMENT -->
+      <div class="payment-box-side">
+        <h3 class="payment-title">Payment</h3>
+
+        <div class="payment-modes">
+          <button
+            class="pay-btn"
+            [class.active]="selectedPayment === 'CASH'"
+            (click)="selectedPayment = 'CASH'"
+          >
+            Cash
+          </button>
+          <button
+            class="pay-btn"
+            [class.active]="selectedPayment === 'CARD'"
+            (click)="selectedPayment = 'CARD'"
+          >
+            Card
+          </button>
+          <button
+            class="pay-btn"
+            [class.active]="selectedPayment === 'UPI'"
+            (click)="selectedPayment = 'UPI'"
+          >
+            UPI
+          </button>
+          <button
+            class="pay-btn"
+            [class.active]="selectedPayment === 'MIXED'"
+            (click)="selectedPayment = 'MIXED'"
+          >
+            Mixed
+          </button>
+        </div>
+
+        <!-- CASH -->
+        <div *ngIf="selectedPayment === 'CASH'" class="pay-panel compact">
+          <label>Cash Received</label>
+          <input type="number" [(ngModel)]="cashAmount" />
+        </div>
+
+        <!-- CARD -->
+        <div *ngIf="selectedPayment === 'CARD'" class="pay-panel compact">
+          <label>Card Amount</label>
+          <input type="number" [(ngModel)]="cardAmount" />
+        </div>
+
+        <!-- UPI -->
+        <div
+          *ngIf="selectedPayment === 'UPI'"
+          class="pay-panel compact-vertical"
+        >
+          <div class="field">
+            <label>UPI Amount</label
+            ><input type="number" [(ngModel)]="upiAmount" />
+          </div>
+          <div class="field">
+            <label>UPI Ref No</label><input type="text" [(ngModel)]="upiRef" />
+          </div>
+        </div>
+
+        <!-- MIXED -->
+        <div
+          *ngIf="selectedPayment === 'MIXED'"
+          class="pay-panel compact-vertical"
+        >
+          <div class="field">
+            <label>Cash</label><input type="number" [(ngModel)]="cashAmount" />
+          </div>
+          <div class="field">
+            <label>Card</label><input type="number" [(ngModel)]="cardAmount" />
+          </div>
+          <div class="field">
+            <label>UPI</label><input type="number" [(ngModel)]="upiAmount" />
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- HORIZONTAL TOTAL BAR -->
+    <div class="total-horizontal-bar">
+      <div class="item">
+        <label>Total Invoice</label>
+        <span class="value blue"
+          >₹{{ totalInvoiceAmount | number : "1.2-2" }}</span
+        >
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="item">
+        <label>Paid</label>
+        <span class="value green"
+          >₹{{ getPaidAmount() | number : "1.2-2" }}</span
+        >
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="item">
+        <label>Balance</label>
+        <span class="value red"
+          >₹{{ totalBalanceAmount | number : "1.2-2" }}</span
+        >
+      </div>
+    </div>
+
+    <!-- COMPLETE PAYMENT BUTTON -->
+    <button class="complete-btn">Complete Payment</button>
   </div>
 </div>

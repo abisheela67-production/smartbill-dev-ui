@@ -83,7 +83,6 @@ export interface BillTotals {
   imports: [
     CommonModule,
     FormsModule,
-    FocusOnKeyDirective,
     SmallGridComponent,
     InputDataGridComponent,
     IconsModule,
@@ -341,6 +340,9 @@ export class SalesEntryComponent {
     if (companyId) {
       this.selectedCompanyId = companyId;
     }
+      setTimeout(() => {
+    this.nextBill(); 
+  }, 100);
   }
 
   onBusinessTypeChanged() {
@@ -795,8 +797,6 @@ export class SalesEntryComponent {
     )
       return false;
 
-    if (!this.validateRequired('Invoice Date', this.selectedInvoiceDate))
-      return false;
 
     return true;
   }
