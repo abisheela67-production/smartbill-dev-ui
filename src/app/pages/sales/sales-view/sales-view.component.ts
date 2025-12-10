@@ -1,77 +1,118 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { SalesService } from '../sales.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-sales-view',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './sales-view.component.html',
-  styleUrl: './sales-view.component.css'
+  styleUrl: './sales-view.component.css',
 })
 export class SalesViewComponent {
- company = {
-    logo: 'assets/logo.png',
-    name: 'My Company Pvt Ltd',
-    address: '123, MG Road, Mumbai, India',
-    gstin: '27AAAAA0000A1Z5',
-    contact: '+91-9876543210',
-    bankDetails: 'Bank: XYZ Bank, A/C: 1234567890, IFSC: XYZB0000123'
-  };
+  pageSizes = [
+    { label: "A4", value: "a4" },
+    { label: "A5", value: "a5" },
+    { label: "A6", value: "a6" }
+  ];
 
-  customer = {
-    name: 'John Doe',
-    address: '456, Linking Road, Mumbai, India',
-    gstin: '27BBBBB1111B1Z2'
-  };
+  selectedPageSize = "a4";
+  orientation = "portrait";
 
-  invoice = {
-    number: 'INV-1001',
-    date: new Date(),
-    placeOfSupply: 'Maharashtra',
-    items: [
-      { name: 'Product A', hsn: '1001', quantity: 2, unit: 'pcs', rate: 500, gst: 18, cess: 2 },
-      { name: 'Product B', hsn: '1002', quantity: 1, unit: 'pcs', rate: 300, gst: 12, cess: 0 },
-    ]
-  };
+  company: any = {};
+  customer: any = {};
+  invoice: any = { items: [] };
+  summary: any = {};
+  taxSummary: any[] = [];
 
-  pageSizes = ['a4', 'a5', 'letter']; // user-selectable
+  constructor(
+    private route: ActivatedRoute,
+    private salesService: SalesService
+  ) {}
 
-  selectedPageSize: string = 'a4';
-
-  getSubtotal() {
-    return this.invoice.items.reduce((sum, item) => sum + item.quantity * item.rate, 0);
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get("id");
+    if (id) this.load(id);
   }
 
-  getGSTTotal() {
-    return this.invoice.items.reduce((sum, item) => sum + (item.quantity * item.rate * item.gst / 100), 0);
+  load(id: string) {
+    this.salesService.getSalesEntries(null, null, id).subscribe(rows => {
+
+      if (!rows || rows.length === 0) return;
+
+      const h = rows[0];
+
+      this.company = {
+        name: h.companyName,
+        email: "support@smartbillpro.com",
+        phone: "+91 9876543210",
+        taxId: h.companyGSTIN
+      };
+
+      this.customer = {
+        name: h.customerName,
+        address: h.customerState,
+        gstin: h.customerGSTIN
+      };
+
+      this.invoice = {
+        number: h.invoiceNumber,
+        date: h.invoiceDate,
+        placeOfSupply: h.companyState,
+        items: rows.map(x => ({
+          name: x.productName,
+          hsn: x.hsnid,
+          quantity: x.quantity,
+          rate: x.saleRate,
+          gstRate: x.gstPercentage,
+          gstAmount: x.gstAmount,
+          total: x.netAmount
+        }))
+      };
+
+      this.summary = {
+        subTotal: rows.reduce((a, b) => a + b.taxableAmount, 0),
+        totalGST: rows.reduce((a, b) => a + b.gstAmount, 0),
+        totalCESS: rows.reduce((a, b) => a + b.cessAmount, 0),
+        grandTotal: h.totalInvoiceAmount
+      };
+
+      this.taxSummary = this.buildTaxTable(rows);
+    });
   }
 
-  getCessTotal() {
-    return this.invoice.items.reduce((sum, item) => sum + (item.quantity * item.rate * item.cess / 100), 0);
-  }
-
-  getGrandTotal() {
-    return this.getSubtotal() + this.getGSTTotal() + this.getCessTotal();
+  buildTaxTable(rows: any[]) {
+    const map: { [key: string]: any } = {};
+    rows.forEach(r => {
+      const rate = r.gstPercentage;
+      if (!map[rate]) map[rate] = { rate, taxable: 0, taxAmount: 0 };
+      map[rate].taxable += r.taxableAmount;
+      map[rate].taxAmount += r.gstAmount;
+    });
+    return Object.values(map);
   }
 
   downloadPDF() {
-    const data = document.getElementById('invoicePDF') as HTMLElement;
-    if (!data) return;
+    const container = document.getElementById("invoicePDF");
+    if (!container) return;
 
-    html2canvas(data, { scale: 2 }).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
+    html2canvas(container, { scale: 3 }).then(canvas => {
+      const img = canvas.toDataURL("image/png");
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: this.selectedPageSize // 'a4', 'a5', etc.
+        orientation: this.orientation as "portrait" | "p" | "l" | "landscape",
+        unit: "mm",
+        format: this.selectedPageSize as "a4" | "a5" | "a6"
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const w = pdf.internal.pageSize.getWidth();
+      const h = (canvas.height * w) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(img, "PNG", 0, 0, w, h);
       pdf.save(`Invoice-${this.invoice.number}.pdf`);
     });
   }

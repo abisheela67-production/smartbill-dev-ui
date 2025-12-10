@@ -161,5 +161,6 @@ export interface SalesInvoice {
   totalQuantity: number;
 }
 export interface SaveSalesEntryResponse {
+  lastInvoiceNumber: any;
   lastInvoiceID: number;
 }

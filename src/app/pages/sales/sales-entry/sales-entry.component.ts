@@ -823,94 +823,93 @@ export class SalesEntryComponent {
 
     return true;
   }
-@HostListener('document:keydown', ['$event'])
-handleKeyEvents(event: KeyboardEvent) {
-  // ============================
-  // SAVE SALES ENTRY (Shift + S)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 's') {
-    event.preventDefault();
+  @HostListener('document:keydown', ['$event'])
+  handleKeyEvents(event: KeyboardEvent) {
+    // ============================
+    // SAVE SALES ENTRY (Shift + S)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 's') {
+      event.preventDefault();
 
-    if (!this.validateHeaderFields()) return;
+      if (!this.validateHeaderFields()) return;
 
-    if (!this.salesEntries || this.salesEntries.length === 0) {
-      this.swall.warning('No Items', 'Please add at least one product.');
-      return;
-    }
-
-    this.saveSalesEntry();
-    return;
-  }
-
-  // ============================
-  // FOCUS PAID AMOUNT (Shift + T)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 't') {
-    event.preventDefault();
-
-    const paidInput = document.getElementById(
-      'paidAmountInput'
-    ) as HTMLInputElement;
-
-    if (paidInput) {
-      paidInput.focus();
-      paidInput.select();
-    }
-    return;
-  }
-
-  // ============================
-  // 1) CLOSE / TOGGLE SMALL GRID (ESC)
-  // ============================
-  if (event.key === 'Escape') {
-    event.preventDefault();
-
-    if (this.smallGridVisible) {
-      this.smallGridVisible = false; // Close
-    } else {
-      if (this.activeProductRow !== null) {
-        this.showSmallGrid(this.activeProductRow); // Open again
+      if (!this.salesEntries || this.salesEntries.length === 0) {
+        this.swall.warning('No Items', 'Please add at least one product.');
+        return;
       }
+
+      this.saveSalesEntry();
+      return;
     }
-    return;
-  }
 
-  // ============================
-  // ADD NEW PRODUCT ROW (Shift + N)
-  // ============================
-  if (event.shiftKey && event.key.toLowerCase() === 'n') {
-    event.preventDefault();
+    // ============================
+    // FOCUS PAID AMOUNT (Shift + T)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 't') {
+      event.preventDefault();
 
-    if (!this.validateHeaderFields()) return;
+      const paidInput = document.getElementById(
+        'paidAmountInput'
+      ) as HTMLInputElement;
 
-    if (this.salesEntries.length === 0) {
+      if (paidInput) {
+        paidInput.focus();
+        paidInput.select();
+      }
+      return;
+    }
+
+    // ============================
+    // 1) CLOSE / TOGGLE SMALL GRID (ESC)
+    // ============================
+    if (event.key === 'Escape') {
+      event.preventDefault();
+
+      if (this.smallGridVisible) {
+        this.smallGridVisible = false; // Close
+      } else {
+        if (this.activeProductRow !== null) {
+          this.showSmallGrid(this.activeProductRow); // Open again
+        }
+      }
+      return;
+    }
+
+    // ============================
+    // ADD NEW PRODUCT ROW (Shift + N)
+    // ============================
+    if (event.shiftKey && event.key.toLowerCase() === 'n') {
+      event.preventDefault();
+
+      if (!this.validateHeaderFields()) return;
+
+      if (this.salesEntries.length === 0) {
+        this.addNewProduct();
+        setTimeout(() => {
+          this.grid.focusCell(0, 2);
+        }, 50);
+        return;
+      }
+
+      const lastIndex = this.salesEntries.length - 1;
+      const lastRow = this.salesEntries[lastIndex];
+
+      if (!this.validateRowForNext(lastRow)) {
+        this.swall.warning(
+          'Validation Required',
+          'Please fill Product, Category, Subcategory, Purchase Rate, Retail Price, Quantity & Amount before adding a new row.'
+        );
+        return;
+      }
+
       this.addNewProduct();
+
+      const newIndex = this.salesEntries.length - 1;
       setTimeout(() => {
-        this.grid.focusCell(0, 2);
+        this.grid.focusCell(newIndex, 2);
       }, 50);
-      return;
     }
-
-    const lastIndex = this.salesEntries.length - 1;
-    const lastRow = this.salesEntries[lastIndex];
-
-    if (!this.validateRowForNext(lastRow)) {
-      this.swall.warning(
-        'Validation Required',
-        'Please fill Product, Category, Subcategory, Purchase Rate, Retail Price, Quantity & Amount before adding a new row.'
-      );
-      return;
-    }
-
-    this.addNewProduct();
-
-    const newIndex = this.salesEntries.length - 1;
-    setTimeout(() => {
-      this.grid.focusCell(newIndex, 2);
-    }, 50);
   }
-}
-
 
   addNewProduct(): void {
     const newProd = this.newProduct();
@@ -1017,71 +1016,69 @@ handleKeyEvents(event: KeyboardEvent) {
     }
   }
   private refreshBillTabNames() {
-  this.billTabs.forEach((tab: BillTab, index: number) => {
-    tab.id = index + 1;
-    tab.name = `Bill ${index + 1}`;
-  });
-}
-
-async nextBill() {
-  if (!this.billTabs) {
-    this.billTabs = [];
+    this.billTabs.forEach((tab: BillTab, index: number) => {
+      tab.id = index + 1;
+      tab.name = `Bill ${index + 1}`;
+    });
   }
 
-  // 🔥 Always load a fresh invoice number for this tab
-  const nextInvoiceNo = await this.loadNextInvoiceNo();
+  async nextBill() {
+    if (!this.billTabs) {
+      this.billTabs = [];
+    }
 
-  // Tab numbering = index + 1
-  const newBillNo = (this.billTabs?.length || 0) + 1;
+    // 🔥 Always load a fresh invoice number for this tab
+    const nextInvoiceNo = await this.loadNextInvoiceNo();
 
-  const newTab: BillTab = {
-    id: newBillNo,
-    name: `Bill ${newBillNo}`,
+    // Tab numbering = index + 1
+    const newBillNo = (this.billTabs?.length || 0) + 1;
 
-    // 💥 Each tab gets a unique invoice number from API
-    billNumber: nextInvoiceNo,
+    const newTab: BillTab = {
+      id: newBillNo,
+      name: `Bill ${newBillNo}`,
 
-    invoiceDate: this.getTodayDate(),
-    accountingYear: this.accountingYear,
+      // 💥 Each tab gets a unique invoice number from API
+      billNumber: nextInvoiceNo,
 
-    selectedCustomerId: null,
-    customerGSTIN: '',
+      invoiceDate: this.getTodayDate(),
+      accountingYear: this.accountingYear,
 
-    selectedPayment: 'CASH',
-    cashAmount: 0,
-    cardAmount: 0,
-    upiAmount: 0,
-    upiRef: '',
+      selectedCustomerId: null,
+      customerGSTIN: '',
 
-    salesEntries: [],
+      selectedPayment: 'CASH',
+      cashAmount: 0,
+      cardAmount: 0,
+      upiAmount: 0,
+      upiRef: '',
 
-    totals: {
-      totalGrossAmount: 0,
-      totalDiscAmount: 0,
-      totalTaxableAmount: 0,
-      totalGstAmount: 0,
-      totalCessAmount: 0,
-      totalNetAmount: 0,
-      totalInvoiceAmount: 0,
-      totalPaidAmount: 0,
-      totalBalanceAmount: 0,
-      totalRoundOff: 0,
-    },
-  };
+      salesEntries: [],
 
-  this.billTabs.push(newTab);
+      totals: {
+        totalGrossAmount: 0,
+        totalDiscAmount: 0,
+        totalTaxableAmount: 0,
+        totalGstAmount: 0,
+        totalCessAmount: 0,
+        totalNetAmount: 0,
+        totalInvoiceAmount: 0,
+        totalPaidAmount: 0,
+        totalBalanceAmount: 0,
+        totalRoundOff: 0,
+      },
+    };
 
-  // Activate new tab
-  this.activeBillIndex = this.billTabs.length - 1;
+    this.billTabs.push(newTab);
 
-  // Load values into UI
-  this.loadBillToScreen(this.activeBillIndex);
+    // Activate new tab
+    this.activeBillIndex = this.billTabs.length - 1;
 
-  // Ensure tab names stay correct after deletes
-  this.refreshBillTabNames();
-}
+    // Load values into UI
+    this.loadBillToScreen(this.activeBillIndex);
 
-
+    // Ensure tab names stay correct after deletes
+    this.refreshBillTabNames();
+  }
 
   switchBill(i: number) {
     this.saveBillFromScreen();
@@ -1299,18 +1296,28 @@ async nextBill() {
       totalQuantity: cleanedRows.reduce((s, r) => s + num(r.quantity), 0),
     }));
 
-    console.log('🟩 FINAL PAYLOAD SENT TO API:', payload);
+    console.log(' FINAL PAYLOAD SENT TO API:', payload);
 
-    // 5️⃣ SEND TO SERVER
     this.salesservice.saveSalesEntry(payload).subscribe({
       next: (res) => {
-        console.log('🟩 SERVER RESPONSE:', res);
-        if (res.success) {
-          this.swall.success('Saved!', `Invoice ID: ${res.data.lastInvoiceID}`);
-          this.nextBill();
-        } else {
-          this.swall.error('Save Failed', res.message);
-        }
+        console.log(' SERVER RESPONSE:', res);
+   if (res.success) {
+  const invoiceNo = res.data.lastInvoiceNumber;  
+
+  this.swall
+    .confirm(
+      'Invoice Saved!',
+      `Invoice No: ${invoiceNo}\nDo you want to view the invoice?`
+    )
+    .then((result: any) => {
+      if (result.isConfirmed) {
+        window.open(`/Sales/SalesView/${invoiceNo}`, '_blank');   // ✅ Use invoiceNo
+      }
+
+      this.nextBill();
+    });
+}
+
       },
       error: (err) => {
         console.error(' SAVE ERROR:', err);

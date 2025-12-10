@@ -1,144 +1,120 @@
-.controls {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
-  font-family: 'Poppins', sans-serif;
+/* -------------------------------
+   INVOICE CORE LAYOUT
+--------------------------------*/
+.invoice-container {
+  background: white;
+  margin: 20px auto;
+  padding: 25px 35px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  overflow: hidden;
 }
 
-.invoice-container {
+/* -------------------------------
+   PAGE SIZES
+--------------------------------*/
+
+/* --- A4 --- */
+.a4.portrait { width: 210mm; height: 297mm; }
+.a4.landscape { width: 297mm; height: 210mm; }
+
+/* --- A5 --- */
+.a5.portrait { width: 148mm; height: 210mm; }
+.a5.landscape { width: 210mm; height: 148mm; }
+
+/* --- A6 --- */
+.a6.portrait { width: 105mm; height: 148mm; }
+.a6.landscape { width: 148mm; height: 105mm; }
+
+/* Center on screen */
+.a4, .a5, .a6 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* -------------------------------
+   HEADER
+--------------------------------*/
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.logo {
+  width: 55px;
+  height: 55px;
+}
+
+.company-block h2 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.invoice-meta h1 {
+  font-size: 34px;
+  font-weight: 800;
+  opacity: 0.14;
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+/* -------------------------------
+   TABLES
+--------------------------------*/
+.item-table {
   width: 100%;
-  max-width: 210mm;
-  margin: auto;
-  padding: 25px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #ffffff;
-  font-family: 'Poppins', sans-serif;
-  color: #333;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 12px;
+}
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 25px;
+.item-table th {
+  background: #eef0f8;
+  padding: 8px;
+  text-align: left;
+}
 
-    .logo {
-      width: 100px;
-      height: auto;
-    }
+.item-table td {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+}
 
-    .company-info {
-      text-align: left;
+/* -------------------------------
+   TAX + SUMMARY
+--------------------------------*/
+.tax-box, .summary {
+  margin-top: 25px;
+  width: 100%;
+}
 
-      h2 {
-        font-size: 1.4rem;
-        margin: 0 0 5px 0;
-        font-weight: 600;
-      }
+.summary .grand {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1a2258;
+  padding-top: 6px;
+}
 
-      p {
-        margin: 2px 0;
-        font-size: 0.85rem;
-        line-height: 1.4;
-      }
-    }
+/* -------------------------------
+   SIGN
+--------------------------------*/
+.sign {
+  margin-top: 40px;
+  text-align: right;
+}
 
-    .invoice-info {
-      text-align: right;
+.auth {
+  margin-top: 40px;
+  border-top: 1px solid #444;
+  display: inline-block;
+  padding-top: 4px;
+}
 
-      h1 {
-        font-size: 1.5rem;
-        margin: 0 0 5px 0;
-        color: #1D1160;
-      }
-
-      p {
-        margin: 2px 0;
-        font-size: 0.85rem;
-      }
-    }
-  }
-
-  .customer-info {
-    margin-bottom: 20px;
-    h3 {
-      font-size: 1.1rem;
-      margin-bottom: 5px;
-    }
-    p {
-      margin: 2px 0;
-      font-size: 0.85rem;
-    }
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f0f0f0;
-      font-weight: 600;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #fafafa;
-    }
-  }
-
-  .summary {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 15px;
-
-    p {
-      margin: 2px 0;
-      font-size: 0.9rem;
-
-      strong {
-        font-size: 1rem;
-      }
-    }
-  }
-
-  .footer {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    font-size: 0.85rem;
-
-    .bank-qr {
-      display: flex;
-      gap: 25px;
-      align-items: flex-start;
-
-      .bank-details {
-        p {
-          margin: 0;
-        }
-      }
-
-      .qr-code {
-        text-align: center;
-        p {
-          margin-top: 5px;
-          font-size: 0.75rem;
-        }
-      }
-    }
-
-    p {
-      text-align: center;
-    }
-  }
+/* -------------------------------
+   PRINT
+--------------------------------*/
+@media print {
+  body { background: white; }
+  .top-controls { display: none; }
+  .invoice-container { box-shadow: none; }
 }

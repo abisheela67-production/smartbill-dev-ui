@@ -1,74 +1,126 @@
-<div>
-  <label>Select Page Size:</label>
+<div class="top-controls">
+  <label>Page Size:</label>
   <select [(ngModel)]="selectedPageSize">
-    <option *ngFor="let size of pageSizes" [value]="size">{{size.toUpperCase()}}</option>
+    <option *ngFor="let s of pageSizes" [value]="s.value">
+      {{ s.label }}
+    </option>
   </select>
-  <button (click)="downloadPDF()">Download PDF</button>
+
+  <label>Orientation:</label>
+  <select [(ngModel)]="orientation">
+    <option value="portrait">Portrait</option>
+    <option value="landscape">Landscape</option>
+  </select>
+
+  <button class="btn-download" (click)="downloadPDF()">Download PDF</button>
 </div>
 
-<div id="invoicePDF" class="invoice-container">
+<div
+  id="invoicePDF"
+  class="invoice-container"
+  [ngClass]="[
+    selectedPageSize,
+    orientation === 'landscape' ? 'landscape' : 'portrait'
+  ]"
+>
+  <!-- HEADER -->
   <div class="header">
-    <img [src]="company.logo" alt="Logo" class="logo">
-    <div>
-      <h2>{{company.name}}</h2>
-      <p>{{company.address}}</p>
-      <p>GSTIN: {{company.gstin}}</p>
+    <div class="left">
+      <img class="logo" src="assets/logos/smartbilllogo.png" />
+
+      <div class="company-block">
+        <h2>{{ company.name }}</h2>
+        <p>Email: {{ company.email }}</p>
+        <p>Phone: {{ company.phone }}</p>
+        <p>GSTIN: {{ company.taxId }}</p>
+      </div>
     </div>
-    <div class="invoice-info">
-      <h1>Tax Invoice</h1>
-      <p>Invoice No: {{invoice.number}}</p>
-      <p>Date: {{invoice.date | date:'dd-MMM-yyyy'}}</p>
-      <p>Place of Supply: {{invoice.placeOfSupply}}</p>
+
+    <div class="right">
+      <h1>INVOICE</h1>
+      <p><strong>No:</strong> {{ invoice.number }}</p>
+      <p><strong>Date:</strong> {{ invoice.date | date : "dd MMM yyyy" }}</p>
+      <p><strong>Supply Place:</strong> {{ invoice.placeOfSupply }}</p>
     </div>
   </div>
 
-  <div class="customer-info">
-    <h3>Bill To:</h3>
-    <p>{{customer.name}}</p>
-    <p>{{customer.address}}</p>
-    <p>GSTIN: {{customer.gstin}}</p>
+  <hr />
+
+  <!-- CUSTOMER -->
+  <div class="customer">
+    <h3>BILL TO</h3>
+    <p>
+      <strong>{{ customer.name }}</strong>
+    </p>
+    <p>{{ customer.address }}</p>
+    <p>GSTIN: {{ customer.gstin }}</p>
   </div>
 
-  <table class="items-table">
+  <!-- ITEMS -->
+  <table class="item-table">
     <thead>
       <tr>
-        <th>S.No</th>
+        <th>#</th>
         <th>Description</th>
-        <th>HSN/SAC</th>
+        <th>HSN</th>
         <th>Qty</th>
-        <th>Unit</th>
         <th>Rate</th>
-        <th>Taxable Value</th>
-        <th>GST %</th>
-        <th>Cess %</th>
+        <th>GST%</th>
+        <th>GST Amt</th>
         <th>Total</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of invoice.items; let i = index">
-        <td>{{i+1}}</td>
-        <td>{{item.name}}</td>
-        <td>{{item.hsn}}</td>
-        <td>{{item.quantity}}</td>
-        <td>{{item.unit}}</td>
-        <td>{{item.rate | currency}}</td>
-        <td>{{item.quantity * item.rate | currency}}</td>
-        <td>{{item.gst}}</td>
-        <td>{{item.cess}}</td>
-        <td>{{(item.quantity*item.rate)+(item.quantity*item.rate*item.gst/100)+(item.quantity*item.rate*item.cess/100) | currency}}</td>
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.hsn }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.rate | currency : "INR" }}</td>
+        <td>{{ item.gstRate }}</td>
+        <td>{{ item.gstAmount | currency : "INR" }}</td>
+        <td>{{ item.total | currency : "INR" }}</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="summary">
-    <p>Subtotal: {{getSubtotal() | currency}}</p>
-    <p>Total GST: {{getGSTTotal() | currency}}</p>
-    <p>Total Cess: {{getCessTotal() | currency}}</p>
-    <p><strong>Grand Total: {{getGrandTotal() | currency}}</strong></p>
+  <!-- TAX -->
+  <div class="tax-box">
+    <h3>TAX BREAKDOWN</h3>
+
+    <table class="tax-table">
+      <thead>
+        <tr>
+          <th>GST Rate</th>
+          <th>Taxable</th>
+          <th>GST Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tax of taxSummary">
+          <td>{{ tax.rate }}%</td>
+          <td>{{ tax.taxable | currency : "INR" }}</td>
+          <td>{{ tax.taxAmount | currency : "INR" }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="footer">
-    <p>Bank Details: {{company.bankDetails}}</p>
-    <p>Authorized Signatory</p>
+  <!-- SUMMARY -->
+  <div class="summary">
+    <p><strong>Subtotal:</strong> {{ summary.subTotal | currency : "INR" }}</p>
+    <p><strong>Total GST:</strong> {{ summary.totalGST | currency : "INR" }}</p>
+    <p>
+      <strong>Total CESS:</strong> {{ summary.totalCESS | currency : "INR" }}
+    </p>
+    <p class="grand">
+      <strong>Grand Total:</strong> {{ summary.grandTotal | currency : "INR" }}
+    </p>
+  </div>
+
+  <!-- SIGN -->
+  <div class="sign">
+    <p>For {{ company.name }}</p>
+    <p class="auth">AUTHORIZED SIGNATORY</p>
   </div>
 </div>

@@ -74,4 +74,21 @@ export class SalesService {
       params: params,
     });
   }
+
+
+getSalesEntries(companyId?: number | null, branchId?: number | null, invoiceNumber?: string | null): Observable<any[]> {
+  let params = new HttpParams();
+
+  if (companyId) params = params.set('companyId', companyId);
+  if (branchId) params = params.set('branchId', branchId);
+  if (invoiceNumber) params = params.set('invoiceNumber', invoiceNumber);
+
+  return this.http.get<any[]>(`${this.baseUrl}/GetSalesEntries`, { params });
+}
+
+
+
+
+
+
 }
