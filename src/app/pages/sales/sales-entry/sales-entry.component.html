@@ -79,7 +79,10 @@
         </div>
       </div>
 
-      <!-- GST TYPE -->
+      <!-- GST TYPE
+      <button type="button" (click)="saveSalesEntry()">Save</button>
+       
+      -->
       <div class="h-item">
         <label>GST Type</label>
         <div class="toggle-pill small">
@@ -96,7 +99,6 @@
         </div>
       </div>
 
-      <button type="button" (click)="saveSalesEntry()">Save</button>
     </div>
 
     <div class="big-grid-card">
@@ -449,6 +451,6 @@
     </div>
 
     <!-- COMPLETE PAYMENT BUTTON -->
-    <button class="complete-btn">Complete Payment</button>
+    <button class="complete-btn" (click)="saveSalesEntry()">Complete Payment</button>
   </div>
 </div>

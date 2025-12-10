@@ -823,83 +823,94 @@ export class SalesEntryComponent {
 
     return true;
   }
+@HostListener('document:keydown', ['$event'])
+handleKeyEvents(event: KeyboardEvent) {
+  // ============================
+  // SAVE SALES ENTRY (Shift + S)
+  // ============================
+  if (event.shiftKey && event.key.toLowerCase() === 's') {
+    event.preventDefault();
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyEvents(event: KeyboardEvent) {
-    // ============================
-    // SAVE PURCHASE (Shift + S)
-    // ============================
-    if (event.shiftKey && event.key.toLowerCase() === 's') {
-      event.preventDefault();
+    if (!this.validateHeaderFields()) return;
+
+    if (!this.salesEntries || this.salesEntries.length === 0) {
+      this.swall.warning('No Items', 'Please add at least one product.');
       return;
     }
 
-    // ============================
-    // FOCUS PAID AMOUNT (Shift + T)
-    // ============================
-    if (event.shiftKey && event.key.toLowerCase() === 't') {
-      event.preventDefault();
-
-      const paidInput = document.getElementById(
-        'paidAmountInput'
-      ) as HTMLInputElement;
-
-      if (paidInput) {
-        paidInput.focus();
-        paidInput.select();
-      }
-      return;
-    }
-    // ============================
-    // 1) CLOSE / TOGGLE SMALL GRID (ESC)
-    // ============================
-    if (event.key === 'Escape') {
-      event.preventDefault();
-
-      if (this.smallGridVisible) {
-        this.smallGridVisible = false; // Close
-      } else {
-        if (this.activeProductRow !== null) {
-          this.showSmallGrid(this.activeProductRow); // Open again
-        }
-      }
-      return;
-    }
-
-    if (event.shiftKey && event.key.toLowerCase() === 'n') {
-      event.preventDefault();
-
-      if (!this.validateHeaderFields()) {
-        return;
-      }
-
-      if (this.salesEntries.length === 0) {
-        this.addNewProduct();
-        setTimeout(() => {
-          this.grid.focusCell(0, 2);
-        }, 50);
-        return;
-      }
-
-      const lastIndex = this.salesEntries.length - 1;
-      const lastRow = this.salesEntries[lastIndex];
-
-      if (!this.validateRowForNext(lastRow)) {
-        this.swall.warning(
-          'Validation Required',
-          'Please fill Product, Category, Subcategory, Purchase Rate, Retail Price, Quantity & Amount before adding a new row.'
-        );
-        return;
-      }
-
-      this.addNewProduct();
-
-      const newIndex = this.salesEntries.length - 1;
-      setTimeout(() => {
-        this.grid.focusCell(newIndex, 2);
-      }, 50);
-    }
+    this.saveSalesEntry();
+    return;
   }
+
+  // ============================
+  // FOCUS PAID AMOUNT (Shift + T)
+  // ============================
+  if (event.shiftKey && event.key.toLowerCase() === 't') {
+    event.preventDefault();
+
+    const paidInput = document.getElementById(
+      'paidAmountInput'
+    ) as HTMLInputElement;
+
+    if (paidInput) {
+      paidInput.focus();
+      paidInput.select();
+    }
+    return;
+  }
+
+  // ============================
+  // 1) CLOSE / TOGGLE SMALL GRID (ESC)
+  // ============================
+  if (event.key === 'Escape') {
+    event.preventDefault();
+
+    if (this.smallGridVisible) {
+      this.smallGridVisible = false; // Close
+    } else {
+      if (this.activeProductRow !== null) {
+        this.showSmallGrid(this.activeProductRow); // Open again
+      }
+    }
+    return;
+  }
+
+  // ============================
+  // ADD NEW PRODUCT ROW (Shift + N)
+  // ============================
+  if (event.shiftKey && event.key.toLowerCase() === 'n') {
+    event.preventDefault();
+
+    if (!this.validateHeaderFields()) return;
+
+    if (this.salesEntries.length === 0) {
+      this.addNewProduct();
+      setTimeout(() => {
+        this.grid.focusCell(0, 2);
+      }, 50);
+      return;
+    }
+
+    const lastIndex = this.salesEntries.length - 1;
+    const lastRow = this.salesEntries[lastIndex];
+
+    if (!this.validateRowForNext(lastRow)) {
+      this.swall.warning(
+        'Validation Required',
+        'Please fill Product, Category, Subcategory, Purchase Rate, Retail Price, Quantity & Amount before adding a new row.'
+      );
+      return;
+    }
+
+    this.addNewProduct();
+
+    const newIndex = this.salesEntries.length - 1;
+    setTimeout(() => {
+      this.grid.focusCell(newIndex, 2);
+    }, 50);
+  }
+}
+
 
   addNewProduct(): void {
     const newProd = this.newProduct();
@@ -1005,55 +1016,72 @@ export class SalesEntryComponent {
       this.activeBillIndex--;
     }
   }
-  async nextBill() {
-    if (!this.billTabs) {
-      this.billTabs = [];
-    }
+  private refreshBillTabNames() {
+  this.billTabs.forEach((tab: BillTab, index: number) => {
+    tab.id = index + 1;
+    tab.name = `Bill ${index + 1}`;
+  });
+}
 
-    // 🔵 Load invoice number from API
-    const nextInvoiceNo = await this.loadNextInvoiceNo();
-
-    const newBillNo = this.billTabs.length + 1;
-
-    const newTab: BillTab = {
-      id: newBillNo,
-      name: `Bill ${newBillNo}`,
-
-      // 🔥 API GENERATED
-      billNumber: nextInvoiceNo,
-      invoiceDate: this.selectedInvoiceDate || new Date(),
-      accountingYear: this.accountingYear,
-
-      selectedCustomerId: null,
-      customerGSTIN: '',
-
-      selectedPayment: 'CASH',
-      cashAmount: 0,
-      cardAmount: 0,
-      upiAmount: 0,
-      upiRef: '',
-
-      salesEntries: [],
-
-      totals: {
-        totalGrossAmount: 0,
-        totalDiscAmount: 0,
-        totalTaxableAmount: 0,
-        totalGstAmount: 0,
-        totalCessAmount: 0,
-        totalNetAmount: 0,
-        totalInvoiceAmount: 0,
-        totalPaidAmount: 0,
-        totalBalanceAmount: 0,
-        totalRoundOff: 0,
-      },
-    };
-
-    this.billTabs.push(newTab);
-    this.activeBillIndex = this.billTabs.length - 1;
-
-    this.loadBillToScreen(this.activeBillIndex);
+async nextBill() {
+  if (!this.billTabs) {
+    this.billTabs = [];
   }
+
+  // 🔥 Always load a fresh invoice number for this tab
+  const nextInvoiceNo = await this.loadNextInvoiceNo();
+
+  // Tab numbering = index + 1
+  const newBillNo = (this.billTabs?.length || 0) + 1;
+
+  const newTab: BillTab = {
+    id: newBillNo,
+    name: `Bill ${newBillNo}`,
+
+    // 💥 Each tab gets a unique invoice number from API
+    billNumber: nextInvoiceNo,
+
+    invoiceDate: this.getTodayDate(),
+    accountingYear: this.accountingYear,
+
+    selectedCustomerId: null,
+    customerGSTIN: '',
+
+    selectedPayment: 'CASH',
+    cashAmount: 0,
+    cardAmount: 0,
+    upiAmount: 0,
+    upiRef: '',
+
+    salesEntries: [],
+
+    totals: {
+      totalGrossAmount: 0,
+      totalDiscAmount: 0,
+      totalTaxableAmount: 0,
+      totalGstAmount: 0,
+      totalCessAmount: 0,
+      totalNetAmount: 0,
+      totalInvoiceAmount: 0,
+      totalPaidAmount: 0,
+      totalBalanceAmount: 0,
+      totalRoundOff: 0,
+    },
+  };
+
+  this.billTabs.push(newTab);
+
+  // Activate new tab
+  this.activeBillIndex = this.billTabs.length - 1;
+
+  // Load values into UI
+  this.loadBillToScreen(this.activeBillIndex);
+
+  // Ensure tab names stay correct after deletes
+  this.refreshBillTabNames();
+}
+
+
 
   switchBill(i: number) {
     this.saveBillFromScreen();
