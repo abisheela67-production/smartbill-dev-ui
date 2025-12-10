@@ -1375,13 +1375,13 @@
 }
 
 .total-horizontal-bar label {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
   color: #1a1445;
 }
 
 .total-horizontal-bar .value {
-  font-size: 22px;
+  font-size: 40px;
   font-weight: 800;
   margin-top: 4px;
 }

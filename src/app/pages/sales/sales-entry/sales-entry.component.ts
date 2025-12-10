@@ -86,6 +86,7 @@ export interface BillTotals {
     SmallGridComponent,
     InputDataGridComponent,
     IconsModule,
+    FocusOnKeyDirective,
   ],
   templateUrl: './sales-entry.component.html',
   styleUrls: ['./sales-entry.component.css'],
@@ -147,7 +148,7 @@ export class SalesEntryComponent {
 
   selectedBusinessType: BusinessType | null = null;
   selectedGstType: GstTransactionType | null = null;
-
+  invoiceNo: any;
   // TOTALS
   grossAmount = 0;
   discountAmount = 0;
@@ -322,7 +323,6 @@ export class SalesEntryComponent {
     private masterService: MasterService,
     private commonService: CommonserviceService,
     private salesservice: SalesService,
-
     private swall: SweetAlertService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
@@ -330,6 +330,7 @@ export class SalesEntryComponent {
   ) {}
 
   ngOnInit(): void {
+    this.selectedInvoiceDate = this.getTodayDate();
     this.loadDropdowns();
     this.loadBusinessTypes();
     this.loadGstTypes();
@@ -340,38 +341,61 @@ export class SalesEntryComponent {
     if (companyId) {
       this.selectedCompanyId = companyId;
     }
-      setTimeout(() => {
-    this.nextBill(); 
-  }, 100);
+    setTimeout(() => {
+      this.nextBill();
+    }, 100);
+  }
+  getTodayDate() {
+    return new Date().toISOString().substring(0, 10);
   }
 
   onBusinessTypeChanged() {
     this.loadProducts();
   }
   onProductSelected(product: ProductStockPrice) {
-    if (this.activeProductRow !== null) {
-      const row = this.salesEntries[this.activeProductRow];
+    if (!product) return;
 
-      row.productCode = product.productCode;
-      row.productName = product.productName;
-      row.retailPrice = product.retailPrice;
-      row.wholesalePrice = product.wholesalePrice;
-      row.gstPercentage =product.gstPercentage
+    const lastEmptyIndex = this.salesEntries.length - 1;
 
-      if (this.selectedBusinessType?.businessTypeID === 1) {
-        row.saleRate = product.retailPrice; // Retail
-      } else if (this.selectedBusinessType?.businessTypeID === 2) {
-        row.saleRate = product.wholesalePrice; // Wholesale
-      } else {
-        row.saleRate = product.retailPrice; // Default
-      }
+    // If same product exists → increment qty
+    const existingIndex = this.salesEntries.findIndex(
+      (r) => r.productCode === product.productCode
+    );
 
-      // Recalculate totals for this row
+    if (existingIndex !== -1) {
+      const row = this.salesEntries[existingIndex];
+      row.quantity = Number(row.quantity || 0) + 1;
+
+      this.calculateRowTotals(row, 'quantity');
       this.calculateOverallTotals();
+      this.smallGridVisible = false;
+
+      setTimeout(() => this.grid.focusCell(lastEmptyIndex, 2), 50);
+      return;
     }
 
-    // Close grid and refocus back to QTY column
+    const row = this.salesEntries[this.activeProductRow!];
+
+    row.productID = product.productID;
+
+    row.productCode = product.productCode;
+    row.productName = product.productName;
+    row.retailPrice = product.retailPrice;
+    row.wholesalePrice = product.wholesalePrice;
+    row.gstPercentage = product.gstPercentage;
+
+    row.saleRate =
+      this.selectedBusinessType?.businessTypeID === 2
+        ? product.wholesalePrice
+        : product.retailPrice;
+
+    row.quantity = 1;
+
+    this.calculateRowTotals(row, 'quantity');
+    this.calculateOverallTotals();
+
     this.smallGridVisible = false;
+
     setTimeout(() => this.grid.focusCell(this.activeProductRow!, 4), 50);
   }
 
@@ -473,20 +497,16 @@ export class SalesEntryComponent {
     if (!retail || !wholesale) return;
 
     if (this.selectedBusinessType?.businessTypeID === 1) {
-      // RETAIL MODE
       retail.visible = true;
       wholesale.visible = false;
     } else if (this.selectedBusinessType?.businessTypeID === 2) {
-      // WHOLESALE MODE
       retail.visible = false;
       wholesale.visible = true;
     } else {
-      // DEFAULT (Show both)
       retail.visible = true;
       wholesale.visible = true;
     }
 
-    // Refresh array (Angular change detection)
     this.productGridColumns = [...this.productGridColumns];
     this.productGridColumns = [...this.productGridColumns];
   }
@@ -543,7 +563,6 @@ export class SalesEntryComponent {
     row.branchID = this.selectedBranchId ?? null;
     row.accountingYear = this.accountingYear ?? null;
     row.statusID = 3;
-    row.isActive = true;
   }
   updateSerialNumbers() {
     this.salesEntries.forEach((row, index) => {
@@ -559,37 +578,44 @@ export class SalesEntryComponent {
     this.calculateOverallTotals();
   }
 
+  loadNextInvoiceNo(): Promise<string> {
+    return new Promise((resolve) => {
+      const companyId = this.selectedCompanyId ?? 0;
+      const branchId = this.selectedBranchId
+        ? String(this.selectedBranchId)
+        : '';
+
+      this.salesservice.getNextInvoiceNumber(companyId, branchId).subscribe({
+        next: (invoiceNo: string) => {
+          resolve(invoiceNo ?? 'INV-0001');
+        },
+        error: () => {
+          resolve('INV-0001');
+        },
+      });
+    });
+  }
+
   calculateRowTotals(row: SalesInvoice, changedField: string) {
     const rate = Number(row.saleRate || 0);
     const qty = Number(row.quantity || 0);
     const gst = Number(row.gstPercentage || 0);
-
     let discPerc = Number(row.discountPercentage || 0);
     let discAmt = Number(row.discountAmount || 0);
-
-    // 1) Base
     const baseAmount = rate * qty;
-
-    // =======================================
-    //   DISCOUNT REVERSE SYNC (Perfect)
-    // =======================================
     if (changedField === 'discountPercentage') {
-      // user typed %
       discAmt = (baseAmount * discPerc) / 100;
       row.discountAmount = discAmt;
     }
 
     if (changedField === 'discountAmount') {
-      // user typed ₹
       discPerc = baseAmount > 0 ? (discAmt / baseAmount) * 100 : 0;
       row.discountPercentage = discPerc;
     }
 
-    // 3) Taxable
     const taxableAmount = baseAmount - discAmt;
     row.taxableAmount = taxableAmount;
 
-    // 4) GST
     const gstAmount = (taxableAmount * gst) / 100;
     row.gstAmount = gstAmount;
 
@@ -598,10 +624,8 @@ export class SalesEntryComponent {
     row.cgstAmount = gstAmount / 2;
     row.sgstAmount = gstAmount / 2;
 
-    // 5) Net
     row.netAmount = taxableAmount + gstAmount;
 
-    // Save for totals
     row.grossAmount = baseAmount;
   }
 
@@ -797,7 +821,6 @@ export class SalesEntryComponent {
     )
       return false;
 
-
     return true;
   }
 
@@ -982,11 +1005,13 @@ export class SalesEntryComponent {
       this.activeBillIndex--;
     }
   }
-  nextBill() {
-    // ⭐ FIX: billTabs must exist before using length
+  async nextBill() {
     if (!this.billTabs) {
       this.billTabs = [];
     }
+
+    // 🔵 Load invoice number from API
+    const nextInvoiceNo = await this.loadNextInvoiceNo();
 
     const newBillNo = this.billTabs.length + 1;
 
@@ -994,7 +1019,8 @@ export class SalesEntryComponent {
       id: newBillNo,
       name: `Bill ${newBillNo}`,
 
-      billNumber: `B24-000${newBillNo}`,
+      // 🔥 API GENERATED
+      billNumber: nextInvoiceNo,
       invoiceDate: this.selectedInvoiceDate || new Date(),
       accountingYear: this.accountingYear,
 
@@ -1110,5 +1136,176 @@ export class SalesEntryComponent {
       totalBalanceAmount: this.totalBalanceAmount,
       totalRoundOff: this.totalRoundOff,
     };
+  }
+  saveSalesEntry() {
+    if (!this.validateHeaderFields()) return;
+
+    const cleanedRows = this.salesEntries.filter(
+      (r) =>
+        r.productName?.trim() !== '' &&
+        r.productCode?.trim() !== '' &&
+        Number(r.quantity) > 0 &&
+        Number(r.saleRate) > 0 &&
+        Number(r.netAmount) > 0
+    );
+
+    if (cleanedRows.length === 0) {
+      this.swall.warning(
+        'Validation Failed',
+        'Please add at least one valid product.'
+      );
+      return;
+    }
+
+    const num = (v: any) =>
+      v === null || v === undefined || v === '' || isNaN(v) ? 0 : Number(v);
+
+    const company =
+      this.companies.find((c) => c.companyID === this.selectedCompanyId) ||
+      null;
+    const branch =
+      this.branches.find((b) => b.branchID === this.selectedBranchId) || null;
+    const customer =
+      this.customers.find((c) => c.customerID === this.selectedCustomerId) ||
+      null;
+
+    console.log('CLEANED ROWS:', cleanedRows);
+
+    const payload = cleanedRows.map((row) => ({
+      invoiceID: num(row.invoiceID),
+      invoiceNumber: this.billNumber,
+      invoiceDate: new Date(this.selectedInvoiceDate).toISOString(),
+
+      companyID: this.selectedCompanyId,
+      companyName: company?.companyName ?? '',
+
+      branchID: num(this.selectedBranchId),
+      branchName: branch?.branchName ?? '',
+
+      customerID: num(this.selectedCustomerId),
+      customerName: customer?.customerName ?? 'Walk-in Customer',
+      customerGSTIN: this.customerGSTIN ?? '',
+      customerState: customer?.state ?? '',
+      companyState: company?.state ?? '',
+
+      accountingYear: this.accountingYear,
+      billingType: this.selectedBusinessType?.businessTypeName ?? '',
+      isGSTApplicable: true,
+      gstType: this.selectedGstType?.transactionTypeName ?? '',
+
+      // PRODUCT FIELDS
+      productID: num(row.productID),
+      barcode: row.barcode ?? '',
+      productCode: row.productCode ?? '',
+      productName: row.productName ?? '',
+      brandID: num(row.brandID),
+      categoryID: num(row.categoryID),
+      subCategoryID: num(row.subCategoryID),
+
+      // FIX: Backend expects HSNID
+      HSNID: num(row.hsnid),
+
+      unitID: num(row.unitID),
+      secondaryUnitID: num(row.secondaryUnitID),
+
+      quantity: num(row.quantity),
+      saleRate: num(row.saleRate),
+      productRate: num(row.saleRate),
+      retailPrice: num(row.retailPrice),
+      wholesalePrice: num(row.wholesalePrice),
+      mrp: num(row.mrp),
+
+      discountPercentage: num(row.discountPercentage),
+      discountAmount: num(row.discountAmount),
+
+      inclusiveAmount: num(row.inclusiveAmount),
+      exclusiveAmount: num(row.exclusiveAmount),
+
+      gstPercentage: num(row.gstPercentage),
+      gstAmount: num(row.gstAmount),
+      cgstRate: num(row.cgstRate),
+      cgstAmount: num(row.cgstAmount),
+      sgstRate: num(row.sgstRate),
+      sgstAmount: num(row.sgstAmount),
+      igstRate: num(row.igstRate),
+      igstAmount: num(row.igstAmount),
+      cessRate: num(row.cessRate),
+      cessAmount: num(row.cessAmount),
+
+      grossAmount: num(row.grossAmount),
+      taxableAmount: num(row.taxableAmount),
+      netAmount: num(row.netAmount),
+
+      grandTotal: num(this.totalInvoiceAmount),
+
+      billingMode: this.billMode,
+      cashAmount: num(this.cashAmount),
+      cardAmount: num(this.cardAmount),
+      upiAmount: num(this.upiAmount),
+      paidAmount: num(this.getPaidAmount()),
+      balanceAmount: num(this.getBalanceAmount()),
+
+      status: 'ACTIVE',
+      remarks: row.remarks ?? '',
+      createdBy: 'AngularApp',
+      updatedBy: 'AngularApp',
+
+      // TOTALS
+      totalSaleRate: cleanedRows.reduce((s, r) => s + num(r.saleRate), 0),
+      totalDiscountAmount: num(this.totalDiscAmount),
+      totalCGSTAmount: cleanedRows.reduce((s, r) => s + num(r.cgstAmount), 0),
+      totalSGSTAmount: cleanedRows.reduce((s, r) => s + num(r.sgstAmount), 0),
+      totalIGSTAmount: cleanedRows.reduce((s, r) => s + num(r.igstAmount), 0),
+      totalCESSAmount: cleanedRows.reduce((s, r) => s + num(r.cessAmount), 0),
+
+      totalGrossAmount: num(this.totalGrossAmount),
+      totalDiscAmount: num(this.totalDiscAmount),
+      totalTaxableAmount: num(this.totalTaxableAmount),
+      totalGstAmount: num(this.totalGstAmount),
+      totalNetAmount: num(this.totalNetAmount),
+      totalInvoiceAmount: num(this.totalInvoiceAmount),
+      totalPaidAmount: num(this.totalPaidAmount),
+      totalBalanceAmount: num(this.totalBalanceAmount),
+      totalRoundOff: num(this.totalRoundOff),
+
+      totalQuantity: cleanedRows.reduce((s, r) => s + num(r.quantity), 0),
+    }));
+
+    console.log('🟩 FINAL PAYLOAD SENT TO API:', payload);
+
+    // 5️⃣ SEND TO SERVER
+    this.salesservice.saveSalesEntry(payload).subscribe({
+      next: (res) => {
+        console.log('🟩 SERVER RESPONSE:', res);
+        if (res.success) {
+          this.swall.success('Saved!', `Invoice ID: ${res.data.lastInvoiceID}`);
+          this.nextBill();
+        } else {
+          this.swall.error('Save Failed', res.message);
+        }
+      },
+      error: (err) => {
+        console.error(' SAVE ERROR:', err);
+        console.table(err.error?.errors || {});
+        this.swall.error('Server Error', 'Could not save invoice.');
+      },
+    });
+  }
+
+  updatePaidAndBalance() {
+    const paid =
+      Number(this.cashAmount || 0) +
+      Number(this.cardAmount || 0) +
+      Number(this.upiAmount || 0);
+
+    this.totalPaidAmount = paid;
+    this.totalBalanceAmount = Number(this.totalInvoiceAmount || 0) - paid;
+
+    // update active bill tab totals also
+    if (this.billTabs && this.activeBillIndex != null) {
+      const tab = this.billTabs[this.activeBillIndex];
+      tab.totals.totalPaidAmount = this.totalPaidAmount;
+      tab.totals.totalBalanceAmount = this.totalBalanceAmount;
+    }
   }
 }

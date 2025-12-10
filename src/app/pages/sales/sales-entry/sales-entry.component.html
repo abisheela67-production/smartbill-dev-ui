@@ -32,14 +32,16 @@
 <div class="pos-wrapper">
   <div class="pos-left">
     <div class="bill-horizontal-box">
-      <!-- COMPANY -->
       <div class="h-item">
         <label>Company</label>
         <select
           [(ngModel)]="selectedCompanyId"
           (ngModelChange)="onCompanyChange($event)"
+          appFocusOnKey
+          targetId="companyName"
+          [autoFocus]="true"
         >
-          <option *ngFor="let c of companies" [value]="c.companyID">
+          <option *ngFor="let c of companies" [ngValue]="c.companyID">
             {{ c.companyName }}
           </option>
         </select>
@@ -48,9 +50,13 @@
       <!-- BRANCH -->
       <div class="h-item">
         <label>Branch</label>
-        <select [(ngModel)]="selectedBranchId">
+        <select
+          [(ngModel)]="selectedBranchId"
+          appFocusOnKey
+          targetId="branchName"
+        >
           <option [ngValue]="null">-- Select Branch --</option>
-          <option *ngFor="let b of branches" [value]="b.branchID">
+          <option *ngFor="let b of branches" [ngValue]="b.branchID">
             {{ b.branchName }}
           </option>
         </select>
@@ -89,6 +95,8 @@
           </button>
         </div>
       </div>
+
+      <button type="button" (click)="saveSalesEntry()">Save</button>
     </div>
 
     <div class="big-grid-card">
@@ -201,9 +209,17 @@
 
         <div class="h-item">
           <label>Bill No.</label>
-          <span class="value">{{ billNumber || "B24-0003" }}</span>
+          <span class="value">{{ billNumber }}</span>
         </div>
-
+        <div class="h-item">
+          <label>Invoice Date</label>
+          <input
+            type="date"
+            [(ngModel)]="selectedInvoiceDate"
+            appFocusOnKey
+            targetId="invoiceDate"
+          />
+        </div>
         <div class="h-item">
           <label>Customer</label>
           <select [(ngModel)]="selectedCustomerId">
@@ -318,13 +334,25 @@
         <!-- CASH -->
         <div *ngIf="selectedPayment === 'CASH'" class="pay-panel compact">
           <label>Cash Received</label>
-          <input type="number" [(ngModel)]="cashAmount" />
+          <input
+            type="number"
+            [(ngModel)]="cashAmount"
+            (input)="updatePaidAndBalance()"
+            appFocusOnKey
+            targetId="cashAmount"
+          />
         </div>
 
         <!-- CARD -->
         <div *ngIf="selectedPayment === 'CARD'" class="pay-panel compact">
           <label>Card Amount</label>
-          <input type="number" [(ngModel)]="cardAmount" />
+          <input
+            type="number"
+            [(ngModel)]="cardAmount"
+            appFocusOnKey
+            targetId="cardAmount"
+            (input)="updatePaidAndBalance()"
+          />
         </div>
 
         <!-- UPI -->
@@ -334,10 +362,22 @@
         >
           <div class="field">
             <label>UPI Amount</label
-            ><input type="number" [(ngModel)]="upiAmount" />
+            ><input
+              type="number"
+              [(ngModel)]="upiAmount"
+              appFocusOnKey
+              targetId="upiAmount"
+              (input)="updatePaidAndBalance()"
+            />
           </div>
           <div class="field">
-            <label>UPI Ref No</label><input type="text" [(ngModel)]="upiRef" />
+            <label>UPI Ref No</label
+            ><input
+              type="text"
+              appFocusOnKey
+              targetId="upiRef"
+              [(ngModel)]="upiRef"
+            />
           </div>
         </div>
 
@@ -347,13 +387,34 @@
           class="pay-panel compact-vertical"
         >
           <div class="field">
-            <label>Cash</label><input type="number" [(ngModel)]="cashAmount" />
+            <label>Cash</label
+            ><input
+              type="number"
+              [(ngModel)]="cashAmount"
+              appFocusOnKey
+              targetId="cashAmount"
+              (input)="updatePaidAndBalance()"
+            />
           </div>
           <div class="field">
-            <label>Card</label><input type="number" [(ngModel)]="cardAmount" />
+            <label>Card</label
+            ><input
+              type="number"
+              [(ngModel)]="cardAmount"
+              appFocusOnKey
+              targetId="cardAmount"
+              (input)="updatePaidAndBalance()"
+            />
           </div>
           <div class="field">
-            <label>UPI</label><input type="number" [(ngModel)]="upiAmount" />
+            <label>UPI</label
+            ><input
+              type="number"
+              [(ngModel)]="upiAmount"
+              appFocusOnKey
+              targetId="upiAmount"
+              (input)="updatePaidAndBalance()"
+            />
           </div>
         </div>
       </div>

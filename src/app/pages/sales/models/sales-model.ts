@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export interface BusinessType {
   businessTypeID: number;
   companyID: number | null;
@@ -36,19 +22,9 @@ export interface GstTransactionType {
   createdSystemName: string;
 }
 
-
-
-
-
-
-
-
-
-
 export interface ProductStockPrice {
-
   sno: number;
-
+  productID: number;
   productCode: string;
   productName: string;
   retailPrice: number;
@@ -63,10 +39,10 @@ export interface ProductStockPrice {
 
   supplierName: string | null;
   poNumber: string | null;
-  purchaseDate: string | null;   // ISO string from API
+  purchaseDate: string | null; // ISO string from API
 }
 export interface SalesInvoice {
-    sno?: number;
+  sno?: number;
   invoiceID: number;
   invoiceNumber: string;
   invoiceDate: string;
@@ -79,7 +55,7 @@ export interface SalesInvoice {
 
   customerID: number;
   customerName: string;
-  customerContact: string;
+  customerContact?: string;
   customerGSTIN: string;
   customerState: string;
   companyState: string;
@@ -183,4 +159,7 @@ export interface SalesInvoice {
   totalBalanceAmount: number;
   totalRoundOff: number;
   totalQuantity: number;
+}
+export interface SaveSalesEntryResponse {
+  lastInvoiceID: number;
 }
