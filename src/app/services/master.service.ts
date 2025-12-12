@@ -8,6 +8,9 @@ import forkJoin from 'rxjs/operators';
   providedIn: 'root'
 })
 export class MasterService {
+  getCompanyById(companyId: any) {
+    throw new Error('Method not implemented.');
+  }
   private baseUrl = `${environment.apiBaseUrl}/Master`;
 
   constructor(private http: HttpClient) { }

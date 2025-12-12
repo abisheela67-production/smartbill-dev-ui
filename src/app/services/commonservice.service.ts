@@ -28,12 +28,11 @@ export class CommonserviceService {
     return this.http.get<Company[]>(`${this.baseUrl}/GetCompanylist`);
   }
 
-  getCompanyById(companyID: number): Observable<Company> {
+  getCompanyById(companyID: number) {
     return this.http.get<Company>(
-      `${this.baseUrl}/GetCompanylistByID/${companyID}`
+      `${this.baseUrl}/GetCompanylistByID?id=${companyID}`
     );
   }
-
 
   saveBranch(branch: Branch): Observable<number> {
     return this.http.post<number>(`${this.baseUrl}/PostBranchMaster`, branch);

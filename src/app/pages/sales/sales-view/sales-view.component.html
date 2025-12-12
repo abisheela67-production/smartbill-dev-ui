@@ -1,126 +1,167 @@
-<div class="top-controls">
+<!-- ===================== TOOLS BAR ===================== -->
+<div class="tools-bar">
+
+  <!-- Print Menu Button -->
+  <div class="printer-menu">
+    <button class="printer-btn" (click)="toggleMenu()">☰ Options</button>
+    <div class="printer-dropdown" *ngIf="menuOpen">
+      <p (click)="printInvoice()">🖨️ Print Invoice</p>
+      <p (click)="downloadPDF()">⬇️ Download PDF</p>
+    </div>
+  </div>
+
+  <!-- Page Size Selection -->
   <label>Page Size:</label>
-  <select [(ngModel)]="selectedPageSize">
-    <option *ngFor="let s of pageSizes" [value]="s.value">
-      {{ s.label }}
-    </option>
+  <select [(ngModel)]="selectedPageSize" (change)="updateSizeInfo()">
+    <option value="a4">A4</option>
+    <option value="a5">A5</option>
+    <option value="a6">A6</option>
+    <option value="thermal58">Thermal 58mm</option>
+    <option value="thermal80">Thermal 80mm</option>
+    <option value="thermal110">Thermal 110mm</option>
   </select>
 
+  <!-- Orientation -->
   <label>Orientation:</label>
-  <select [(ngModel)]="orientation">
+  <select [(ngModel)]="orientation" (change)="updateSizeInfo()">
     <option value="portrait">Portrait</option>
-    <option value="landscape">Landscape</option>
+    <option value="landscape" *ngIf="!selectedPageSize.includes('thermal')">Landscape</option>
   </select>
 
-  <button class="btn-download" (click)="downloadPDF()">Download PDF</button>
 </div>
 
-<div
-  id="invoicePDF"
-  class="invoice-container"
-  [ngClass]="[
-    selectedPageSize,
-    orientation === 'landscape' ? 'landscape' : 'portrait'
-  ]"
->
-  <!-- HEADER -->
-  <div class="header">
-    <div class="left">
-      <img class="logo" src="assets/logos/smartbilllogo.png" />
+<!-- ===================== SIZE INFO BOX ===================== -->
+<div class="size-info-box">
+  <strong>Current Size:</strong> {{ pageLabel }} <br>
+  <strong>Dimensions:</strong> {{ pageSizeText }}
+</div>
 
-      <div class="company-block">
-        <h2>{{ company.name }}</h2>
-        <p>Email: {{ company.email }}</p>
+<!-- ===================== INVOICE WRAPPER ===================== -->
+<div class="invoice-wrapper">
+
+  <!-- ===================== INVOICE CONTAINER ===================== -->
+  <div id="invoicePDF"
+       class="invoice-container"
+       [ngClass]="[selectedPageSize, orientation]">
+
+    <!-- ===================== HEADER ===================== -->
+    <div class="header-section">
+      <div class="company-center">
+        <h2>{{ company.companyName }}</h2>
+        <p>{{ company.addressLine1 }}, {{ company.addressLine2 }}</p>
+        <p>{{ company.addressLine3 }}, {{ company.addressLine4 }}</p>
+        <p>{{ company.city }}, {{ company.state }} - {{ company.pincode }}</p>
         <p>Phone: {{ company.phone }}</p>
-        <p>GSTIN: {{ company.taxId }}</p>
+        <p>Email: {{ company.email }}</p>
+        <p>GSTIN: {{ company.gstNumber }}</p>
+        <p>PAN: {{ company.panNumber }}</p>
+      </div>
+
+      <div class="invoice-right">
+        <h1>TAX INVOICE</h1>
+        <p><strong>Invoice No:</strong> {{ invoice.invoiceNumber }}</p>
+        <p><strong>Date:</strong> {{ invoice.invoiceDate | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Billing Type:</strong> {{ invoice.billingType }}</p>
       </div>
     </div>
 
-    <div class="right">
-      <h1>INVOICE</h1>
-      <p><strong>No:</strong> {{ invoice.number }}</p>
-      <p><strong>Date:</strong> {{ invoice.date | date : "dd MMM yyyy" }}</p>
-      <p><strong>Supply Place:</strong> {{ invoice.placeOfSupply }}</p>
+    <!-- ===================== CUSTOMER INFO ===================== -->
+    <div class="section">
+      <h3>Bill To</h3>
+      <p><strong>{{ invoice.customerName }}</strong></p>
+      <p *ngIf="invoice.customerContact">Phone: {{ invoice.customerContact }}</p>
+      <p *ngIf="invoice.customerGSTIN">GSTIN: {{ invoice.customerGSTIN }}</p>
     </div>
-  </div>
 
-  <hr />
-
-  <!-- CUSTOMER -->
-  <div class="customer">
-    <h3>BILL TO</h3>
-    <p>
-      <strong>{{ customer.name }}</strong>
-    </p>
-    <p>{{ customer.address }}</p>
-    <p>GSTIN: {{ customer.gstin }}</p>
-  </div>
-
-  <!-- ITEMS -->
-  <table class="item-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Description</th>
-        <th>HSN</th>
-        <th>Qty</th>
-        <th>Rate</th>
-        <th>GST%</th>
-        <th>GST Amt</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of invoice.items; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.hsn }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.rate | currency : "INR" }}</td>
-        <td>{{ item.gstRate }}</td>
-        <td>{{ item.gstAmount | currency : "INR" }}</td>
-        <td>{{ item.total | currency : "INR" }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- TAX -->
-  <div class="tax-box">
-    <h3>TAX BREAKDOWN</h3>
-
-    <table class="tax-table">
+    <!-- ===================== ITEMS TABLE ===================== -->
+    <table class="invoice-table">
       <thead>
         <tr>
-          <th>GST Rate</th>
+          <th>#</th>
+          <th>Description</th>
+          <th>HSN</th>
+          <th>Qty</th>
+          <th>Rate</th>
           <th>Taxable</th>
-          <th>GST Amount</th>
+          <th>GST %</th>
+          <th>GST Amt</th>
+          <th>Total</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr *ngFor="let tax of taxSummary">
-          <td>{{ tax.rate }}%</td>
-          <td>{{ tax.taxable | currency : "INR" }}</td>
-          <td>{{ tax.taxAmount | currency : "INR" }}</td>
+        <tr *ngFor="let item of invoice.items; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.productName }}</td>
+          <td>{{ item.hsnid }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.saleRate | number:'1.2-2' }}</td>
+          <td>{{ item.taxableAmount | number:'1.2-2' }}</td>
+          <td>{{ item.gstPercentage }}%</td>
+          <td>{{ item.gstAmount | number:'1.2-2' }}</td>
+          <td>{{ item.netAmount | number:'1.2-2' }}</td>
         </tr>
       </tbody>
     </table>
-  </div>
 
-  <!-- SUMMARY -->
-  <div class="summary">
-    <p><strong>Subtotal:</strong> {{ summary.subTotal | currency : "INR" }}</p>
-    <p><strong>Total GST:</strong> {{ summary.totalGST | currency : "INR" }}</p>
-    <p>
-      <strong>Total CESS:</strong> {{ summary.totalCESS | currency : "INR" }}
-    </p>
-    <p class="grand">
-      <strong>Grand Total:</strong> {{ summary.grandTotal | currency : "INR" }}
-    </p>
-  </div>
+    <!-- ===================== GST SUMMARY ===================== -->
+    <div class="tax-summary" *ngIf="invoice.totalGstAmount > 0">
+      <h3>GST Summary</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rate</th>
+            <th>Taxable</th>
+            <th>CGST</th>
+            <th>SGST</th>
+            <th>Total GST</th>
+          </tr>
+        </thead>
 
-  <!-- SIGN -->
-  <div class="sign">
-    <p>For {{ company.name }}</p>
-    <p class="auth">AUTHORIZED SIGNATORY</p>
-  </div>
-</div>
+        <tbody>
+          <tr>
+            <td>{{ invoice.gstPercentage }}%</td>
+            <td>{{ invoice.totalTaxableAmount | number:'1.2-2' }}</td>
+            <td>{{ (invoice.totalGstAmount / 2) | number:'1.2-2' }}</td>
+            <td>{{ (invoice.totalGstAmount / 2) | number:'1.2-2' }}</td>
+            <td>{{ invoice.totalGstAmount | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===================== TOTAL SUMMARY ===================== -->
+    <div class="summary-section">
+      <table>
+        <tbody>
+          <tr><td>Gross Amount</td><td>{{ invoice.totalGrossAmount | number:'1.2-2' }}</td></tr>
+          <tr><td>Discount</td><td>{{ invoice.totalDiscAmount | number:'1.2-2' }}</td></tr>
+          <tr><td>Taxable Amount</td><td>{{ invoice.totalTaxableAmount | number:'1.2-2' }}</td></tr>
+          <tr *ngIf="invoice.totalGstAmount > 0"><td>GST</td><td>{{ invoice.totalGstAmount | number:'1.2-2' }}</td></tr>
+          <tr><td>Round Off</td><td>{{ invoice.totalRoundOff | number:'1.2-2' }}</td></tr>
+          <tr><th>Grand Total</th><th>{{ invoice.totalInvoiceAmount | number:'1.2-2' }}</th></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===================== PAYMENT SUMMARY ===================== -->
+    <div class="payment-details">
+      <h3>Payment Summary</h3>
+      <p>Cash: ₹ {{ invoice.cashAmount }}</p>
+      <p>Card: ₹ {{ invoice.cardAmount }}</p>
+      <p>UPI: ₹ {{ invoice.upiAmount }}</p>
+      <p><strong>Total Paid:</strong> ₹ {{ invoice.totalPaidAmount }}</p>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <div class="footer">
+      <p><strong>Bank:</strong> {{ company.bankName }}</p>
+      <p><strong>Account No:</strong> {{ company.bankAccountNumber }}</p>
+      <p><strong>IFSC:</strong> {{ company.ifscCode }}</p>
+      <br>
+      <p><strong>Authorized Signatory</strong></p>
+    </div>
+
+  </div> <!-- END invoice-container -->
+
+</div> <!-- END invoice-wrapper -->

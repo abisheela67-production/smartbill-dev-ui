@@ -21,7 +21,7 @@ export class InputRestrictDirective {
         if (!/^[a-zA-Z]$/.test(key)) event.preventDefault();
         break;
       case 'text':
-        if (!/^[a-zA-Z0-9 ]$/.test(key)) event.preventDefault();
+        if (!/^[a-zA-Z0-9.]$/.test(key)) event.preventDefault();
         break;
       case 'email':
         if (!/^[a-zA-Z0-9@._+-]$/.test(key)) event.preventDefault();
