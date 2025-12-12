@@ -1,32 +1,38 @@
 /* ============================================
-   GLOBAL SETTINGS
+   GLOBAL FONT — 100% ARIAL
 ============================================ */
+* {
+  font-family: Arial, sans-serif !important;
+}
+
 body {
   margin: 0;
   background: #f5f5f5;
-  font-family: Arial, sans-serif;
 }
 
+/* ============================================
+   WRAPPER
+============================================ */
 .invoice-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  padding-top: 20px;
 }
 
-/* Main invoice container */
+/* Main container */
 .invoice-container {
   background: white;
-  padding: 20px 30px;
+  padding: 18mm 15mm;
   border: 1px solid #ccc;
   box-sizing: border-box;
   overflow: hidden;
   color: #000;
-  border-radius: 6px;
+  margin: auto;
 }
 
 /* ============================================
-   PAGE SIZE DEFINITIONS
+   PAGE SIZES
 ============================================ */
 
 /* A4 */
@@ -41,25 +47,18 @@ body {
 .a6.portrait  { width: 105mm; min-height: 148mm; }
 .a6.landscape { width: 148mm; min-height: 105mm; }
 
-/* Thermal receipts */
-.thermal58  { width: 58mm;  padding: 10px !important; }
-.thermal80  { width: 80mm;  padding: 12px !important; }
-.thermal110 { width: 110mm; padding: 15px !important; }
+/* Thermal */
+.thermal58  { width: 58mm; padding: 3mm !important; }
+.thermal80  { width: 80mm; padding: 3mm !important; }
+.thermal110 { width: 110mm; padding: 4mm !important; }
 
 /* ============================================
-   SIZE-BASED FONT ADJUSTMENT
+   FONT SIZE PER PAGE TYPE
 ============================================ */
-
-/* A4 default font size */
-.a4 { font-size: 14px; }
-
-/* A5 */
+.a4 { font-size: 13px; }
 .a5 { font-size: 12px; }
-
-/* A6 */
 .a6 { font-size: 11px; }
 
-/* Thermal receipt fonts */
 .thermal58,
 .thermal80,
 .thermal110 {
@@ -68,77 +67,94 @@ body {
 }
 
 /* ============================================
-   SIZE DISPLAY BOX FOR USER
-============================================ */
-.current-size-box {
-  display: inline-block;
-  background: #eef5ff;
-  border: 1px solid #aac7ff;
-  padding: 6px 12px;
-  margin: 10px 0;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-/* ============================================
-   HEADER SECTION
+   HEADER
 ============================================ */
 .header-section {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #111;
+  border-bottom: 1.6px solid #222;
   padding-bottom: 10px;
   margin-bottom: 15px;
 }
 
 .company-center {
-  text-align: center;
+  width: 60%;
+  text-align: left;
+  line-height: 1.4;
 }
 
 .company-center h2 {
-  font-size: 24px;
-  color: #002060;
   font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 22px;
+  color: #003e92;
 }
 
 .invoice-right {
+  width: 40%;
   text-align: right;
 }
 
-/* ============================================
-   SECTION HEADINGS & TABLES
-============================================ */
-
-.section h3 {
-  border-bottom: 1px solid #333;
-  margin-bottom: 5px;
-  padding-bottom: 3px;
-  font-size: 16px;
+.invoice-right h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.invoice-table,
-.tax-summary table,
-.summary-section table {
+/* ============================================
+   SECTION HEADINGS
+============================================ */
+.section h3 {
+  padding-bottom: 3px;
+  border-bottom: 1px solid #000;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   TABLES
+============================================ */
+.invoice-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  overflow-wrap: break-word;
+  margin-top: 5px;
 }
 
-.invoice-table th,
-.invoice-table td,
-.tax-summary th,
-.tax-summary td,
-.summary-section td {
-  border: 1px solid #555;
+.invoice-table th {
+  background: #f1f1f1;
   padding: 6px;
-  text-align: center;
+  font-weight: bold;
+  border: 1px solid #444;
   font-size: inherit;
 }
 
+.invoice-table td {
+  padding: 6px;
+  border: 1px solid #444;
+  font-size: inherit;
+}
+
+/* GST SUMMARY */
+.tax-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.tax-summary th {
+  background: #efefef;
+  font-weight: bold;
+  border: 1px solid #444;
+  padding: 6px;
+}
+
+.tax-summary td {
+  border: 1px solid #444;
+  padding: 6px;
+}
+
 /* ============================================
-   SUMMARY RIGHT COLUMN
+   TOTAL SUMMARY BOX — RIGHT SIDE
 ============================================ */
 .summary-section {
   width: 40%;
@@ -146,54 +162,49 @@ body {
   margin-top: 20px;
 }
 
-/* ============================================
-   THERMAL TABLE OPTIMIZATION
-============================================ */
-.thermal58 .invoice-table th,
-.thermal58 .invoice-table td,
-.thermal80 .invoice-table th,
-.thermal80 .invoice-table td,
-.thermal110 .invoice-table th,
-.thermal110 .invoice-table td {
-  padding: 3px 2px !important;
-  font-size: 9px !important;
+.summary-section table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.thermal58 .invoice-table td:nth-child(2),
-.thermal80 .invoice-table td:nth-child(2),
-.thermal110 .invoice-table td:nth-child(2) {
-  width: 45%;
-  white-space: normal !important;
+.summary-section td {
+  border: 1px solid #444;
+  padding: 6px;
+  font-size: inherit;
+}
+
+/* Highlight grand total */
+.summary-section tr:last-child td {
+  font-weight: bold;
+  background: #f5f5f5;
 }
 
 /* ============================================
-   FOOTER SECTION
+   FOOTER
 ============================================ */
 .footer {
-  border-top: 2px solid #111;
-  padding-top: 10px;
   margin-top: 20px;
-  font-size: 13px;
+  padding-top: 10px;
+  border-top: 1.5px solid #333;
+  font-size: 11px;
 }
 
 /* ============================================
-   TOOLS BAR + DROPDOWN MENU
+   TOOLS BAR
 ============================================ */
 .tools-bar {
-  display: flex;
-  gap: 10px;
-  align-items: center;
   padding: 10px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
-.printer-menu {
-  position: relative;
-}
+.printer-menu { position: relative; }
 
 .printer-btn {
-  background: black;
+  background: #2d2d2d;
   color: white;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
@@ -207,14 +218,12 @@ body {
   width: 160px;
   top: 35px;
   z-index: 9999;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
 .printer-dropdown p {
   padding: 10px;
   margin: 0;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .printer-dropdown p:hover {
