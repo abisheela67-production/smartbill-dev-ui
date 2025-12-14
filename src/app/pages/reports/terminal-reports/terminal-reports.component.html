@@ -1,0 +1,103 @@
+<div class="dashboard-container">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Terminal Dashboard</h2>
+    <p class="dashboard-subtitle">
+      Sales summary based on selected filters
+    </p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+
+    <div class="filter-item">
+      <label>From Date</label>
+      <input type="date" [(ngModel)]="filters.fromDate" (change)="onFilterChange()" />
+    </div>
+
+    <div class="filter-item">
+      <label>To Date</label>
+      <input type="date" [(ngModel)]="filters.toDate" (change)="onFilterChange()" />
+    </div>
+
+    <div class="filter-item">
+      <label>Company</label>
+      <select [(ngModel)]="filters.companyId" (change)="onCompanyChange()">
+        <option *ngFor="let c of companies" [ngValue]="c.companyID">
+          {{ c.companyName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Branch</label>
+      <select [(ngModel)]="filters.branchId" (change)="onFilterChange()">
+        <option [ngValue]="null">All Branches</option>
+        <option *ngFor="let b of branches" [ngValue]="b.branchID">
+          {{ b.branchName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Cashier</label>
+      <select [(ngModel)]="filters.createdBy" (change)="onFilterChange()">
+        <option [ngValue]="null">All Users</option>
+        <option *ngFor="let u of users" [ngValue]="u.userName">
+          {{ u.userName }}
+        </option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card primary">
+      <lucide-icon name="indian-rupee"></lucide-icon>
+      <span>Total Sales</span>
+      <strong>₹ {{ summary.netSales | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <lucide-icon name="receipt"></lucide-icon>
+      <span>Total Bills</span>
+      <strong>{{ summary.totalBills }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <lucide-icon name="calculator"></lucide-icon>
+      <span>Avg Bill</span>
+      <strong>₹ {{ avgBill() | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <lucide-icon name="percent"></lucide-icon>
+      <span>Total GST</span>
+      <strong>₹ {{ summary.totalGST | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <lucide-icon name="wallet"></lucide-icon>
+      <span>Cash</span>
+      <strong>₹ {{ summary.cashTotal | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <lucide-icon name="credit-card"></lucide-icon>
+      <span>Card</span>
+      <strong>₹ {{ summary.cardTotal | number:'1.2-2' }}</strong>
+    </div>
+
+  </div>
+
+  <!-- DATA TABLE -->
+  <app-view-datatable
+    [data]="bills"
+    [columns]="visibleColumns"
+    [loading]="loading">
+  </app-view-datatable>
+
+</div>

@@ -28,6 +28,7 @@ import { SalesEditComponent } from './pages/sales/sales-edit/sales-edit.componen
 import { PurchsaeOrderEntryComponent } from './purchase-order/purchsae-order-entry/purchsae-order-entry.component';
 import { PurchsaeOrderViewComponent } from './purchase-order/purchsae-order-view/purchsae-order-view.component';
 import { GrnMasterComponent } from './purchase-order/grn-master/grn-master.component';
+import { ReportsComponent } from './pages/reports/reports.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -77,16 +78,17 @@ export const routes: Routes = [
     path: 'Purchase',
     component: DefaultLayoutComponent,
     children: [
-     { path: 'PurchaseEntry', component: PurchaseEntryComponent, data: { hideHeader: true } },
+      {
+        path: 'PurchaseEntry',
+        component: PurchaseEntryComponent,
+        data: { hideHeader: true },
+      },
       { path: 'PurchaseView', component: PurchaseViewComponent },
       { path: 'PurchaseCancel', component: PurchaseCancelComponent },
       { path: 'PurchaseOrderEntry', component: PurchsaeOrderEntryComponent },
       { path: 'PurchaseOrderView', component: PurchsaeOrderViewComponent },
       { path: 'PurchaseOrderCancel', component: PurchaseCancelComponent },
       { path: 'GRNEntry', component: GrnMasterComponent },
-
-
-
       { path: '', redirectTo: 'PurchaseEntry', pathMatch: 'full' },
     ],
   },
@@ -95,11 +97,39 @@ export const routes: Routes = [
     path: 'Sales',
     component: DefaultLayoutComponent,
     children: [
-      { path: 'SalesEntry', component: SalesEntryComponent,data: { hideHeader: true }},
+      {
+        path: 'SalesEntry',
+        component: SalesEntryComponent,
+        data: { hideHeader: true },
+      },
       { path: 'SalesView', component: SalesViewComponent },
-      { path: 'SalesCancel', component: SalesEditComponent,data: { hideHeader: true  }},
-       { path: 'SalesView/:id', component: SalesViewComponent ,data: { hideHeader: true } },
+      {
+        path: 'SalesCancel',
+        component: SalesEditComponent,
+        data: { hideHeader: true },
+      },
+      {
+        path: 'SalesView/:id',
+        component: SalesViewComponent,
+        data: { hideHeader: true },
+      },
       { path: '', redirectTo: 'SalesEntry', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'Reports',
+    component: DefaultLayoutComponent,
+    children: [
+      {
+        path: 'Reports',
+        component: ReportsComponent,
+        data: { hideHeader: true },
+      },
+      {
+        path: '',
+        redirectTo: 'Reports',
+        pathMatch: 'full',
+      },
     ],
   },
 ];

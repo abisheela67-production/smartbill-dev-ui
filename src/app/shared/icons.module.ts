@@ -1,82 +1,123 @@
 import { NgModule } from '@angular/core';
 import {
   LucideAngularModule,
+
+  // ===== CORE / COMMON =====
   Settings,
-  Building2,
-  Landmark,
-  Users,
-  IdCard,
-  User,
-  ShieldCheck,
-  LockKeyhole,
-  Package,
-  Tag,
-  Grid,
-  UserRound,
-  Hash,
-  Box,
-  Briefcase,
-  LayoutGrid,
-  Truck,
-  Percent,
-  Ruler,
-  Droplet,
-  ShoppingCart,
-  FilePlus,
-  FileX,
-  DollarSign,
-  FilePlus2,
-  FileX2,
-  ChevronDown,
   Search,
   Download,
   Plus,
-  Save, // ✅ add these three
+  Save,
+  ChevronDown,
+
+  // ===== USER / AUTH =====
+  User,
+  Users,
+  UserRound,
+  IdCard,
+  ShieldCheck,
+  LockKeyhole,
+
+  // ===== BUSINESS / COMPANY =====
+  Building2,
+  Landmark,
+  Briefcase,
+
+  // ===== INVENTORY / PRODUCT =====
+  Package,
+  Box,
+  Tag,
+  Truck,
+  ShoppingCart,
+
+  // ===== LAYOUT =====
+  Grid,
+  LayoutGrid,
+  Hash,
+
+  // ===== FINANCE / TAX =====
+  DollarSign,
+  Percent,
+  Calculator,
+  IndianRupee,
+  Wallet,
+  CreditCard,
+
+  // ===== FILE / EXPORT =====
+  FilePlus,
+  FileX,
+  FilePlus2,
+  FileX2,
   FileSpreadsheet,
   FileCode,
   FileText,
-  
+  Receipt,
+
+  // ===== MEASUREMENT =====
+  Ruler,
+  Droplet
 } from 'lucide-angular';
 
 @NgModule({
   imports: [
     LucideAngularModule.pick({
+
+      // CORE
       Settings,
-      Building2,
-      Landmark,
-      Users,
-      IdCard,
-      User,
-      ShieldCheck,
-      LockKeyhole,
-      Package,
-      Tag,
-      Grid,
-      UserRound,
-      Hash,
-      Box,
-      Briefcase,
-      LayoutGrid,
-      Truck,
-      Percent,
-      Ruler,
-      Droplet,
-      ShoppingCart,
-      FilePlus,
-      FileText,
-      FileX,
-      DollarSign,
-      FilePlus2,
-      FileX2,
-      ChevronDown,
       Search,
-      FileSpreadsheet,
-      FileCode,
       Download,
       Plus,
       Save,
-    }),
+      ChevronDown,
+
+      // USER / AUTH
+      User,
+      Users,
+      UserRound,
+      IdCard,
+      ShieldCheck,
+      LockKeyhole,
+
+      // BUSINESS
+      Building2,
+      Landmark,
+      Briefcase,
+
+      // INVENTORY
+      Package,
+      Box,
+      Tag,
+      Truck,
+      ShoppingCart,
+
+      // LAYOUT
+      Grid,
+      LayoutGrid,
+      Hash,
+
+      // FINANCE / TERMINAL DASHBOARD (🔥 FIXED)
+      DollarSign,
+      Percent,
+      Calculator,
+      IndianRupee,
+      Wallet,
+      CreditCard,
+      Receipt,
+
+      // FILE / EXPORT
+      FilePlus,
+      FileX,
+      FilePlus2,
+      FileX2,
+      FileSpreadsheet,
+      FileCode,
+      FileText,
+
+      // MEASUREMENT
+      Ruler,
+      Droplet
+    })
   ],
-  exports: [LucideAngularModule],
+  exports: [LucideAngularModule]
 })
 export class IconsModule {}

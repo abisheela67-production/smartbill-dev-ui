@@ -1,0 +1,39 @@
+<div class="reports-page">
+  <!-- LEFT SIDEBAR -->
+  <aside class="report-tabs">
+    <div class="report-title">Reports</div>
+
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'dashboard'"
+      (click)="setTab('dashboard')"
+    >
+      <i data-lucide="layout-dashboard"></i>
+      Dashboard
+    </button>
+
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'sales'"
+      (click)="setTab('sales')"
+    >
+      <i data-lucide="bar-chart-3"></i>
+      Terminal Reports
+    </button>
+
+
+  </aside>
+
+  <!-- RIGHT CONTENT -->
+  <section class="report-content">
+    <!-- DASHBOARD -->
+    <ng-container *ngIf="activeTab === 'dashboard'">
+      <app-reportdashboard></app-reportdashboard>
+    </ng-container>
+
+    <!-- TERMINAL REPORT -->
+    <ng-container *ngIf="activeTab === 'sales'">
+      <app-terminal-reports></app-terminal-reports>
+    </ng-container>
+  </section>
+</div>

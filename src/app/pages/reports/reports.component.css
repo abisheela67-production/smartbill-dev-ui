@@ -1,0 +1,189 @@
+/* ================= GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: #f5f6fa;
+}
+
+/* ================= PAGE WRAPPER ================= */
+.reports-page {
+  display: flex;
+  gap: 24px;
+  height: 100vh;
+  padding: 20px;
+}
+
+/* ================= LEFT SIDEBAR ================= */
+.report-tabs {
+  width: 260px;
+  height: 100%;
+  background: linear-gradient(180deg, #24126a, #1b0f4f);
+  border-radius: 0px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 6px;
+}
+
+/* TAB BUTTON */
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 0px;
+  border: none;
+  background: transparent;
+  color: #b8b6d9;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn i {
+  font-size: 16px;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.tab-btn.active {
+  background: #3b2a8f;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ================= RIGHT CONTENT ================= */
+.report-content {
+  flex: 1;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 0px;
+  padding: 28px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+}
+
+.report-content h2 {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.report-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* PLACEHOLDER */
+.placeholder {
+  height: calc(100% - 80px);
+  border-radius:0px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 15px;
+  border: 1px dashed #e5e7eb;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+/* --------- Laptop & Desktop --------- */
+@media (min-width: 1024px) {
+  .reports-page {
+    height: 100vh;
+  }
+}
+
+/* --------- Tablet --------- */
+@media (max-width: 1023px) {
+  .reports-page {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .report-tabs {
+    width: 220px;
+  }
+
+  .tab-btn {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}
+
+/* --------- Mobile --------- */
+@media (max-width: 768px) {
+  .reports-page {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  /* Sidebar → Top horizontal tabs */
+  .report-tabs {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .report-title {
+    display: none;
+  }
+
+  .tab-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    border-radius: 0px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .tab-btn i {
+    font-size: 14px;
+  }
+
+  .report-content {
+    width: 100%;
+    height: auto;
+    padding: 16px;
+    overflow: visible;
+  }
+}
+
+/* --------- Small Mobile --------- */
+@media (max-width: 480px) {
+  .tab-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .report-content {
+    padding: 12px;
+  }
+}
