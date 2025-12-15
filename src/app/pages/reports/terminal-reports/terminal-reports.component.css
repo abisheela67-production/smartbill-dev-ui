@@ -1,20 +1,21 @@
 /* ================= ROOT ================= */
 .dashboard-container {
+  min-height: 100vh;
   padding: 24px;
   background: #f4f6fb;
-  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
 }
 
 /* ================= HEADER ================= */
 .dashboard-header {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .dashboard-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
-  color: #1d1160;
-  margin-bottom: 4px;
+  color: #1d1160; /* Trust */
 }
 
 .dashboard-subtitle {
@@ -27,19 +28,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 14px;
-  padding: 14px;
   background: #ffffff;
+  padding: 14px;
   border-radius: 12px;
-  margin-bottom: 28px;
   border: 1px solid #e5e7eb;
+  margin-bottom: 30px;
 }
 
 .filter-item label {
-  display: block;
   font-size: 11px;
   font-weight: 600;
   color: #475569;
-  margin-bottom: 4px;
 }
 
 .filter-item input,
@@ -49,7 +48,6 @@
   font-size: 13px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  background: #ffffff;
 }
 
 /* ================= KPI GRID ================= */
@@ -57,55 +55,99 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 18px;
-  margin-bottom: 32px;
+  margin-bottom: 30px;
 }
 
 /* ================= KPI CARD ================= */
 .kpi-card {
-  background: #ffffff;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 18px;
-  border: 1px solid #eef2f7;
   display: flex;
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.kpi-card:hover {
-  border-color: #1d1160;
-  background: #f8f9ff;
-}
-
-/* PRIMARY KPI */
-.kpi-card.primary {
-  background: linear-gradient(135deg, #1d1160, #2f2aa8);
-  border: none;
-}
-
-.kpi-card.primary span,
-.kpi-card.primary strong,
-.kpi-card.primary lucide-icon {
+  transition: all 0.25s ease;
   color: #ffffff;
-}
-
-/* KPI CONTENT */
-.kpi-card lucide-icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 6px;
-  color: #1d1160;
 }
 
 .kpi-card span {
   font-size: 12px;
-  color: #6b7280;
+  opacity: 0.9;
 }
 
 .kpi-card strong {
   font-size: 24px;
   font-weight: 700;
+}
+
+/* Lucide Icon */
+.kpi-card lucide-icon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+/* Hover psychology: lift = importance */
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+/* ================= COLOR PSYCHOLOGY ================= */
+
+/* TRUST / REVENUE */
+.kpi-blue {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+}
+
+/* SUCCESS / MONEY */
+.kpi-green {
+  background: linear-gradient(135deg, #047857, #10b981);
+}
+
+/* ALERT / RISK */
+.kpi-red {
+  background: linear-gradient(135deg, #991b1b, #ef4444);
+}
+
+/* ATTENTION / TAX */
+.kpi-orange {
+  background: linear-gradient(135deg, #c2410c, #fb923c);
+}
+
+/* ANALYTICS / INSIGHT */
+.kpi-purple {
+  background: linear-gradient(135deg, #5b21b6, #7c3aed);
+}
+
+/* BALANCE / DIGITAL */
+.kpi-teal {
+  background: linear-gradient(135deg, #0f766e, #013a34);
+}
+
+/* ================= TABLE ================= */
+.table-box {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+}
+
+.table-title {
+  font-size: 14px;
+  font-weight: 700;
   color: #1d1160;
-  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+}
+
+.table-placeholder {
+  height: 180px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #64748b;
 }

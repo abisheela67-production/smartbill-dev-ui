@@ -21,6 +21,7 @@ import {
   HSN,
   Service,
 } from '../../models/common-models/master-models/master';
+import { AuthService } from '../../../authentication/auth-service.service';
 
 interface ApiResponse {
   success: boolean;
@@ -50,7 +51,8 @@ export class ServiceMasterComponent {
     private readonly masterService: MasterService,
     private readonly validationService: ValidationService,
     private readonly commonService: CommonserviceService,
-    private readonly swall: SweetAlertService
+    private readonly swall: SweetAlertService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -71,11 +73,12 @@ export class ServiceMasterComponent {
       cessID: 0,
       serviceCharge: 0,
       isActive: true,
+     
       createdByUserID: this.commonService.getCurrentUserId(),
-      createdSystemName: 'AngularApp',
+      createdSystemName:   this.authService.userName || 'admin',
       createdAt: now,
       updatedByUserID: this.commonService.getCurrentUserId(),
-      updatedSystemName: 'AngularApp',
+      updatedSystemName:  this.authService.userName || 'admin',
       updatedAt: now,
     };
   }

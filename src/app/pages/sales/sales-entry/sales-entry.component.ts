@@ -318,6 +318,7 @@ export class SalesEntryComponent {
   ];
   billTabs: any;
   activeBillIndex: number | undefined;
+  loggedInUser: string = 'SYSTEM';
 
   constructor(
     private masterService: MasterService,
@@ -330,6 +331,8 @@ export class SalesEntryComponent {
   ) {}
 
   ngOnInit(): void {
+    this.loggedInUser = this.authService.userName ?? 'SYSTEM';
+
     this.selectedInvoiceDate = this.getTodayDate();
     this.loadDropdowns();
     this.loadBusinessTypes();
@@ -344,6 +347,8 @@ export class SalesEntryComponent {
     setTimeout(() => {
       this.nextBill();
     }, 100);
+
+    console.log(this.loggedInUser);
   }
   getTodayDate() {
     return new Date().toISOString().substring(0, 10);
@@ -357,7 +362,6 @@ export class SalesEntryComponent {
 
     const lastEmptyIndex = this.salesEntries.length - 1;
 
-    // If same product exists → increment qty
     const existingIndex = this.salesEntries.findIndex(
       (r) => r.productCode === product.productCode
     );
@@ -767,9 +771,9 @@ export class SalesEntryComponent {
       isService: false,
       remarks: '',
 
-      createdBy: 'AngularApp',
+      createdBy: this.loggedInUser,
+      updatedBy: this.loggedInUser,
       createdDate: new Date().toISOString(),
-      updatedBy: 'AngularApp',
       updatedDate: new Date().toISOString(),
       cancelledDate: '',
       cancelledBy: '',
@@ -1027,17 +1031,14 @@ export class SalesEntryComponent {
       this.billTabs = [];
     }
 
-    // 🔥 Always load a fresh invoice number for this tab
     const nextInvoiceNo = await this.loadNextInvoiceNo();
 
-    // Tab numbering = index + 1
     const newBillNo = (this.billTabs?.length || 0) + 1;
 
     const newTab: BillTab = {
       id: newBillNo,
       name: `Bill ${newBillNo}`,
 
-      // 💥 Each tab gets a unique invoice number from API
       billNumber: nextInvoiceNo,
 
       invoiceDate: this.getTodayDate(),
@@ -1272,8 +1273,8 @@ export class SalesEntryComponent {
 
       status: 'ACTIVE',
       remarks: row.remarks ?? '',
-      createdBy: 'AngularApp',
-      updatedBy: 'AngularApp',
+      createdBy: this.loggedInUser,
+      updatedBy: this.loggedInUser,
 
       // TOTALS
       totalSaleRate: cleanedRows.reduce((s, r) => s + num(r.saleRate), 0),
@@ -1301,23 +1302,22 @@ export class SalesEntryComponent {
     this.salesservice.saveSalesEntry(payload).subscribe({
       next: (res) => {
         console.log(' SERVER RESPONSE:', res);
-   if (res.success) {
-  const invoiceNo = res.data.lastInvoiceNumber;  
+        if (res.success) {
+          const invoiceNo = res.data.lastInvoiceNumber;
 
-  this.swall
-    .confirm(
-      'Invoice Saved!',
-      `Invoice No: ${invoiceNo}\nDo you want to view the invoice?`
-    )
-    .then((result: any) => {
-      if (result.isConfirmed) {
-        window.open(`/Sales/SalesView/${invoiceNo}`, '_blank');   // ✅ Use invoiceNo
-      }
+          this.swall
+            .confirm(
+              'Invoice Saved!',
+              `Invoice No: ${invoiceNo}\nDo you want to view the invoice?`
+            )
+            .then((result: any) => {
+              if (result.isConfirmed) {
+                window.open(`/Sales/SalesView/${invoiceNo}`, '_blank'); // ✅ Use invoiceNo
+              }
 
-      this.nextBill();
-    });
-}
-
+              this.nextBill();
+            });
+        }
       },
       error: (err) => {
         console.error(' SAVE ERROR:', err);
