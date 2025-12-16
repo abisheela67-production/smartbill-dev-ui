@@ -1,7 +1,10 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ReportdashboardComponent } from './reportdashboard/reportdashboard.component';
 import { TerminalReportsComponent } from './terminal-reports/terminal-reports.component';
+import { GstReportComponent } from './gst-report/gst-report.component';
+import { SalesReportsComponent } from './sales-reports/sales-reports.component';
 
 declare const lucide: any;
 
@@ -11,18 +14,21 @@ declare const lucide: any;
   imports: [
     CommonModule,
     ReportdashboardComponent,
-    TerminalReportsComponent
+    TerminalReportsComponent,
+    SalesReportsComponent,
+    GstReportComponent
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })
 export class ReportsComponent implements AfterViewInit {
 
-  activeTab: 'dashboard' | 'sales' | 'purchase' | 'gst' = 'dashboard';
+  activeTab: 'dashboard' | 'terminal' | 'sales' | 'gst' = 'dashboard';
 
-  setTab(tab: 'dashboard' | 'sales' | 'purchase' | 'gst'): void {
+  setTab(tab: 'dashboard' | 'terminal' | 'sales' | 'gst'): void {
     this.activeTab = tab;
 
+    // Re-render lucide icons
     setTimeout(() => {
       if (typeof lucide !== 'undefined') {
         lucide.createIcons();

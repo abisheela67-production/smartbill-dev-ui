@@ -1,0 +1,78 @@
+<div class="dashboard-container">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <lucide-icon name="bar-chart-3"></lucide-icon>
+    <div>
+      <h2 class="dashboard-title">Sales Reports</h2>
+      <p class="dashboard-subtitle">
+        Summary, Detailed, Customer & Area wise sales analytics
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-section">
+    <div class="filter-bar">
+
+      <div class="filter-item">
+        <label>From Date</label>
+        <input type="date" [(ngModel)]="filters.fromDate" (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>To Date</label>
+        <input type="date" [(ngModel)]="filters.toDate" (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>Company</label>
+        <select [(ngModel)]="filters.companyId" (change)="onCompanyChange()">
+          <option *ngFor="let c of companies" [ngValue]="c.companyID">
+            {{ c.companyName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Branch</label>
+        <select [(ngModel)]="filters.branchId" (change)="onFilterChange()">
+          <option [ngValue]="null">All Branches</option>
+          <option *ngFor="let b of branches" [ngValue]="b.branchID">
+            {{ b.branchName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Report Type</label>
+        <select [(ngModel)]="filters.reportType" (change)="onFilterChange()">
+          <option value="SUMMARY">Summary</option>
+          <option value="DETAILED">Detailed</option>
+          <option value="PAYMODE">Paymode</option>
+          <option value="CUSTOMER">Customer-wise</option>
+          <option value="AREA">Area-wise</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">Total Sales: ₹ {{ totalSales | number:'1.2-2' }}</div>
+    <div class="kpi-card">Taxable: ₹ {{ totalTaxable | number:'1.2-2' }}</div>
+    <div class="kpi-card">GST: ₹ {{ totalGST | number:'1.2-2' }}</div>
+    <div class="kpi-card">Paid: ₹ {{ totalPaid | number:'1.2-2' }}</div>
+    <div class="kpi-card">Balance: ₹ {{ totalBalance | number:'1.2-2' }}</div>
+  </div>
+
+  <!-- TABLE -->
+  <app-view-datatable
+    [data]="salesData"
+    [columns]="columns"
+    title="Sales Report"
+    companyName="SMARTBILLPRO">
+  </app-view-datatable>
+
+</div>

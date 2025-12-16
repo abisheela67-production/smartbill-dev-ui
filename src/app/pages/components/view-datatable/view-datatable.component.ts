@@ -15,10 +15,12 @@ import { IconsModule } from '../../../shared/icons.module';
   styleUrl: './view-datatable.component.css',
 })
 export class ViewDatatableComponent implements OnChanges {
-
   @Input() data: any[] = [];
   @Input() columns: any[] = [];
   @Input() loading: boolean = false;
+
+  @Input() title = 'Data Table Export';
+  @Input() companyName = 'Company Name';
 
   searchText = '';
   pageSize = 10;
@@ -40,8 +42,8 @@ export class ViewDatatableComponent implements OnChanges {
   applySearch() {
     const s = this.searchText.toLowerCase();
 
-    this.filteredData = this.data.filter(row =>
-      Object.values(row).some(val =>
+    this.filteredData = this.data.filter((row) =>
+      Object.values(row).some((val) =>
         (val ?? '').toString().toLowerCase().includes(s)
       )
     );
@@ -58,9 +60,7 @@ export class ViewDatatableComponent implements OnChanges {
     this.sortDirection = { [field]: next };
     const dir = next === 'asc' ? 1 : -1;
 
-    this.filteredData.sort((a, b) =>
-      a[field] > b[field] ? dir : -dir
-    );
+    this.filteredData.sort((a, b) => (a[field] > b[field] ? dir : -dir));
 
     this.updatePagination();
   }
@@ -112,14 +112,12 @@ export class ViewDatatableComponent implements OnChanges {
     if (s.includes('pending') || s.includes('unqualified'))
       return 'badge-pending';
 
-    if (s.includes('negotiation'))
-      return 'badge-negotiation';
+    if (s.includes('negotiation')) return 'badge-negotiation';
 
     if (s.includes('qualified') || s.includes('approved'))
       return 'badge-qualified';
 
-    if (s.includes('new'))
-      return 'badge-new';
+    if (s.includes('new')) return 'badge-new';
 
     return '';
   }
@@ -138,33 +136,102 @@ export class ViewDatatableComponent implements OnChanges {
   exportCSV() {
     const exportData = this.filteredData.length ? this.filteredData : this.data;
 
-    const headers = this.columns.map(c => c.header);
-    const rows = exportData.map(row =>
-      this.columns.map(col => `"${row[col.field] ?? ''}"`)
+    const headers = this.columns.map((c) => c.header);
+    const rows = exportData.map((row) =>
+      this.columns.map((col) => `"${row[col.field] ?? ''}"`)
     );
 
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 
-    saveAs(new Blob([csv], { type: 'text/csv' }),
-      `table_export_${Date.now()}.csv`);
+    saveAs(
+      new Blob([csv], { type: 'text/csv' }),
+      `table_export_${Date.now()}.csv`
+    );
   }
 
   exportPDF() {
     const exportData = this.filteredData.length ? this.filteredData : this.data;
 
-    const doc = new jsPDF('landscape');
-    doc.text('Data Table Export', 14, 15);
-    
-    autoTable(doc, {
-      startY: 20,
-      head: [this.columns.map(c => c.header)],
-      body: exportData.map(row =>
-        this.columns.map(col => row[col.field])
-      ),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [30, 41, 59] }
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
     });
 
-    doc.save(`table_export_${Date.now()}.pdf`);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const generatedOn = new Date().toLocaleString();
+
+    /* ================= HEADER ================= */
+    const drawHeader = () => {
+      doc.setFont('helvetica', 'bold'); // Arial-style
+      doc.setFontSize(13);
+      doc.text(this.companyName, 14, 12);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(this.title, 14, 18);
+
+      doc.setFontSize(8);
+      doc.text(`Generated on: ${generatedOn}`, pageWidth - 14, 12, {
+        align: 'right',
+      });
+
+      doc.setDrawColor(180);
+      doc.setLineWidth(0.2);
+      doc.line(14, 21, pageWidth - 14, 21);
+    };
+
+    /* ================= FOOTER ================= */
+    const drawFooter = (pageNo: number) => {
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(`Page ${pageNo}`, pageWidth / 2, pageHeight - 8, {
+        align: 'center',
+      });
+    };
+
+    /* ================= TABLE ================= */
+    autoTable(doc, {
+      startY: 26,
+
+      head: [this.columns.map((c) => c.header)],
+      body: exportData.map((row) =>
+        this.columns.map((col) => row[col.field] ?? '')
+      ),
+
+      theme: 'grid',
+
+      styles: {
+        font: 'helvetica',
+        fontSize: 9,
+        cellPadding: 4,
+        valign: 'middle',
+        textColor: [33, 37, 41],
+        lineWidth: 0.2,
+        lineColor: [200, 200, 200],
+      },
+
+      headStyles: {
+        fillColor: [30, 41, 59],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 9,
+      },
+
+      alternateRowStyles: {
+        fillColor: [248, 249, 250],
+      },
+
+      margin: { left: 14, right: 14 },
+
+      didDrawPage: () => {
+        drawHeader();
+        drawFooter(doc.getNumberOfPages());
+      },
+    });
+
+    doc.save(`${this.title.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
   }
 }

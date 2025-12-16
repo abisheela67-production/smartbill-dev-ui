@@ -3,6 +3,7 @@
   <aside class="report-tabs">
     <div class="report-title">Reports</div>
 
+    <!-- DASHBOARD -->
     <button
       class="tab-btn"
       [class.active]="activeTab === 'dashboard'"
@@ -12,28 +13,59 @@
       Dashboard
     </button>
 
+    <!-- TERMINAL -->
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'terminal'"
+      (click)="setTab('terminal')"
+    >
+      <i data-lucide="monitor"></i>
+      Terminal Reports
+    </button>
+
+    <!-- SALES -->
     <button
       class="tab-btn"
       [class.active]="activeTab === 'sales'"
       (click)="setTab('sales')"
     >
       <i data-lucide="bar-chart-3"></i>
-      Terminal Reports
+      Sales Reports
     </button>
 
-
+    <!-- GST -->
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'gst'"
+      (click)="setTab('gst')"
+    >
+      <i data-lucide="file-text"></i>
+      GST Reports
+    </button>
   </aside>
 
   <!-- RIGHT CONTENT -->
   <section class="report-content">
+
     <!-- DASHBOARD -->
     <ng-container *ngIf="activeTab === 'dashboard'">
       <app-reportdashboard></app-reportdashboard>
     </ng-container>
 
     <!-- TERMINAL REPORT -->
-    <ng-container *ngIf="activeTab === 'sales'">
+    <ng-container *ngIf="activeTab === 'terminal'">
       <app-terminal-reports></app-terminal-reports>
     </ng-container>
+
+    <!-- SALES REPORT -->
+    <ng-container *ngIf="activeTab === 'sales'">
+      <app-sales-reports></app-sales-reports>
+    </ng-container>
+
+    <!-- GST REPORT -->
+    <ng-container *ngIf="activeTab === 'gst'">
+      <app-gst-report></app-gst-report>
+    </ng-container>
+
   </section>
 </div>
