@@ -52,6 +52,9 @@ import {
   FileCode,
   FileText,
   Receipt,
+  BarChart,
+  BarChart2,
+  AlertCircle,
 
   // ===== MEASUREMENT =====
   Ruler,
@@ -115,7 +118,11 @@ import {
 
       // MEASUREMENT
       Ruler,
-      Droplet
+      Droplet,
+      BarChart,
+      BarChart2,
+      AlertCircle,
+
     })
   ],
   exports: [LucideAngularModule]

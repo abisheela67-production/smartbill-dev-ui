@@ -98,7 +98,6 @@
           </button>
         </div>
       </div>
-
     </div>
 
     <div class="big-grid-card">
@@ -224,10 +223,13 @@
         </div>
         <div class="h-item">
           <label>Customer</label>
-          <select [(ngModel)]="selectedCustomerId">
+          <select
+            [(ngModel)]="selectedCustomerId"
+            (change)="onCustomerChange()"
+          >
             <option [ngValue]="null">Walk-in Customer</option>
-            <option *ngFor="let c of customers" [value]="c.customerID">
-              {{ c.customerName }} - {{ c.city || "" }}
+            <option *ngFor="let c of customers" [ngValue]="c.customerID">
+              {{ c.customerName }}
             </option>
           </select>
         </div>
@@ -451,6 +453,8 @@
     </div>
 
     <!-- COMPLETE PAYMENT BUTTON -->
-    <button class="complete-btn" (click)="saveSalesEntry()">Complete Payment</button>
+    <button class="complete-btn" (click)="saveSalesEntry()">
+      Complete Payment
+    </button>
   </div>
 </div>

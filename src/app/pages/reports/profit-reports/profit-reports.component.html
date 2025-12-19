@@ -2,12 +2,11 @@
 
   <!-- HEADER -->
   <div class="dashboard-header">
-  <lucide-icon name="bar-chart"></lucide-icon>
-
+    <lucide-icon name="trending-up"></lucide-icon>
     <div>
-      <h2 class="dashboard-title">Sales Reports</h2>
+      <h2 class="dashboard-title">Profit Reports</h2>
       <p class="dashboard-subtitle">
-        Summary, Detailed, Customer & Area wise sales analytics
+        Item, Invoice & Day-wise profit analytics
       </p>
     </div>
   </div>
@@ -48,56 +47,43 @@
       <div class="filter-item">
         <label>Report Type</label>
         <select [(ngModel)]="filters.reportType" (change)="onFilterChange()">
-          <option value="SUMMARY">Summary</option>
-          <option value="DETAILED">Detailed</option>
-          <option value="PAYMODE">Paymode</option>
-          <option value="CUSTOMER">Customer-wise</option>
-          <option value="AREA">Area-wise</option>
+          <option value="ITEM">Item-wise</option>
+          <option value="INVOICE">Invoice-wise</option>
+          <option value="DAY">Day-wise</option>
         </select>
       </div>
 
     </div>
   </div>
-<div class="kpi-grid">
 
-  <div class="kpi-card kpi-blue">
-  <lucide-icon name="bar-chart"></lucide-icon>
+  <!-- KPI -->
+  <div class="kpi-grid">
 
-    <span>Total Sales</span>
-    <strong>₹ {{ totalSales | number:'1.2-2' }}</strong>
+    <div class="kpi-card kpi-blue">
+      <lucide-icon name="shopping-cart"></lucide-icon>
+      <span>Total Sales</span>
+      <strong>₹ {{ totalSales | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card kpi-orange">
+      <lucide-icon name="package"></lucide-icon>
+      <span>Total Cost</span>
+      <strong>₹ {{ totalCost | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card kpi-green">
+      <lucide-icon name="trending-up"></lucide-icon>
+      <span>Total Profit</span>
+      <strong>₹ {{ totalProfit | number:'1.2-2' }}</strong>
+    </div>
+
   </div>
-
-  <div class="kpi-card kpi-orange">
-    <lucide-icon name="percent"></lucide-icon>
-    <span>Taxable</span>
-    <strong>₹ {{ totalTaxable | number:'1.2-2' }}</strong>
-  </div>
-
-  <div class="kpi-card kpi-purple">
-    <lucide-icon name="receipt"></lucide-icon>
-    <span>GST</span>
-    <strong>₹ {{ totalGST | number:'1.2-2' }}</strong>
-  </div>
-
-  <div class="kpi-card kpi-green">
-    <lucide-icon name="wallet"></lucide-icon>
-    <span>Paid</span>
-    <strong>₹ {{ totalPaid | number:'1.2-2' }}</strong>
-  </div>
-
-  <div class="kpi-card kpi-red">
-    <lucide-icon name="alert-circle"></lucide-icon>
-    <span>Balance</span>
-    <strong>₹ {{ totalBalance | number:'1.2-2' }}</strong>
-  </div>
-
-</div>
 
   <!-- TABLE -->
   <app-view-datatable
-    [data]="salesData"
+    [data]="profitData"
     [columns]="columns"
-    title="Sales Report"
+    title="Profit Report"
     companyName="SMARTBILLPRO">
   </app-view-datatable>
 

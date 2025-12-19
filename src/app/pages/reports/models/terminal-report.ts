@@ -99,3 +99,73 @@ export interface SalesReportCommon {
   status?: string;
   area?: string;
 }
+export interface ProfitReport {
+  // ITEM-wise
+  productCode?: string;
+  productName?: string;
+
+  // INVOICE-wise
+  invoiceNumber?: string;
+  invoiceDate?: string;   // yyyy-MM-dd
+  customerName?: string;
+
+  // DAY-wise
+  saleDate?: string;      // yyyy-MM-dd
+
+  // COMMON
+  soldQty: number;
+  avgPurchaseRate?: number;   // only ITEM
+  costAmount: number;
+  salesAmount: number;
+  profitAmount: number;
+}
+/* ================= CUSTOMER OUTSTANDING ================= */
+export interface CustomerOutstandingReport {
+  customerID?: number;
+  customerName?: string;
+  customerContact?: string;
+  customerGSTIN?: string;
+  area?: string;
+  outstandingDate?: string;   // ISO Date
+
+  invoiceCount: number;
+
+  invoiceAmount: number;
+  paidAmount: number;
+  outstandingAmount: number;
+}
+
+/* ================= SUPPLIER OUTSTANDING ================= */
+export interface SupplierOutstandingReport {
+  supplierID?: number;
+  supplierName?: string;
+  area?: string;
+  outstandingDate?: string;   // ISO Date
+
+  purchaseCount: number;
+
+  billAmount: number;
+  paidAmount: number;
+  outstandingAmount: number;
+}
+export interface StockReport {
+  productCode: string;
+  productName: string;
+
+  // ===== STOCK =====
+  currentStock?: number;
+  reorderLevel?: number;
+
+  // ===== RATES / VALUE =====
+  purchaseRate?: number;
+  saleRate?: number;
+  stockValue?: number;
+
+  // ===== MOVEMENT =====
+  soldQty?: number;
+
+  // ===== LEDGER =====
+  txnType?: 'OPENING' | 'PURCHASE' | 'SALE';
+  quantity?: number;
+  txnDate?: string;
+}

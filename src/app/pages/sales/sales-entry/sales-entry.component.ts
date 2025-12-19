@@ -137,6 +137,8 @@ export class SalesEntryComponent {
   totalPaidAmount: number = 0;
   totalBalanceAmount: number = 0;
   totalRoundOff: number = 0;
+  selectedCustomerName: string = 'Walk-in Customer';
+
 
   businessTypes: BusinessType[] = [];
 
@@ -437,12 +439,25 @@ export class SalesEntryComponent {
     });
   }
 
-  loadCustomers() {
-    this.masterService.getCustomers().subscribe({
-      next: (res) => (this.customers = res ?? []),
-      error: () => this.swall.error('Error', 'Failed to load customers!'),
-    });
-  }
+loadCustomers() {
+  this.masterService.getCustomers().subscribe({
+    next: (res) => {
+      this.customers = res ?? [];
+      console.log('Customers loaded:', this.customers);
+    },
+    error: () => this.swall.error('Error', 'Failed to load customers!')
+  });
+}
+onCustomerChange() {
+  const customer = this.customers.find(
+    c => c.customerID === this.selectedCustomerId
+  );
+
+  this.selectedCustomerName = customer?.customerName ?? 'Walk-in Customer';
+
+  console.log('Customer selected:', this.selectedCustomerName);
+}
+
 
   loadDropdowns(): void {
     const companyId = this.authService.companyId;
@@ -1209,7 +1224,7 @@ export class SalesEntryComponent {
       branchName: branch?.branchName ?? '',
 
       customerID: num(this.selectedCustomerId),
-      customerName: customer?.customerName ?? 'Walk-in Customer',
+      customerName: customer?.customerName ,
       customerGSTIN: this.customerGSTIN ?? '',
       customerState: customer?.state ?? '',
       companyState: company?.state ?? '',

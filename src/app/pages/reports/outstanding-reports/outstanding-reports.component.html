@@ -1,0 +1,89 @@
+<div class="dashboard-container">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <lucide-icon name="alert-circle"></lucide-icon>
+    <div>
+      <h2 class="dashboard-title">Outstanding Reports</h2>
+      <p class="dashboard-subtitle">
+        Customer & Supplier outstanding analytics
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-section">
+    <div class="filter-bar">
+
+      <div class="filter-item">
+        <label>From Date</label>
+        <input type="date" [(ngModel)]="filters.fromDate" (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>To Date</label>
+        <input type="date" [(ngModel)]="filters.toDate" (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>Company</label>
+        <select [(ngModel)]="filters.companyId" (change)="onCompanyChange()">
+          <option *ngFor="let c of companies" [ngValue]="c.companyID">
+            {{ c.companyName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Branch</label>
+        <select [(ngModel)]="filters.branchId" (change)="onFilterChange()">
+          <option [ngValue]="null">All Branches</option>
+          <option *ngFor="let b of branches" [ngValue]="b.branchID">
+            {{ b.branchName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Type</label>
+        <select [(ngModel)]="filters.outstandingType" (change)="onFilterChange()">
+          <option value="CUSTOMER">Customer</option>
+          <option value="SUPPLIER">Supplier</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card kpi-blue">
+      <lucide-icon name="file-text"></lucide-icon>
+      <span>Total Bill</span>
+      <strong>₹ {{ totalBill | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card kpi-green">
+      <lucide-icon name="wallet"></lucide-icon>
+      <span>Total Paid</span>
+      <strong>₹ {{ totalPaid | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="kpi-card kpi-red">
+      <lucide-icon name="alert-triangle"></lucide-icon>
+      <span>Outstanding</span>
+      <strong>₹ {{ totalOutstanding | number:'1.2-2' }}</strong>
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+  <app-view-datatable
+    [data]="filters.outstandingType === 'CUSTOMER' ? customerData : supplierData"
+    [columns]="columns"
+    title="Outstanding Report"
+    companyName="SMARTBILLPRO">
+  </app-view-datatable>
+
+</div>

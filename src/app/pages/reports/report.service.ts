@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../config';
-import { TerminalReport ,SalesReportCommon,GSTFiling} from './models/terminal-report';
+import { TerminalReport ,SalesReportCommon,GSTFiling,ProfitReport,
+  CustomerOutstandingReport,SupplierOutstandingReport,StockReport} from './models/terminal-report';
 
 
 
@@ -103,4 +104,117 @@ export class ReportService {
       { params }
     );
   }
+
+
+  /* ================= PROFIT REPORT ================= */
+  getProfitReport(
+    companyId: number,
+    reportType: 'ITEM' | 'INVOICE' | 'DAY',
+    fromDate: string,     // yyyy-MM-dd
+    toDate: string,       // yyyy-MM-dd
+    branchId?: number
+  ): Observable<ProfitReport[]> {
+
+    let params = new HttpParams()
+      .set('companyId', companyId.toString())
+      .set('reportType', reportType)
+      .set('fromDate', fromDate)
+      .set('toDate', toDate);
+
+    if (branchId !== undefined) {
+      params = params.set('branchId', branchId.toString());
+    }
+
+    return this.http.get<ProfitReport[]>(
+      `${this.baseUrl}/reports/sales/Profit`,
+      { params }
+    );
+  }
+  /* ================= CUSTOMER OUTSTANDING ================= */
+  getCustomerOutstanding(
+    companyId: number,                        // ✅ mandatory
+    reportType: 'CUSTOMER' | 'AREA' | 'DATE',
+    fromDate?: string,
+    toDate?: string,
+    branchId?: number
+  ): Observable<CustomerOutstandingReport[]> {
+
+    let params = new HttpParams()
+      .set('companyId', companyId.toString())
+      .set('reportType', reportType);
+
+    if (fromDate) {
+      params = params.set('fromDate', fromDate);
+    }
+
+    if (toDate) {
+      params = params.set('toDate', toDate);
+    }
+
+    if (branchId !== undefined) {
+      params = params.set('branchId', branchId.toString());
+    }
+
+    return this.http.get<CustomerOutstandingReport[]>(
+      `${this.baseUrl}/reports/sales/CustomerOutstanding`,
+      { params }
+    );
+  }
+
+  /* ================= SUPPLIER OUTSTANDING ================= */
+  getSupplierOutstanding(
+    companyId: number,                        // ✅ mandatory
+    reportType: 'SUPPLIER' | 'AREA' | 'DATE',
+    fromDate?: string,
+    toDate?: string,
+    branchId?: number
+  ): Observable<SupplierOutstandingReport[]> {
+
+    let params = new HttpParams()
+      .set('companyId', companyId.toString())
+      .set('reportType', reportType);
+
+    if (fromDate) {
+      params = params.set('fromDate', fromDate);
+    }
+
+    if (toDate) {
+      params = params.set('toDate', toDate);
+    }
+
+    if (branchId !== undefined) {
+      params = params.set('branchId', branchId.toString());
+    }
+
+    return this.http.get<SupplierOutstandingReport[]>(
+      `${this.baseUrl}/reports/sales/SupplierOutstanding`,
+      { params }
+    );
+  }
+
+getStockReport(
+  companyId: number,
+  reportType: 'TOTAL' | 'LOW' | 'FAST' | 'SLOW' | 'LEDGER' | 'VALUATION',
+  fromDate?: string,
+  toDate?: string,
+  branchId?: number,
+  days: number = 30
+): Observable<StockReport[]> {
+
+  let params = new HttpParams()
+    .set('companyId', companyId.toString())
+    .set('reportType', reportType)
+    .set('days', days.toString());
+
+  if (fromDate) params = params.set('fromDate', fromDate);
+  if (toDate) params = params.set('toDate', toDate);
+  if (branchId !== undefined) params = params.set('branchId', branchId.toString());
+
+  return this.http.get<StockReport[]>(
+    `${this.baseUrl}/reports/sales/stock`,   // ✅ FIXED
+    { params }
+  );
+}
+
+
 }

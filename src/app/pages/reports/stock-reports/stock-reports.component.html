@@ -1,0 +1,88 @@
+<div class="dashboard-container">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <lucide-icon name="boxes"></lucide-icon>
+    <div>
+      <h2 class="dashboard-title">Stock Reports</h2>
+      <p class="dashboard-subtitle">
+        Inventory analytics & valuation
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-section">
+    <div class="filter-bar">
+
+      <div class="filter-item">
+        <label>From Date</label>
+        <input type="date"
+               [(ngModel)]="filters.fromDate"
+               (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>To Date</label>
+        <input type="date"
+               [(ngModel)]="filters.toDate"
+               (change)="onFilterChange()" />
+      </div>
+
+      <div class="filter-item">
+        <label>Company</label>
+        <select [(ngModel)]="filters.companyId"
+                (change)="onCompanyChange()">
+          <option *ngFor="let c of companies"
+                  [ngValue]="c.companyID">
+            {{ c.companyName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Branch</label>
+        <select [(ngModel)]="filters.branchId"
+                (change)="onFilterChange()">
+          <option [ngValue]="null">All</option>
+          <option *ngFor="let b of branches"
+                  [ngValue]="b.branchID">
+            {{ b.branchName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label>Report Type</label>
+        <select [(ngModel)]="filters.reportType"
+                (change)="onFilterChange()">
+          <option value="TOTAL">Total Stock</option>
+          <option value="LOW">Low Stock</option>
+          <option value="FAST">Fast Moving</option>
+          <option value="SLOW">Slow Moving</option>
+          <option value="LEDGER">Stock Ledger</option>
+          <option value="VALUATION">Valuation</option>
+        </select>
+      </div>
+
+      <div class="filter-item"
+           *ngIf="filters.reportType === 'FAST' || filters.reportType === 'SLOW'">
+        <label>Days</label>
+        <input type="number"
+               min="1"
+               [(ngModel)]="filters.days"
+               (change)="onFilterChange()" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <app-view-datatable
+    [data]="stockData"
+    [columns]="columns"
+    title="Stock Report"
+    companyName="SMARTBILLPRO">
+  </app-view-datatable>
+
+</div>
