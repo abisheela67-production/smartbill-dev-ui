@@ -1,3 +1,33 @@
+export interface RegisterRequest {
+  companyName: string;
+  companyEmail: string;
+  phone: string;
+  userName: string;
+  userEmail: string;
+  passwordHash: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  companyID: number;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export interface Company {
   companyID: number;
   companyCode: string;

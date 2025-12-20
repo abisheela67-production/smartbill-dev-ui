@@ -5,6 +5,8 @@ import {
   Company,
   Branch,
   Department,
+  RegisterRequest,
+  RegisterResponse,
   Role,
 } from '../pages/models/common-models/companyMaster';
 import {
@@ -26,6 +28,10 @@ export class CommonserviceService {
   }
   getCompanies(): Observable<Company[]> {
     return this.http.get<Company[]>(`${this.baseUrl}/GetCompanylist`);
+  }
+
+  register(data: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, data);
   }
 
   getCompanyById(companyID: number) {

@@ -1,81 +1,232 @@
-import { Component } from '@angular/core';
-import { Colors } from '../color';
-import { User } from '../models/common-models/user';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,  
+  FormGroup,
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { userInfo } from 'node:os';
+import { RouterModule, Router } from '@angular/router';
 import { CommonserviceService } from '../../services/commonservice.service';
-import { SweetAlertService } from '../../services/properties/sweet-alert.service';
+import { User } from '../models/common-models/user';
+
+/* ===============================
+   API RESPONSE MODELS
+================================ */
+interface RegisterResponse {
+  success: boolean;
+  companyID: number;
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  imports: [CommonModule, ReactiveFormsModule],
 })
-export class LoginComponent {
-  colors = Colors;
-  loginForm: FormGroup;
-  errorMessage: string = '';
-  users: User[] = [];
+export class LoginComponent implements OnInit {
+  /* ===============================
+     TAB STATE
+  ================================ */
+  activeTab: 'login' | 'register' = 'login';
+
+  /* ===============================
+     FORMS
+  ================================ */
+  loginForm!: FormGroup;
+  registerForm!: FormGroup;
+
+  /* ===============================
+     USERS
+  ================================ */
+  apiUsers: User[] = [];      // from GetUserList (API)
+  isAdmin = false;
+
+  /* ===============================
+     UI STATE
+  ================================ */
+  errorMessage = '';
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private commonService: CommonserviceService,
-      private sweetAlert: SweetAlertService 
-  ) {
+    private commonService: CommonserviceService
+  ) {}
+
+  /* ===============================
+     INIT
+  ================================ */
+  ngOnInit(): void {
+    this.initForms();
+    this.loadApiUsers(); // 🔑 IMPORTANT: preload API users
+  }
+
+  /* ===============================
+     FORM INIT
+  ================================ */
+  private initForms(): void {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      userName: ['', Validators.required],
       password: ['', Validators.required],
     });
 
-    this.loadUsers();
+    this.registerForm = this.fb.group({
+      companyName: ['', Validators.required],
+      userName: ['', Validators.required],
+      passwordHash: ['', Validators.required],
+    });
   }
 
-  loadUsers() {
+  /* ===============================
+     TAB SWITCH
+  ================================ */
+  switchTab(tab: 'login' | 'register'): void {
+    this.activeTab = tab;
+    this.errorMessage = '';
+  }
+
+  /* ===============================
+     LOGIN (ADMIN + API + LOCAL)
+  ================================ */
+  login(): void {
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Please enter username and password';
+      return;
+    }
+
+    const { userName, password } = this.loginForm.value;
+
+    /* ========== ADMIN LOGIN ========== */
+    if (userName === 'admin' && password === '123') {
+      this.isAdmin = true;
+
+      localStorage.setItem('userId', '0');
+      localStorage.setItem('userName', 'admin');
+      localStorage.setItem('role', 'admin');
+
+      this.router.navigate(['/default']);
+      return;
+    }
+
+    /* ========== API USER LOGIN ========== */
+    const apiUser = this.apiUsers.find(
+      (u) =>
+        u.userName === userName &&
+        u.passwordHash === password &&
+        u.isActive === true
+    );
+
+    if (apiUser) {
+      localStorage.setItem('userId', apiUser.userID.toString());
+      localStorage.setItem('userName', apiUser.userName);
+      localStorage.setItem('companyId', apiUser.companyID.toString());
+      localStorage.setItem('role', 'client');
+
+      this.router.navigate(['/default']);
+      return;
+    }
+
+    /* ========== LOCAL STORAGE USER LOGIN (DEMO) ========== */
+    const localUsers: any[] = JSON.parse(
+      localStorage.getItem('users') || '[]'
+    );
+
+    const localUser = localUsers.find(
+      (u: any) => u.userName === userName && u.password === password
+    );
+
+    if (localUser) {
+      localStorage.setItem('userId', localUser.userId);
+      localStorage.setItem('userName', localUser.userName);
+      localStorage.setItem('companyId', localUser.companyId);
+      localStorage.setItem('role', 'client');
+
+      this.router.navigate(['/default']);
+      return;
+    }
+
+    /* ========== FAIL ========== */
+    this.errorMessage = 'Invalid username or password';
+  }
+
+  /* ===============================
+     LOAD API USERS
+  ================================ */
+  private loadApiUsers(): void {
     this.commonService.getUsers().subscribe({
-      next: (res) => (this.users = res),
-      error: (err) => {
-        console.error('Error loading users:', err);
-        alert('Error loading user list.');
+      next: (res: User[]) => {
+        this.apiUsers = res;
+        console.log('API users loaded:', this.apiUsers);
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load users';
       },
     });
   }
-  onSubmit() {
-    if (this.loginForm.valid) {
-      const { username, password } = this.loginForm.value;
-      if (username === 'admin' && password === '123') {
-        localStorage.setItem('userId', '0'); 
-        localStorage.setItem('userName', 'admin');
-        localStorage.setItem('role', 'admin'); 
-        alert(`Login successful 🎉 Welcome admin`);
-        this.router.navigate(['/default']);
+
+register(): void {
+  if (this.registerForm.invalid) {
+    this.errorMessage = 'Company name, username and password are required';
+    return;
+  }
+
+  this.loading = true;
+  this.errorMessage = '';
+
+  const payload = {
+    companyName: this.registerForm.value.companyName,
+    userName: this.registerForm.value.userName,
+    passwordHash: this.registerForm.value.passwordHash,
+
+    // OPTIONAL FIELDS (send empty strings)
+    companyEmail: this.registerForm.value.companyEmail || '',
+    userEmail: this.registerForm.value.userEmail || '',
+    phone: this.registerForm.value.phone || '',
+  };
+
+  this.commonService.register(payload).subscribe({
+    next: (res: RegisterResponse) => {
+      this.loading = false;
+
+      if (!res.success) {
+        this.errorMessage = 'Registration failed';
         return;
       }
 
-      const matchedUser = this.users.find(
-        (u) => u.userName === username && u.passwordHash === password
+      /* ===== SAVE USER LOCALLY (DEMO LOGIN) ===== */
+      const localUsers: any[] = JSON.parse(
+        localStorage.getItem('users') || '[]'
       );
 
-      if (matchedUser) {
-        localStorage.setItem('userId', matchedUser.userID.toString());
-        localStorage.setItem('userName', matchedUser.userName);
-        localStorage.setItem('role', 'client');
-          localStorage.setItem('companyId', matchedUser.companyID.toString()); 
-        alert(`Login successful  Welcome ${matchedUser.userName}`);
-        this.router.navigate(['/default']);
-      } else {
-        this.errorMessage = 'Invalid username or password';
+      const exists = localUsers.some(
+        (u: any) => u.userName === payload.userName
+      );
+
+      if (exists) {
+        this.errorMessage = 'Username already exists';
+        return;
       }
-    } else {
-      this.errorMessage = 'Please fill in all fields';
-    }
-  }
+
+      localUsers.push({
+        userId: Date.now().toString(),
+        companyId: res.companyID,
+        userName: payload.userName,
+        password: payload.passwordHash, // demo only
+      });
+
+      localStorage.setItem('users', JSON.stringify(localUsers));
+
+      alert('Company registered successfully');
+      this.registerForm.reset();
+      this.switchTab('login');
+    },
+    error: () => {
+      this.loading = false;
+      this.errorMessage = 'Registration failed';
+    },
+  });
+}
+
 }

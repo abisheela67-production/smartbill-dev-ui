@@ -29,9 +29,11 @@ import { PurchsaeOrderEntryComponent } from './purchase-order/purchsae-order-ent
 import { PurchsaeOrderViewComponent } from './purchase-order/purchsae-order-view/purchsae-order-view.component';
 import { GrnMasterComponent } from './purchase-order/grn-master/grn-master.component';
 import { ReportsComponent } from './pages/reports/reports.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   {
@@ -43,6 +45,7 @@ export const routes: Routes = [
       { path: 'master/department', component: DepartmentMasterComponent },
       { path: 'master/role', component: RoleMasterComponent },
       { path: 'master/user', component: UsermasterComponent },
+
       { path: '', redirectTo: 'master/company', pathMatch: 'full' },
     ],
   },

@@ -147,12 +147,7 @@ label.required::after {
   font-weight: bold;
 }
 
-/* ==============================
-   BUTTONS
-============================== */
-/* ==============================
-   🌈 BASE BUTTON STYLES
-============================== */
+
 button {
   display: inline-block;
   border-radius: var(--border-radius, 6px);
@@ -276,101 +271,9 @@ button:disabled {
   background-color: #eef2ff;
 }
 
-/* ==============================
-   LOGIN PAGE
-============================== */
-.login-container {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, var(--color-primary) 30%, var(--color-primary-dark) 100%);
-}
-
-.login-card {
-  background-color: #fff;
-  padding: 2.5rem;
-  border-radius: 16px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.brand-section {
-  margin-bottom: 1rem;
-}
-
-.company-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.login-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-}
-
-.form-group input:focus {
-  border-color: var(--color-primary);
-  outline: none;
-}
-
-.error {
-  color: #dc3545;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.login-card button {
-  width: 100%;
-  margin-top: 1rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
-  padding: 10px 0;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.login-card button:hover {
-  background-color: var(--color-primary-dark);
-}
 
 
 
-
-/* ==============================
-   RESPONSIVE
-============================== */
-@media (max-width: 991px) {
-  .form-grid {
-    flex-direction: column;
-  }
-  .form-column {
-    flex: 1 1 100%;
-  }
-  .sidebar {
-    width: 200px;
-  }
-  .login-card {
-    padding: 1.8rem;
-  }
-}
 
 /* ==============================
    HEADER — SmartBillPro (Enhanced Skote Style)
@@ -1538,4 +1441,480 @@ button,
   justify-content: flex-end;
   align-items: flex-end;
   gap: 12px;
+}
+
+
+/* Reports section
+
+
+/* ================= GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: #f5f6fa;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ================= HEADER ================= */
+.app-header {
+  height: 64px;
+  background: linear-gradient(90deg, #24126a, #1b0f4f);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* HEADER LEFT */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-text .brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.logo-text .pro {
+  color:  #F4A261;
+}
+
+/* ================= PAGE LAYOUT ================= */
+.reports-page {
+  display: flex;
+  gap: 24px;
+  height: calc(100vh - 64px);
+  padding: 20px;
+  align-items: stretch;
+}
+
+/* ================= SIDEBAR ================= */
+.report-tabs {
+  width: 260px;
+  height: 100%;
+  background: linear-gradient(180deg, #24126a, #1b0f4f);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 10px;
+  position: sticky;
+  top: 84px; /* header + padding */
+}
+
+/* SIDEBAR TITLE */
+.report-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+/* ================= TAB BUTTON (VERTICAL) ================= */
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  padding: 12px 16px;
+
+  border: none;
+  background: transparent;
+  color: #cfd0ff;
+
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* ICON */
+.tab-btn i,
+.tab-btn lucide-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.9;
+}
+
+/* HOVER */
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* ================= ACTIVE TAB ================= */
+.tab-btn.active {
+  background: linear-gradient(
+    90deg,
+    rgba(250, 204, 21, 0.18),
+    rgba(59, 42, 143, 0.95)
+  );
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* LEFT INDICATOR BAR */
+.tab-btn.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 4px;
+  background: #facc15;
+}
+
+/* ICON STRONGER WHEN ACTIVE */
+.tab-btn.active i,
+.tab-btn.active lucide-icon {
+  opacity: 1;
+}
+
+
+/* ================= CONTENT ================= */
+.report-content {
+  flex: 1;
+  background: #ffffff;
+  padding: 28px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow-y: auto;
+}
+
+/* CONTENT HEADERS */
+.report-content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.report-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+
+
+/* ================= SCROLLBAR ================= */
+.report-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.report-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.report-content::-webkit-scrollbar-thumb {
+  background: #c7c7ff;
+  border-radius: 6px;
+}
+
+.report-content::-webkit-scrollbar-thumb:hover {
+  background: #9a9aff;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .report-tabs {
+    width: 220px;
+  }
+}
+
+/* ================= MOBILE (320px – PERFECT FIX) ================= */
+@media (max-width: 768px) {
+
+  .reports-page {
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px;
+    height: auto;
+  }
+
+  .app-header {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .report-tabs {
+    width: 100%;
+    position: relative;
+    top: 0;
+    height: auto;
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .report-title {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .tab-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .tab-btn i {
+    display: none;
+  }
+
+  .tab-btn.active {
+    box-shadow: none;
+    background: #4c3db2;
+  }
+
+  .report-content {
+    padding: 16px;
+    border-radius: 14px;
+    min-height: 300px;
+  }
+
+  input,
+  select {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* =====================================================
+   COMMON UI SYSTEM – SINGLE CSS FILE
+   ===================================================== */
+
+/* ---------- ROOT ---------- */
+:root {
+  --ui-bg: #f4f6fb;
+  --ui-card: #ffffff;
+  --ui-border: #e5e7eb;
+
+  --ui-primary:  #1D1160;
+  --ui-success: #16a34a;
+  --ui-warning: #f59e0b;
+  --ui-danger: #dc2626;
+  --ui-info: #0ea5e9;
+  --ui-muted: #6b7280;
+
+  --ui-radius: 14px;
+  --ui-radius-sm: 10px;
+
+  --ui-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  --ui-shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ---------- GLOBAL ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ui-bg);
+   font-family: 'Poppins', sans-serif;
+  color: #111827;
+}
+
+/* ---------- PAGE ---------- */
+.ui-page {
+  padding: 20px;
+}
+
+.ui-header {
+  margin-bottom: 16px;
+}
+
+.ui-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ui-primary);
+}
+
+.ui-subtitle {
+  font-size: 13px;
+  color: var(--ui-muted);
+}
+
+/* ---------- FILTER BAR ---------- */
+.ui-filter {
+  background: var(--ui-card);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: 14px;
+  box-shadow: var(--ui-shadow-sm);
+  margin-bottom: 18px;
+}
+
+.ui-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.ui-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.ui-field input,
+.ui-field select {
+  width: 100%;
+  height: 36px;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+}
+
+.ui-field input:focus,
+.ui-field select:focus {
+  outline: none;
+  border-color: var(--ui-primary);
+}
+
+/* ---------- KPI CARDS ---------- */
+.ui-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ui-kpi {
+  background: var(--ui-card);
+  border-radius: var(--ui-radius);
+  padding: 16px 18px;
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow);
+}
+
+.ui-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ui-kpi-value {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* KPI COLORS */
+.kpi-primary { color: var(--ui-primary); }
+.kpi-success { color: var(--ui-success); }
+.kpi-warning { color: var(--ui-warning); }
+.kpi-danger  { color: var(--ui-danger); }
+.kpi-info    { color: var(--ui-info); }
+
+/* ---------- TABLE ---------- */
+.ui-table {
+  background: var(--ui-card);
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow-sm);
+  overflow: hidden;
+}
+
+.ui-table-body {
+  max-height: calc(100vh - 420px);
+  overflow: auto;
+}
+
+/* ---------- ACTION BAR ---------- */
+.ui-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ui-search {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+}
+
+/* ---------- SCROLL FIX ---------- */
+html, body {
+  overflow-x: hidden;
+}.app-header {
+  height: 64px;
+  background: linear-gradient(90deg, #24126a, #1b0f4f);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+/* Make header-left full width */
+.header-left {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Push back button to right */
+.back-btn {
+  margin-left: auto;   /* 🔑 MAIN LINE */
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
 }

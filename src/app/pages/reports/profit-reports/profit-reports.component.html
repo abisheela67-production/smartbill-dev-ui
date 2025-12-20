@@ -1,42 +1,56 @@
-<div class="dashboard-container">
+<div class="ui-page">
 
-  <!-- HEADER -->
-  <div class="dashboard-header">
-    <lucide-icon name="trending-up"></lucide-icon>
-    <div>
-      <h2 class="dashboard-title">Profit Reports</h2>
-      <p class="dashboard-subtitle">
-        Item, Invoice & Day-wise profit analytics
-      </p>
+  <!-- ================= HEADER ================= -->
+  <div class="ui-header">
+    <div class="ui-title d-flex align-items-center gap-2">
+      <lucide-icon name="trending-up"></lucide-icon>
+      Profit Reports
+    </div>
+    <div class="ui-subtitle">
+      Item, Invoice & Day-wise profit analytics
     </div>
   </div>
 
-  <!-- FILTER BAR -->
-  <div class="filter-section">
-    <div class="filter-bar">
+  <!-- ================= FILTER BAR ================= -->
+  <div class="ui-filter">
+    <div class="ui-filter-grid">
 
-      <div class="filter-item">
+      <div class="ui-field">
         <label>From Date</label>
-        <input type="date" [(ngModel)]="filters.fromDate" (change)="onFilterChange()" />
+        <input
+          type="date"
+          [(ngModel)]="filters.fromDate"
+          (change)="onFilterChange()"
+        />
       </div>
 
-      <div class="filter-item">
+      <div class="ui-field">
         <label>To Date</label>
-        <input type="date" [(ngModel)]="filters.toDate" (change)="onFilterChange()" />
+        <input
+          type="date"
+          [(ngModel)]="filters.toDate"
+          (change)="onFilterChange()"
+        />
       </div>
 
-      <div class="filter-item">
+      <div class="ui-field">
         <label>Company</label>
-        <select [(ngModel)]="filters.companyId" (change)="onCompanyChange()">
+        <select
+          [(ngModel)]="filters.companyId"
+          (change)="onCompanyChange()"
+        >
           <option *ngFor="let c of companies" [ngValue]="c.companyID">
             {{ c.companyName }}
           </option>
         </select>
       </div>
 
-      <div class="filter-item">
+      <div class="ui-field">
         <label>Branch</label>
-        <select [(ngModel)]="filters.branchId" (change)="onFilterChange()">
+        <select
+          [(ngModel)]="filters.branchId"
+          (change)="onFilterChange()"
+        >
           <option [ngValue]="null">All Branches</option>
           <option *ngFor="let b of branches" [ngValue]="b.branchID">
             {{ b.branchName }}
@@ -44,9 +58,12 @@
         </select>
       </div>
 
-      <div class="filter-item">
+      <div class="ui-field">
         <label>Report Type</label>
-        <select [(ngModel)]="filters.reportType" (change)="onFilterChange()">
+        <select
+          [(ngModel)]="filters.reportType"
+          (change)="onFilterChange()"
+        >
           <option value="ITEM">Item-wise</option>
           <option value="INVOICE">Invoice-wise</option>
           <option value="DAY">Day-wise</option>
@@ -56,35 +73,51 @@
     </div>
   </div>
 
-  <!-- KPI -->
-  <div class="kpi-grid">
+  <!-- ================= KPI CARDS ================= -->
+  <div class="ui-kpi-grid">
 
-    <div class="kpi-card kpi-blue">
-      <lucide-icon name="shopping-cart"></lucide-icon>
-      <span>Total Sales</span>
-      <strong>₹ {{ totalSales | number:'1.2-2' }}</strong>
+    <div class="ui-kpi">
+      <div class="ui-kpi-head kpi-primary">
+        <lucide-icon name="shopping-cart"></lucide-icon>
+        Total Sales
+      </div>
+      <div class="ui-kpi-value">
+        ₹ {{ totalSales | number:'1.2-2' }}
+      </div>
     </div>
 
-    <div class="kpi-card kpi-orange">
-      <lucide-icon name="package"></lucide-icon>
-      <span>Total Cost</span>
-      <strong>₹ {{ totalCost | number:'1.2-2' }}</strong>
+    <div class="ui-kpi">
+      <div class="ui-kpi-head kpi-warning">
+        <lucide-icon name="package"></lucide-icon>
+        Total Cost
+      </div>
+      <div class="ui-kpi-value">
+        ₹ {{ totalCost | number:'1.2-2' }}
+      </div>
     </div>
 
-    <div class="kpi-card kpi-green">
-      <lucide-icon name="trending-up"></lucide-icon>
-      <span>Total Profit</span>
-      <strong>₹ {{ totalProfit | number:'1.2-2' }}</strong>
+    <div class="ui-kpi">
+      <div class="ui-kpi-head kpi-success">
+        <lucide-icon name="trending-up"></lucide-icon>
+        Total Profit
+      </div>
+      <div class="ui-kpi-value">
+        ₹ {{ totalProfit | number:'1.2-2' }}
+      </div>
     </div>
 
   </div>
 
-  <!-- TABLE -->
-  <app-view-datatable
-    [data]="profitData"
-    [columns]="columns"
-    title="Profit Report"
-    companyName="SMARTBILLPRO">
-  </app-view-datatable>
+  <!-- ================= TABLE ================= -->
+  <div class="ui-table">
+    <div class="ui-table-body">
+      <app-view-datatable
+        [data]="profitData"
+        [columns]="columns"
+        title="Profit Report"
+        companyName="SMARTBILLPRO">
+      </app-view-datatable>
+    </div>
+  </div>
 
 </div>
