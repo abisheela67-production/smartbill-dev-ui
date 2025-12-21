@@ -30,6 +30,7 @@ import { PurchsaeOrderViewComponent } from './purchase-order/purchsae-order-view
 import { GrnMasterComponent } from './purchase-order/grn-master/grn-master.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { DefaultDashboardComponent } from './pages/container/default-dashboard/default-dashboard.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,7 @@ export const routes: Routes = [
     path: 'default',
     component: DefaultLayoutComponent,
     children: [
+      { path: 'master/dashboard', component: DefaultDashboardComponent },
       { path: 'master/company', component: CompanyMasterComponent },
       { path: 'master/branch', component: BranchMasterComponent },
       { path: 'master/department', component: DepartmentMasterComponent },

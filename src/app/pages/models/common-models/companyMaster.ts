@@ -19,6 +19,23 @@ export interface RegisterResponse {
 
 
 
+export interface CompanyDashboardDto {
+  totalSalesAmount: number;
+  customerOutstandingAmount: number;
+  totalPurchaseAmount: number;
+  supplierOutstandingAmount: number;
+  totalPurchasedQuantity: number;
+  totalSoldQuantity: number;
+  currentStockQuantity: number;
+  customerCount: number;
+  supplierCount: number;
+  productCount: number;
+}
+
+export interface CompanyDashboardResponseDto {
+  dashboard: CompanyDashboardDto;
+  activeBranchCount: number;
+}
 
 
 

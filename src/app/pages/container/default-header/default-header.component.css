@@ -1,0 +1,501 @@
+
+
+
+/* ==============================
+   HEADER — SmartBillPro (Enhanced Skote Style)
+============================== */
+
+/* Base header container */
+.header {
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ==============================
+   🔹 TOP HEADER BAR
+============================== */
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid #e6e9f0;
+  background-color:  #1D1160;
+}
+
+/* ----- Left section: brand + search ----- */
+.top-header .left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* SmartBill */
+.brand-text {
+  color: #ffffff;
+}
+
+/* Pro – highlight color */
+.brand-pro {
+  color:#f4a261;;          /* premium gold */
+  margin-left: 2px;
+  font-weight: 700;
+}
+
+
+.brand-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--color-secondary);
+  margin-right: 6px;
+}/* ===============================
+   HEADER SEARCH – CORPORATE
+================================ */
+.header-search {
+  position: relative;
+  width: 380px;
+  display: flex;
+  align-items: center;
+}
+
+/* Search icon */
+.header-search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+  background-color: #c7c5ff;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z'/%3E%3C/svg%3E") no-repeat center;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 0 0112 0z'/%3E%3C/svg%3E") no-repeat center;
+}
+
+/* Input field */
+.header-search input {
+  width: 100%;
+  height: 30px;                     /* ⬅️ reduced height */
+  padding: 6px 14px 6px 38px;       /* ⬅️ compact padding */
+  
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.15);
+
+  background: rgba(255,255,255,0.10);
+  color: #ffffff;
+  font-size: 13.5px;
+  outline: none;
+
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+}
+
+/* Placeholder */
+.header-search input::placeholder {
+  color: #c7c5ff;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Hover */
+.header-search input:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+/* Focus */
+.header-search input:focus {
+  border-color:  #F4A261;
+  background:  #140C44;
+  box-shadow:  #F4A261;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-search {
+    display: none;
+  }
+}
+
+
+
+/* ==============================
+   🔸 RIGHT SECTION
+============================== */
+.top-header .right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+/* Icon group (notifications, globe, grid) */
+.icon-group {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  color: #555;
+}
+
+.icon-group lucide-icon {
+  width: 20px;
+  height: 20px;
+  transition: color 0.25s ease, transform 0.15s ease;
+  vertical-align: middle;
+}
+
+.icon-group lucide-icon:hover {
+  color: var(--color-primary);
+  transform: scale(1.15);
+}
+
+/* Notification bell */
+.notification {
+  position: relative;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff4b4b;
+  color: #fff;
+  font-size: 0.65rem;
+  border-radius: 50%;
+  padding: 2px 6px;
+}
+/* ==============================
+   👤 USER MENU (SaaS PILL STYLE)
+============================== */
+
+/* Wrapper (important for dropdown positioning) */
+.right {
+  position: relative;
+}
+
+/* USER MENU */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius:10px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.user-menu:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* USER TEXT STACK */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+/* USERNAME */
+.username {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* ROLE UNDER USERNAME */
+.role {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #d1d5ff;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* DROPDOWN ICON */
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  color: #e5e7ff;
+  transition: transform 0.25s ease;
+}
+
+/* Rotate icon when open */
+.user-menu.open .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* ==============================
+   🔽 DROPDOWN MENU
+============================== */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 190px;
+  background: #ffffff;
+  border-radius: 5px;
+  border: 1px solid #e6e9f0;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  list-style: none;
+  padding: 6px 0;
+  z-index: 2000;
+  animation: dropdownFade 0.25s ease;
+}
+
+/* DROPDOWN ITEM */
+.dropdown li {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* ICON INSIDE DROPDOWN */
+.dropdown li lucide-angular {
+  width: 16px;
+  height: 8px;
+}
+
+/* HOVER STATE */
+.dropdown li:hover {
+  background: #1d1160;
+  color: #ffffff;
+}
+
+/* ==============================
+   ✨ ANIMATION
+============================== */
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =====================================================
+   🔥 NAVBAR HOVER — FINAL OVERRIDE (PUT AT END)
+===================================================== */
+
+/* NAV BAR */
+.nav-bar {
+  position: relative;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  overflow: visible;
+  z-index: 100;
+}
+
+/* NAV LIST */
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+/* NAV ITEM */
+.nav-item {
+  position: relative;
+}
+
+/* NAV LINK */
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 12px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: #1d1160;
+  background: transparent;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+/* ================= UNDERLINE ================= */
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  bottom: -6px;                 /* outside navbar */
+  height: 4px;
+
+  background: transparent;
+  border-radius: 4px;
+
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+/* Hover underline */
+.nav-item:hover > .nav-link::after {
+  background: #ff8a1d;
+  transform: scaleX(1);
+}
+
+/* Hover text */
+.nav-item:hover > .nav-link {
+  color: #ff8a1d;
+}
+
+/* ================= CHEVRON ================= */
+
+.submenu-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  color: #9ca3af;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-item:hover .submenu-icon {
+  transform: rotate(180deg);
+  color: #ff8a1d;
+}
+/* =====================================================
+   SUBMENU (TWO COLUMN + ACTIVE FIX)
+===================================================== */
+/* =====================================================
+   SUBMENU SECTION — FINAL (NO MOUSE LEAVE BUG)
+===================================================== */
+
+/* NAV ITEM — hover bridge */
+.nav-item {
+  position: relative;
+  padding-bottom: 16px; /* prevents gap */
+}
+
+/* SUBMENU CONTAINER */
+.submenu {
+  position: absolute;
+  top: 100%;               /* no hover gap */
+  left: 0;
+  margin-top: 8px;         /* visual spacing */
+
+  min-width: 420px;
+  max-width: 520px;
+
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px;
+
+  list-style: none;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+
+  display: none;
+  z-index: 300;
+
+  /* TWO COLUMN GRID */
+  display: none;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 6px 10px;
+
+  pointer-events: auto;
+}
+
+/* SHOW SUBMENU */
+.nav-item:hover .submenu,
+.nav-item.open .submenu {
+  display: grid;
+}
+
+/* SUBMENU LINK */
+.submenu-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1160;
+  text-decoration: none;
+
+  white-space: nowrap;
+  background: transparent;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* HOVER (NON-ACTIVE) */
+.submenu-link:hover {
+  background: #fff1e2;
+  color: #ff8a1d;
+}
+
+/* ACTIVE SUBMENU ONLY */
+.submenu-link.active {
+  background: #ffe3c7 !important;
+  color: #1d1160 !important;
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 #ff8a1d;
+}
+
+/* PREVENT PARENT HOVER LEAK */
+.nav-item:hover .submenu-link:not(.active) {
+  background: transparent;
+  color: #1d1160;
+}
+
+/* ================= ACTIVE ROUTE ================= */
+
+.nav-item.open > .nav-link {
+  color: #050200;
+}
+
+.nav-item.open > .nav-link::after {
+  background: #ff8a1d;
+  transform: scaleX(1);
+}
+

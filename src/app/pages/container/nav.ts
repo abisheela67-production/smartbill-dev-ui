@@ -11,6 +11,7 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: 'Master',
     children: [
+      { label: 'Dashboard', route: '/default/master/dashboard' },
       { label: 'Company', route: '/default/master/company' },
       { label: 'Branch', route: '/default/master/branch' },
       { label: 'Department', route: '/default/master/department' },

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   Company,
@@ -8,6 +8,7 @@ import {
   RegisterRequest,
   RegisterResponse,
   Role,
+  CompanyDashboardResponseDto,
 } from '../pages/models/common-models/companyMaster';
 import {
   User,
@@ -29,7 +30,22 @@ export class CommonserviceService {
   getCompanies(): Observable<Company[]> {
     return this.http.get<Company[]>(`${this.baseUrl}/GetCompanylist`);
   }
+  getCompanyDashboard(
+    companyId: number,
+    fromDate: string,
+    toDate: string
+  ): Observable<CompanyDashboardResponseDto> {
 
+    const params = new HttpParams()
+      .set('companyId', companyId)
+      .set('fromDate', fromDate)
+      .set('toDate', toDate);
+
+    return this.http.get<CompanyDashboardResponseDto>(
+      `${this.baseUrl}/CommonDashboard`,
+      { params }
+    );
+  }
   register(data: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, data);
   }

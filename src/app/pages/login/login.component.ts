@@ -11,7 +11,7 @@ import { CommonserviceService } from '../../services/commonservice.service';
 import { User } from '../models/common-models/user';
 
 /* ===============================
-   API RESPONSE MODELS
+   API RESPONSE MODEL
 ================================ */
 interface RegisterResponse {
   success: boolean;
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   /* ===============================
      USERS
   ================================ */
-  apiUsers: User[] = [];      // from GetUserList (API)
+  apiUsers: User[] = [];
   isAdmin = false;
 
   /* ===============================
@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit {
   ================================ */
   ngOnInit(): void {
     this.initForms();
-    this.loadApiUsers(); // 🔑 IMPORTANT: preload API users
+    this.loadApiUsers();
   }
 
   /* ===============================
@@ -88,7 +88,7 @@ export class LoginComponent implements OnInit {
   }
 
   /* ===============================
-     LOGIN (ADMIN + API + LOCAL)
+     LOGIN
   ================================ */
   login(): void {
     if (this.loginForm.invalid) {
@@ -98,19 +98,17 @@ export class LoginComponent implements OnInit {
 
     const { userName, password } = this.loginForm.value;
 
-    /* ========== ADMIN LOGIN ========== */
+    /* ========= ADMIN LOGIN ========= */
     if (userName === 'admin' && password === '123') {
-      this.isAdmin = true;
-
       localStorage.setItem('userId', '0');
       localStorage.setItem('userName', 'admin');
       localStorage.setItem('role', 'admin');
 
-      this.router.navigate(['/default']);
+      this.router.navigate(['/default/master/dashboard']);
       return;
     }
 
-    /* ========== API USER LOGIN ========== */
+    /* ========= API USER LOGIN ========= */
     const apiUser = this.apiUsers.find(
       (u) =>
         u.userName === userName &&
@@ -124,11 +122,11 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('companyId', apiUser.companyID.toString());
       localStorage.setItem('role', 'client');
 
-      this.router.navigate(['/default']);
+      this.router.navigate(['/default/master/dashboard']);
       return;
     }
 
-    /* ========== LOCAL STORAGE USER LOGIN (DEMO) ========== */
+    /* ========= LOCAL STORAGE LOGIN (DEMO) ========= */
     const localUsers: any[] = JSON.parse(
       localStorage.getItem('users') || '[]'
     );
@@ -143,11 +141,11 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('companyId', localUser.companyId);
       localStorage.setItem('role', 'client');
 
-      this.router.navigate(['/default']);
+      this.router.navigate(['/default/master/dashboard']);
       return;
     }
 
-    /* ========== FAIL ========== */
+    /* ========= FAIL ========= */
     this.errorMessage = 'Invalid username or password';
   }
 
@@ -158,7 +156,6 @@ export class LoginComponent implements OnInit {
     this.commonService.getUsers().subscribe({
       next: (res: User[]) => {
         this.apiUsers = res;
-        console.log('API users loaded:', this.apiUsers);
       },
       error: () => {
         this.errorMessage = 'Failed to load users';
@@ -166,67 +163,69 @@ export class LoginComponent implements OnInit {
     });
   }
 
-register(): void {
-  if (this.registerForm.invalid) {
-    this.errorMessage = 'Company name, username and password are required';
-    return;
-  }
+  /* ===============================
+     REGISTER
+  ================================ */
+  register(): void {
+    if (this.registerForm.invalid) {
+      this.errorMessage = 'Company name, username and password are required';
+      return;
+    }
 
-  this.loading = true;
-  this.errorMessage = '';
+    this.loading = true;
+    this.errorMessage = '';
 
-  const payload = {
-    companyName: this.registerForm.value.companyName,
-    userName: this.registerForm.value.userName,
-    passwordHash: this.registerForm.value.passwordHash,
+    const payload = {
+      companyName: this.registerForm.value.companyName,
+      userName: this.registerForm.value.userName,
+      passwordHash: this.registerForm.value.passwordHash,
 
-    // OPTIONAL FIELDS (send empty strings)
-    companyEmail: this.registerForm.value.companyEmail || '',
-    userEmail: this.registerForm.value.userEmail || '',
-    phone: this.registerForm.value.phone || '',
-  };
+      // optional
+      companyEmail: '',
+      userEmail: '',
+      phone: '',
+    };
 
-  this.commonService.register(payload).subscribe({
-    next: (res: RegisterResponse) => {
-      this.loading = false;
+    this.commonService.register(payload).subscribe({
+      next: (res: RegisterResponse) => {
+        this.loading = false;
 
-      if (!res.success) {
+        if (!res.success) {
+          this.errorMessage = 'Registration failed';
+          return;
+        }
+
+        /* ===== SAVE USER LOCALLY (DEMO) ===== */
+        const localUsers: any[] = JSON.parse(
+          localStorage.getItem('users') || '[]'
+        );
+
+        const exists = localUsers.some(
+          (u: any) => u.userName === payload.userName
+        );
+
+        if (exists) {
+          this.errorMessage = 'Username already exists';
+          return;
+        }
+
+        localUsers.push({
+          userId: Date.now().toString(),
+          companyId: res.companyID,
+          userName: payload.userName,
+          password: payload.passwordHash,
+        });
+
+        localStorage.setItem('users', JSON.stringify(localUsers));
+
+        alert('Company registered successfully');
+        this.registerForm.reset();
+        this.switchTab('login');
+      },
+      error: () => {
+        this.loading = false;
         this.errorMessage = 'Registration failed';
-        return;
-      }
-
-      /* ===== SAVE USER LOCALLY (DEMO LOGIN) ===== */
-      const localUsers: any[] = JSON.parse(
-        localStorage.getItem('users') || '[]'
-      );
-
-      const exists = localUsers.some(
-        (u: any) => u.userName === payload.userName
-      );
-
-      if (exists) {
-        this.errorMessage = 'Username already exists';
-        return;
-      }
-
-      localUsers.push({
-        userId: Date.now().toString(),
-        companyId: res.companyID,
-        userName: payload.userName,
-        password: payload.passwordHash, // demo only
-      });
-
-      localStorage.setItem('users', JSON.stringify(localUsers));
-
-      alert('Company registered successfully');
-      this.registerForm.reset();
-      this.switchTab('login');
-    },
-    error: () => {
-      this.loading = false;
-      this.errorMessage = 'Registration failed';
-    },
-  });
-}
-
+      },
+    });
+  }
 }

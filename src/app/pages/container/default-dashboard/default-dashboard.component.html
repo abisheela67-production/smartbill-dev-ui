@@ -1,0 +1,46 @@
+<div class="dashboard-container">
+
+  <div class="kpi-grid">
+
+    <div class="kpi-card">
+      <span class="kpi-label">Total Sales</span>
+      <strong class="kpi-value">₹ {{ dashboardData.dashboard.totalSalesAmount | number:'1.0-0' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Customer Outstanding</span>
+      <strong class="kpi-value">₹ {{ dashboardData.dashboard.customerOutstandingAmount | number:'1.0-0' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Total Purchase</span>
+      <strong class="kpi-value">₹ {{ dashboardData.dashboard.totalPurchaseAmount | number:'1.0-0' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Supplier Outstanding</span>
+      <strong class="kpi-value">₹ {{ dashboardData.dashboard.supplierOutstandingAmount | number:'1.0-0' }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Products</span>
+      <strong class="kpi-value">{{ dashboardData.dashboard.productCount }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Customers</span>
+      <strong class="kpi-value">{{ dashboardData.dashboard.customerCount }}</strong>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Suppliers</span>
+      <strong class="kpi-value">{{ dashboardData.dashboard.supplierCount }}</strong>
+    </div>
+
+    <div class="kpi-card highlight">
+      <span class="kpi-label">Active Branches</span>
+      <strong class="kpi-value">{{ dashboardData.activeBranchCount }}</strong>
+    </div>
+
+  </div>
+</div>
