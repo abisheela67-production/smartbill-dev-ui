@@ -139,7 +139,6 @@ export class SalesEntryComponent {
   totalRoundOff: number = 0;
   selectedCustomerName: string = 'Walk-in Customer';
 
-
   businessTypes: BusinessType[] = [];
 
   gstTypesList: GstTransactionType[] = [];
@@ -439,25 +438,24 @@ export class SalesEntryComponent {
     });
   }
 
-loadCustomers() {
-  this.masterService.getCustomers().subscribe({
-    next: (res) => {
-      this.customers = res ?? [];
-      console.log('Customers loaded:', this.customers);
-    },
-    error: () => this.swall.error('Error', 'Failed to load customers!')
-  });
-}
-onCustomerChange() {
-  const customer = this.customers.find(
-    c => c.customerID === this.selectedCustomerId
-  );
+  loadCustomers() {
+    this.masterService.getCustomers().subscribe({
+      next: (res) => {
+        this.customers = res ?? [];
+        console.log('Customers loaded:', this.customers);
+      },
+      error: () => this.swall.error('Error', 'Failed to load customers!'),
+    });
+  }
+  onCustomerChange() {
+    const customer = this.customers.find(
+      (c) => c.customerID === this.selectedCustomerId
+    );
 
-  this.selectedCustomerName = customer?.customerName ?? 'Walk-in Customer';
+    this.selectedCustomerName = customer?.customerName ?? 'Walk-in Customer';
 
-  console.log('Customer selected:', this.selectedCustomerName);
-}
-
+    console.log('Customer selected:', this.selectedCustomerName);
+  }
 
   loadDropdowns(): void {
     const companyId = this.authService.companyId;
@@ -1224,7 +1222,7 @@ onCustomerChange() {
       branchName: branch?.branchName ?? '',
 
       customerID: num(this.selectedCustomerId),
-      customerName: customer?.customerName ,
+      customerName: customer?.customerName,
       customerGSTIN: this.customerGSTIN ?? '',
       customerState: customer?.state ?? '',
       companyState: company?.state ?? '',
@@ -1327,7 +1325,10 @@ onCustomerChange() {
             )
             .then((result: any) => {
               if (result.isConfirmed) {
-                window.open(`/Sales/SalesView/${invoiceNo}`, '_blank'); // ✅ Use invoiceNo
+                const url = this.router.serializeUrl(
+                  this.router.createUrlTree(['/Sales/SalesView', invoiceNo])
+                );
+                window.open(url, '_blank');
               }
 
               this.nextBill();
