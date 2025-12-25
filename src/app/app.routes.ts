@@ -116,8 +116,9 @@ export const routes: Routes = [
       {
         path: 'SalesView/:id',
         component: SalesViewComponent,
-        data: { hideHeader: true },
+        data: { hideHeader: true, renderMode: 'client' },
       },
+
       { path: '', redirectTo: 'SalesEntry', pathMatch: 'full' },
     ],
   },
