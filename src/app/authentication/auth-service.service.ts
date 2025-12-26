@@ -1,30 +1,47 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor() {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   get userId(): number | null {
-    const id = localStorage.getItem('userId');
-    return id ? +id : null;
+    if (isPlatformBrowser(this.platformId)) {
+      const id = localStorage.getItem('userId');
+      return id ? +id : null;
+    }
+    return null;
   }
 
   get userName(): string | null {
-    return localStorage.getItem('userName');
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('userName');
+    }
+    return null;
   }
 
   get role(): string | null {
-    return localStorage.getItem('role');
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('role');
+    }
+    return null;
   }
 
   get companyId(): number | null {
-    const id = localStorage.getItem('companyId');
-    return id ? +id : null;
+    if (isPlatformBrowser(this.platformId)) {
+      const id = localStorage.getItem('companyId');
+      return id ? +id : null;
+    }
+    return null;
   }
 
   logout(): void {
-    localStorage.clear();
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+    }
   }
 }
