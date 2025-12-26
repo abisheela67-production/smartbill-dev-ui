@@ -1,297 +1,261 @@
+/* =====================================================
+   GLOBAL RESET & BASE
+===================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+}
 
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-/* ==============================
-   HEADER — SmartBillPro (Enhanced Skote Style)
-============================== */
+/* =====================================================
+   LUCIDE ICON FIX (MANDATORY)
+===================================================== */
+lucide-angular,
+svg[lucide] {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
-/* Base header container */
+/* =====================================================
+   HEADER BASE
+===================================================== */
 .header {
-  font-family: "Poppins", sans-serif;
-  width: 100%;
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* ==============================
-   🔹 TOP HEADER BAR
-============================== */
+/* =====================================================
+   TOP HEADER BAR
+===================================================== */
 .top-header {
-  display: flex;
+  display: grid;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 2rem;
-  border-bottom: 1px solid #e6e9f0;
-  background-color:  #1D1160;
+  align-items: center;
+  height: 56px;
+  padding: 0 12px;
+  background: #1d1160;
+  grid-template-columns: 40px 1fr auto;
 }
 
-/* ----- Left section: brand + search ----- */
-.top-header .left {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
+/* =====================================================
+   BRAND
+===================================================== */
 .brand {
+  justify-self: center;
   display: flex;
   align-items: center;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
-/* SmartBill */
+
 .brand-text {
   color: #ffffff;
 }
 
-/* Pro – highlight color */
 .brand-pro {
-  color:#f4a261;;          /* premium gold */
+  color: #f4a261;
   margin-left: 2px;
   font-weight: 700;
 }
 
-
-.brand-icon {
-  width: 22px;
-  height: 22px;
-  color: var(--color-secondary);
-  margin-right: 6px;
-}/* ===============================
-   HEADER SEARCH – CORPORATE
-================================ */
-.header-search {
-  position: relative;
-  width: 380px;
-  display: flex;
-  align-items: center;
-}
-
-/* Search icon */
-.header-search .search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  opacity: 0.85;
-  background-color: #c7c5ff;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z'/%3E%3C/svg%3E") no-repeat center;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 0 0112 0z'/%3E%3C/svg%3E") no-repeat center;
-}
-
-/* Input field */
-.header-search input {
-  width: 100%;
-  height: 30px;                     /* ⬅️ reduced height */
-  padding: 6px 14px 6px 38px;       /* ⬅️ compact padding */
-  
-  border-radius: 5px;
-  border: 1px solid rgba(255,255,255,0.15);
-
-  background: rgba(255,255,255,0.10);
+/* =====================================================
+   MOBILE MENU BUTTON
+===================================================== */
+.mobile-menu-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
   color: #ffffff;
-  font-size: 13.5px;
-  outline: none;
-
-  backdrop-filter: blur(6px);
-  transition: all 0.2s ease;
-}
-
-/* Placeholder */
-.header-search input::placeholder {
-  color: #c7c5ff;
-  font-weight: 400;
-  opacity: 0.9;
-}
-
-/* Hover */
-.header-search input:hover {
-  background: rgba(255,255,255,0.14);
-}
-
-/* Focus */
-.header-search input:focus {
-  border-color:  #F4A261;
-  background:  #140C44;
-  box-shadow:  #F4A261;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .header-search {
-    display: none;
-  }
-}
-
-
-
-/* ==============================
-   🔸 RIGHT SECTION
-============================== */
-.top-header .right {
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  position: relative;
+  justify-content: center;
 }
 
-/* Icon group (notifications, globe, grid) */
-.icon-group {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  color: #555;
-}
-
-.icon-group lucide-icon {
-  width: 20px;
-  height: 20px;
-  transition: color 0.25s ease, transform 0.15s ease;
-  vertical-align: middle;
-}
-
-.icon-group lucide-icon:hover {
-  color: var(--color-primary);
-  transform: scale(1.15);
-}
-
-/* Notification bell */
-.notification {
-  position: relative;
-}
-
-.notification .badge {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background: #ff4b4b;
-  color: #fff;
-  font-size: 0.65rem;
-  border-radius: 50%;
-  padding: 2px 6px;
-}
-/* ==============================
-   👤 USER MENU (SaaS PILL STYLE)
-============================== */
-
-/* Wrapper (important for dropdown positioning) */
+/* =====================================================
+   USER MENU (TOP RIGHT)
+===================================================== */
 .right {
   position: relative;
 }
 
-/* USER MENU */
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  border-radius:10px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.18);
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease;
 }
 
-/* Hover effect */
 .user-menu:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.24);
 }
 
-/* USER TEXT STACK */
 .user-info {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
-/* USERNAME */
 .username {
   font-size: 12px;
   font-weight: 600;
   color: #ffffff;
-  white-space: nowrap;
 }
 
-/* ROLE UNDER USERNAME */
 .role {
-  margin-top: 2px;
   font-size: 10px;
   color: #d1d5ff;
-  opacity: 0.85;
-  white-space: nowrap;
 }
 
-/* DROPDOWN ICON */
-.dropdown-icon {
-  width: 16px;
-  height: 16px;
-  color: #e5e7ff;
-  transition: transform 0.25s ease;
-}
-
-/* Rotate icon when open */
-.user-menu.open .dropdown-icon {
-  transform: rotate(180deg);
-}
-
-/* ==============================
-   🔽 DROPDOWN MENU
-============================== */
-
+/* =====================================================
+   USER DROPDOWN
+===================================================== */
 .dropdown {
   position: absolute;
-  top: calc(100% + 8px);
   right: 0;
+  top: calc(100% + 10px);
   width: 190px;
   background: #ffffff;
-  border-radius: 5px;
-  border: 1px solid #e6e9f0;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-  list-style: none;
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
   padding: 6px 0;
   z-index: 2000;
-  animation: dropdownFade 0.25s ease;
 }
 
-/* DROPDOWN ITEM */
 .dropdown li {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
-  color: #1f2937;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.15s ease;
 }
 
-/* ICON INSIDE DROPDOWN */
-.dropdown li lucide-angular {
-  width: 16px;
-  height: 8px;
-}
-
-/* HOVER STATE */
 .dropdown li:hover {
   background: #1d1160;
   color: #ffffff;
 }
 
-/* ==============================
-   ✨ ANIMATION
-============================== */
+/* =====================================================
+   DESKTOP NAV BAR
+===================================================== */
+.nav-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
 
-@keyframes dropdownFade {
+.nav-list {
+  display: flex;
+  gap: 1.8rem;
+  padding: 0 16px;
+}
+
+/* hover bridge to prevent close */
+.nav-item {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+/* =====================================================
+   NAV LINKS (TOP STRIP)
+===================================================== */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1d1160;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+/* underline */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 3px;
+  background: #ff8a1d;
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+.nav-item.open > .nav-link::after {
+  transform: scaleX(1);
+}
+
+/* =====================================================
+   DESKTOP MEGA SUBMENU
+===================================================== */
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  min-width: 420px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: none;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px 18px;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.18);
+  z-index: 500;
+  pointer-events: auto;
+}
+
+/* click or hover open */
+.nav-item.open .submenu,
+.nav-item:hover .submenu {
+  display: grid;
+}
+
+/* animation */
+.submenu {
+  animation: submenuFade 0.18s ease;
+}
+
+@keyframes submenuFade {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -299,203 +263,156 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 /* =====================================================
-   🔥 NAVBAR HOVER — FINAL OVERRIDE (PUT AT END)
+   SUBMENU LINKS
 ===================================================== */
-
-/* NAV BAR */
-.nav-bar {
-  position: relative;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  overflow: visible;
-  z-index: 100;
-}
-
-/* NAV LIST */
-.nav-list {
-  display: flex;
-  align-items: center;
-  gap: 1.6rem;
-}
-
-/* NAV ITEM */
-.nav-item {
-  position: relative;
-}
-
-/* NAV LINK */
-.nav-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  padding: 12px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-
-  color: #1d1160;
-  background: transparent;
-  text-decoration: none;
-
-  cursor: pointer;
-  transition: color 0.25s ease;
-}
-
-/* ================= UNDERLINE ================= */
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-
-  bottom: -6px;                 /* outside navbar */
-  height: 4px;
-
-  background: transparent;
-  border-radius: 4px;
-
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.25s ease, background 0.25s ease;
-}
-
-/* Hover underline */
-.nav-item:hover > .nav-link::after {
-  background: #ff8a1d;
-  transform: scaleX(1);
-}
-
-/* Hover text */
-.nav-item:hover > .nav-link {
-  color: #ff8a1d;
-}
-
-/* ================= CHEVRON ================= */
-
-.submenu-icon {
-  width: 14px;
-  height: 14px;
-  margin-left: 4px;
-  color: #9ca3af;
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.nav-item:hover .submenu-icon {
-  transform: rotate(180deg);
-  color: #ff8a1d;
-}
-/* =====================================================
-   SUBMENU (TWO COLUMN + ACTIVE FIX)
-===================================================== */
-/* =====================================================
-   SUBMENU SECTION — FINAL (NO MOUSE LEAVE BUG)
-===================================================== */
-
-/* NAV ITEM — hover bridge */
-.nav-item {
-  position: relative;
-  padding-bottom: 16px; /* prevents gap */
-}
-
-/* SUBMENU CONTAINER */
-.submenu {
-  position: absolute;
-  top: 100%;               /* no hover gap */
-  left: 0;
-  margin-top: 8px;         /* visual spacing */
-
-  min-width: 420px;
-  max-width: 520px;
-
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 12px;
-
-  list-style: none;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
-
-  display: none;
-  z-index: 300;
-
-  /* TWO COLUMN GRID */
-  display: none;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 6px 10px;
-
-  pointer-events: auto;
-}
-
-/* SHOW SUBMENU */
-.nav-item:hover .submenu,
-.nav-item.open .submenu {
-  display: grid;
-}
-
-/* SUBMENU LINK */
 .submenu-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
   padding: 10px 12px;
   border-radius: 10px;
-
   font-size: 13px;
   font-weight: 600;
   color: #1d1160;
   text-decoration: none;
-
-  white-space: nowrap;
-  background: transparent;
-
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-/* HOVER (NON-ACTIVE) */
 .submenu-link:hover {
+  background: #f4f3ff;
+  color: #ff8a1d;
+}
+
+/* =====================================================
+   MOBILE OVERLAY
+===================================================== */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+}
+
+/* =====================================================
+   MOBILE DRAWER (PERFECT FIT)
+===================================================== */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 85%;
+  max-width: 320px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 1000;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-nav.open {
+  left: 0;
+}
+
+/* =====================================================
+   MOBILE HEADER
+===================================================== */
+.mobile-nav-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+
+/* =====================================================
+   MOBILE SEARCH
+===================================================== */
+.mobile-search {
+  width: calc(100% - 24px);
+  margin: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* =====================================================
+   MOBILE MENU LIST
+===================================================== */
+.mobile-nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.mobile-parent {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1160;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.mobile-parent:hover {
+  background: #f4f3ff;
+}
+
+.mobile-submenu a {
+  display: block;
+  padding: 10px 28px;
+  font-size: 14px;
+  color: #1d1160;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.mobile-submenu a:hover {
   background: #fff1e2;
   color: #ff8a1d;
 }
 
-/* ACTIVE SUBMENU ONLY */
-.submenu-link.active {
-  background: #ffe3c7 !important;
-  color: #1d1160 !important;
-  font-weight: 700;
-  box-shadow: inset 4px 0 0 #ff8a1d;
+/* =====================================================
+   MOBILE USER FOOTER
+===================================================== */
+.mobile-user {
+  flex-shrink: 0;
+  border-top: 1px solid #eee;
+  padding: 12px;
+  background: #ffffff;
 }
 
-/* PREVENT PARENT HOVER LEAK */
-.nav-item:hover .submenu-link:not(.active) {
-  background: transparent;
-  color: #1d1160;
+.mobile-actions {
+  display: flex;
+  gap: 8px;
 }
 
-/* ================= ACTIVE ROUTE ================= */
-
-.nav-item.open > .nav-link {
-  color: #050200;
+.logout {
+  color: red;
 }
 
-.nav-item.open > .nav-link::after {
-  background: #ff8a1d;
-  transform: scaleX(1);
+/* =====================================================
+   BODY SCROLL LOCK
+===================================================== */
+body.mobile-open {
+  overflow: hidden;
 }
 
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .nav-bar {
+    display: none;
+  }
+}

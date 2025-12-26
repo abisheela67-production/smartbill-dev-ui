@@ -55,6 +55,7 @@ import {
   BarChart,
   BarChart2,
   AlertCircle,
+    Menu,
 
   // ===== MEASUREMENT =====
   Ruler,
@@ -122,7 +123,7 @@ import {
       BarChart,
       BarChart2,
       AlertCircle,
-
+  Menu,
     })
   ],
   exports: [LucideAngularModule]

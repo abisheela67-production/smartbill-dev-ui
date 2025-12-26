@@ -19,31 +19,40 @@ export class DefaultHeaderComponent implements OnInit {
   navItems: NavItem[] = [];
   userDropdownOpen = false;
 
-  /** 🔑 prevents auto hover open after login */
-  private allowHover = false;
+  /** desktop hover control */
+  allowHover = false;
+
+  /** mobile menu */
+  isMobileMenuOpen = false;
+  isMobile = window.innerWidth <= 768;
 
   constructor(
     private router: Router,
     private commonService: CommonserviceService
   ) {}
 
-  /* =====================================================
-     INIT
-  ===================================================== */
+  /* ================= INIT ================= */
   ngOnInit(): void {
     this.loadNavigation();
 
-    /* ❌ DO NOT auto expand menu on dashboard load */
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         this.closeAllMenus();
+        this.closeMobileMenu();
       });
   }
 
-  /* =====================================================
-     LOAD NAVIGATION
-  ===================================================== */
+  /* ================= RESIZE ================= */
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.closeMobileMenu();
+    }
+  }
+
+  /* ================= NAV LOAD ================= */
   private loadNavigation(): void {
     const userId = Number(localStorage.getItem('userId'));
     const role = localStorage.getItem('role');
@@ -53,131 +62,113 @@ export class DefaultHeaderComponent implements OnInit {
     forkJoin({
       permissions: this.commonService.getPermissionsByUser(userId),
       modules: this.commonService.getAllModules(),
-    }).subscribe({
-      next: ({ permissions, modules }) => {
-        const buildNavTree = (
-          allModules: any[],
-          parentId: number | null = null
-        ): NavItem[] => {
-          return allModules
-            .filter((m) => m.parentID === parentId)
-            .map((m) => ({
-              label: m.label ?? 'Untitled',
-              route: m.route ?? undefined,
-              icon: m.icon ?? '',
-              expanded: false, // 🔥 IMPORTANT
-              children: buildNavTree(allModules, m.moduleID),
-            }));
-        };
+    }).subscribe(({ permissions, modules }) => {
+      const buildTree = (
+        all: any[],
+        parentId: number | null = null
+      ): NavItem[] =>
+        all
+          .filter((m) => m.parentID === parentId)
+          .map((m) => ({
+            label: m.label,
+            route: m.route,
+            icon: m.icon,
+            expanded: false,
+            children: buildTree(all, m.moduleID),
+          }));
 
-        if (role === 'admin') {
-          this.navItems = buildNavTree(modules);
-        } else if (permissions?.length) {
-          const allowedIds = permissions.map((p: any) => p.moduleID);
-          const allowedModules = modules.filter((m: any) =>
-            allowedIds.includes(m.moduleID)
-          );
-          this.navItems = buildNavTree(allowedModules);
-        }
-
-        this.closeAllMenus();
-      },
-      error: (err) => console.error('Navigation load failed:', err),
+      if (role === 'admin') {
+        this.navItems = buildTree(modules);
+      } else {
+        const allowedIds = permissions.map((p: any) => p.moduleID);
+        const allowed = modules.filter(
+          (m: any) =>
+            allowedIds.includes(m.moduleID) ||
+            allowedIds.includes(m.parentID)
+        );
+        this.navItems = buildTree(allowed);
+      }
     });
   }
 
-  /* =====================================================
-     MENU CLICK (PARENT)
-  ===================================================== */
-  onMenuClick(item: NavItem, event: Event): void {
-    event.preventDefault();
-    this.allowHover = true; // 🔓 enable hover after user action
+  /* ================= DESKTOP MENU ================= */
 
-    if (!item.children?.length) return;
-
-    this.navItems.forEach((i) => {
-      if (i !== item) i.expanded = false;
-    });
-
-    item.expanded = !item.expanded;
+  onMenuEnter(item: NavItem) {
+    if (this.isMobile || !this.allowHover) return;
+    this.navItems.forEach((i) => (i.expanded = i === item));
   }
 
-  /* =====================================================
-     HOVER CONTROL
-  ===================================================== */
-  onMenuEnter(item: NavItem): void {
-    if (!this.allowHover) return;
-
-    this.navItems.forEach((i) => {
-      if (i !== item) i.expanded = false;
-    });
-
-    item.expanded = true;
-  }
-
-  onMenuLeave(item: NavItem): void {
-    if (!this.allowHover) return;
+  onMenuLeave(item: NavItem) {
+    if (this.isMobile || !this.allowHover) return;
     item.expanded = false;
   }
 
-  /* =====================================================
-     GLOBAL CLICK → ENABLE HOVER
-  ===================================================== */
-  @HostListener('document:click')
-  enableHover(): void {
-    this.allowHover = true;
+
+
+  /* ================= MOBILE MENU ================= */
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
-  /* =====================================================
-     UTIL
-  ===================================================== */
-  private closeAllMenus(): void {
-    this.navItems.forEach((item) => (item.expanded = false));
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+    this.closeAllMenus();
   }
 
-  /* =====================================================
-     USER DROPDOWN
-  ===================================================== */
-  toggleUserDropdown(event: Event): void {
+  toggleMobileItem(item: NavItem) {
+    item.expanded = !item.expanded;
+  }
+
+  /* ================= USER ================= */
+  toggleUserDropdown(event: Event) {
     event.stopPropagation();
     this.userDropdownOpen = !this.userDropdownOpen;
   }
 
   @HostListener('document:click', ['$event'])
-  onOutsideClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.user-menu')) {
+  onDocClick(event: Event) {
+    this.allowHover = true;
+    if (!(event.target as HTMLElement).closest('.user-menu')) {
       this.userDropdownOpen = false;
     }
   }
 
-  goToProfile(): void {
+  goToProfile() {
     this.router.navigate(['/profile']);
     this.userDropdownOpen = false;
   }
 
-  goToSettings(): void {
+  goToSettings() {
     this.router.navigate(['/settings']);
     this.userDropdownOpen = false;
   }
 
-  logout(): void {
-    localStorage.clear();
+  logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('role');
     this.router.navigate(['/login']);
   }
 
-  /* =====================================================
-     AUTH HELPERS
-  ===================================================== */
-  isLoggedIn(): boolean {
+  isLoggedIn() {
     return !!localStorage.getItem('userId');
   }
 
-  getCurrentUserName(): string {
-    return localStorage.getItem('userName') || 'Guest';
+  getCurrentUserName() {
+    return localStorage.getItem('userName') || 'User';
   }
 
-  getCurrentUserRole(): string {
-    return localStorage.getItem('role') || 'User';
+  getCurrentUserRole() {
+    return localStorage.getItem('role') || 'Guest';
   }
+  onMenuClick(item: any, event: MouseEvent) {
+  event.preventDefault();
+  this.navItems.forEach(i => i.expanded = false);
+  item.expanded = !item.expanded;
+}
+
+closeAllMenus() {
+  this.navItems.forEach(i => i.expanded = false);
+}
+
 }
