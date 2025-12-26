@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/cracker-shop",
+    "public": "dist/cracker-shop/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
