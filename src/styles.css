@@ -64,19 +64,47 @@ body {
   color: var(--color-text-light);
 }
 
-/* ==============================
-   FOOTER
-============================== */
+/* =====================================================
+   FOOTER (ENTERPRISE STYLE)
+===================================================== */
 app-default-footer {
-  height: 40px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg-white);
-  color: var(--color-text-dark);
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 13px;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.04);
 }
 
+/* =====================================================
+   FOOTER LINKS
+===================================================== */
+app-default-footer a {
+  color: #1d1160;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+app-default-footer a:hover {
+  text-decoration: underline;
+}
+
+/* =================================================
+   FOOTER CONTENT
+================================================= */
+app-default-footer span,
+app-default-footer a {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+app-default-footer a:hover {
+  text-decoration: underline;
+  color: #1d1160;
+}
 /* ==============================
    HEADINGS
 ============================== */
@@ -402,7 +430,7 @@ app-default-header {
 /* MAIN CONTENT — Adjust for header height */
 .layout-content {
   flex: 1;
-  margin-top: 120px;
+  margin-top: 100px;
   overflow-y: auto;
   background: #f9f9f9;
   padding: 20px;
