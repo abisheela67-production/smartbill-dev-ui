@@ -432,7 +432,7 @@ app-default-header {
   flex: 1;
   margin-top: 100px;
   overflow-y: auto;
-  background: #f9f9f9;
+  background: #ffff  ;
   padding: 20px;
 }
 /* FULLSCREEN PAGE (no header/footer/padding) */

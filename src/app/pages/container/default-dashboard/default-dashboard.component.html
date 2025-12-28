@@ -1,46 +1,118 @@
 <div class="dashboard-container">
-
-  <div class="kpi-grid">
-
-    <div class="kpi-card">
-      <span class="kpi-label">Total Sales</span>
-      <strong class="kpi-value">₹ {{ dashboardData.dashboard.totalSalesAmount | number:'1.0-0' }}</strong>
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div class="header-text">
+      <h1>Welcome back, {{ userName }}</h1>
+      <p>Here’s what’s happening in your business</p>
     </div>
 
-    <div class="kpi-card">
-      <span class="kpi-label">Customer Outstanding</span>
-      <strong class="kpi-value">₹ {{ dashboardData.dashboard.customerOutstandingAmount | number:'1.0-0' }}</strong>
-    </div>
+    <div class="date-filter">
+      <input
+        type="date"
+        [(ngModel)]="fromDate"
+        [max]="toDate"
+        (change)="onDateChange()"
+      />
 
-    <div class="kpi-card">
-      <span class="kpi-label">Total Purchase</span>
-      <strong class="kpi-value">₹ {{ dashboardData.dashboard.totalPurchaseAmount | number:'1.0-0' }}</strong>
-    </div>
+      <span class="date-separator">→</span>
 
-    <div class="kpi-card">
-      <span class="kpi-label">Supplier Outstanding</span>
-      <strong class="kpi-value">₹ {{ dashboardData.dashboard.supplierOutstandingAmount | number:'1.0-0' }}</strong>
+      <input
+        type="date"
+        [(ngModel)]="toDate"
+        [max]="today"
+        (change)="onDateChange()"
+      />
     </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Products</span>
-      <strong class="kpi-value">{{ dashboardData.dashboard.productCount }}</strong>
-    </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Customers</span>
-      <strong class="kpi-value">{{ dashboardData.dashboard.customerCount }}</strong>
-    </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Suppliers</span>
-      <strong class="kpi-value">{{ dashboardData.dashboard.supplierCount }}</strong>
-    </div>
-
-    <div class="kpi-card highlight">
-      <span class="kpi-label">Active Branches</span>
-      <strong class="kpi-value">{{ dashboardData.activeBranchCount }}</strong>
-    </div>
-
   </div>
-</div>
+
+  <!-- KPI GRID -->
+  <div class="kpi-grid" *ngIf="dashboardData && !loading">
+    <div class="kpi-card sales">
+      <lucide-icon name="trending-up" class="kpi-icon"></lucide-icon>
+      <span>Total Sales</span>
+      <strong
+        >₹
+        {{
+          dashboardData.dashboard.totalSalesAmount | number : "1.0-0"
+        }}</strong
+      >
+    </div>
+    <div class="kpi-card purchase">
+      <lucide-icon name="shopping-cart" class="kpi-icon"></lucide-icon>
+      <span>Total Purchase</span>
+      <strong
+        >₹
+        {{
+          dashboardData.dashboard.totalPurchaseAmount | number : "1.0-0"
+        }}</strong
+      >
+    </div>
+
+    <div class="kpi-card outstanding">
+      <lucide-icon name="wallet" class="kpi-icon"></lucide-icon>
+      <span>Customer Outstanding</span>
+      <strong
+        >₹
+        {{
+          dashboardData.dashboard.customerOutstandingAmount | number : "1.0-0"
+        }}</strong
+      >
+    </div>
+
+    <div class="kpi-card supplier">
+      <lucide-icon name="truck" class="kpi-icon"></lucide-icon>
+      <span>Supplier Outstanding</span>
+      <strong
+        >₹
+        {{
+          dashboardData.dashboard.supplierOutstandingAmount | number : "1.0-0"
+        }}</strong
+      >
+    </div>
+
+   
+      <!-- KPI GRID
+        <div class="overall-card">
+      <div class="overall-header">
+        <div class="header-left">
+          <div class="info-icon">i</div>
+          <h3>Overall Information</h3>
+        </div>
+      </div>
+
+      <div class="overall-kpi-grid">
+        <div class="overall-kpi">
+          <div class="kpi-icon blue">
+            <lucide-icon name="box"></lucide-icon>
+          </div>
+          <span>Products</span>
+          <strong>{{ dashboardData.dashboard.productCount }}</strong>
+        </div>
+
+        <div class="overall-kpi">
+          <div class="kpi-icon orange">
+            <lucide-icon name="users"></lucide-icon>
+          </div>
+          <span>Customers</span>
+          <strong>{{ dashboardData.dashboard.customerCount }}</strong>
+        </div>
+
+        <div class="overall-kpi">
+          <div class="kpi-icon green">
+            <lucide-icon name="building-2"></lucide-icon>
+          </div>
+          <span>Suppliers</span>
+          <strong>{{ dashboardData.dashboard.supplierCount }}</strong>
+        </div>
+
+        <div class="overall-kpi">
+          <div class="kpi-icon purple">
+            <lucide-icon name="building-2"></lucide-icon>
+          </div>
+          <span>Active Branches</span>
+          <strong>{{ dashboardData.activeBranchCount }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

@@ -1,176 +1,302 @@
-/* =====================================================
-   EXECUTIVE DASHBOARD – ROYAL PROFESSIONAL SAAS UI
-===================================================== */
-
-:root {
-  /* BRAND */
-  --primary: #3b3bf6;
-  --primary-dark: #2b2fd6;
-
-  /* STATUS */
-  --success: #22c55e;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-
-  /* TEXT */
-  --text-dark: #0b1220;
-  --text-muted: #6b7280;
-
-  /* BACKGROUNDS */
-  --bg-page: #f9fafb;
-  --bg-card: #ffffff;
-
-  /* UI */
-  --border-light: #e5e7eb;
-  --radius-lg: 14px;
-  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-/* =====================================================
-   PAGE
-===================================================== */
+/* BASE */
 .dashboard-container {
-  background: var(--bg-page);
-  padding: 28px 32px;
-  min-height: calc(100vh - 120px);
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 24px;
+  background: #ffffff;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* =====================================================
+/* HEADER */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.header-text h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1d1160;
+  margin: 0;
+}
+
+.header-text p {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter input {
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  background: #fff;
+}
+
+.date-separator {
+  color: #6b7280;
+}/* ==============================
    KPI GRID
-===================================================== */
+============================== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
 }
 
-/* =====================================================
-   KPI CARD BASE
-===================================================== */
+/* ==============================
+   KPI CARD – BASE
+============================== */
 .kpi-card {
   position: relative;
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: 22px 24px;
-  min-height: 130px;
-  border: none;
-  box-shadow: var(--shadow-soft);
+  border-radius: 10px;
+  padding: 16px 18px 16px 72px; /* space for icon */
+  min-height: 90px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  overflow: hidden;
+  gap: 6px;
+
+  background: #ffffff;
+  color: #111827;
 }
 
-/* Luxury inner glow */
-.kpi-card::after {
-  content: "";
+/* ==============================
+   ICON – WHITE BOX (LEFT CENTER)
+============================== */
+.kpi-icon {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at top left,
-    rgba(255,255,255,0.08),
-    transparent 60%
-  );
-  pointer-events: none;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Hover */
+/* SVG ICON SIZE & COLOR */
+.kpi-icon svg {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+/* ==============================
+   TEXT
+============================== */
+.kpi-card span {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.kpi-card strong {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ==============================
+   KPI COLOR VARIANTS
+============================== */
+.kpi-card.sales {
+  background: linear-gradient(135deg, #1d1160, #140c44);
+  color: #ffffff;
+}
+
+.kpi-card.outstanding {
+  background: linear-gradient(135deg,#092C4C, #092C4C);
+  color: #ffffff;
+}
+
+.kpi-card.purchase {
+  background: linear-gradient(135deg, #0E9384,#0E9384);
+  color: #ffffff;
+}
+
+.kpi-card.supplier {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff;
+}
+
+.kpi-card.neutral {
+  background: #f8f6f6;
+  color: #111827;
+}
+
+.kpi-card.branch {
+  background: #ffffff;
+  color: #111827;
+  border: 2px solid #1d1160;
+}
+
+/* ==============================
+   ICON COLOR PER KPI
+============================== */
+.kpi-card.sales .kpi-icon svg,
+.kpi-card.outstanding .kpi-icon svg,
+.kpi-card.purchase .kpi-icon svg,
+.kpi-card.supplier .kpi-icon svg {
+  color: #1d1160;
+}
+
+.kpi-card.neutral .kpi-icon svg {
+  color: #4b5563;
+}
+
+.kpi-card.branch .kpi-icon svg {
+  color: #1d1160;
+}
+
+/* ==============================
+   HOVER EFFECT (PRO)
+============================== */
 .kpi-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s ease;
 }
 
-/* =====================================================
-   KPI TEXT
-===================================================== */
-.kpi-label {
-  font-size: 13px;
+
+/* CHART */
+.chart-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.4px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
 }
 
-.kpi-value {
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.2;
+.chart-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.chart-placeholder {
+  height: 280px;
+  border: 1px dashed #c7c9d1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  margin-top: 12px;
+}
+/* =====================================================
+   LARGE SCREENS (1440px+)
+===================================================== */
+@media (min-width: 1440px) {
+  .kpi-grid {
+    gap: 22px;
+  }
+
+  .kpi-card {
+    min-height: 100px;
+  }
 }
 
 /* =====================================================
-   ROYAL COLORFUL KPI CARDS
+   TABLETS (≤1024px)
 ===================================================== */
-
-/* 1 – ROYAL AMBER (TOTAL SALES) */
-.kpi-card:nth-child(1) {
-  background: linear-gradient(135deg, #c2410c, #9a3412);
-}
-.kpi-card:nth-child(1) .kpi-label,
-.kpi-card:nth-child(1) .kpi-value {
-  color: #fff7ed;
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
 }
 
-/* 2 – MIDNIGHT NAVY (CUSTOMER OUTSTANDING) */
-.kpi-card:nth-child(2) {
-  background: linear-gradient(135deg, #020617, #0f172a);
-}
-.kpi-card:nth-child(2) .kpi-label,
-.kpi-card:nth-child(2) .kpi-value {
-  color: #e5e7eb;
+/* =====================================================
+   MOBILE (≤600px)
+===================================================== */
+@media (max-width: 600px) {
+
+  .dashboard-container {
+    padding: 14px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-text h1 {
+    font-size: 18px;
+  }
+
+  .header-text p {
+    font-size: 12px;
+  }
+
+  .date-filter {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .date-filter input {
+    flex: 1;
+    min-width: 130px;
+  }
+
+  /* KPI STACK */
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .kpi-card {
+    padding: 14px 16px 14px 60px;
+    min-height: 80px;
+  }
+
+  .kpi-icon {
+    width: 36px;
+    height: 36px;
+    left: 14px;
+  }
+
+  .kpi-icon svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
-/* 3 – EMERALD ROYAL (TOTAL PURCHASE) */
-.kpi-card:nth-child(3) {
-  background: linear-gradient(135deg, #065f46, #047857);
-}
-.kpi-card:nth-child(3) .kpi-label,
-.kpi-card:nth-child(3) .kpi-value {
-  color: #ecfdf5;
-}
+/* =====================================================
+   EXTRA SMALL DEVICES (≤360px)
+===================================================== */
+@media (max-width: 360px) {
 
-/* 4 – ROYAL BLUE (SUPPLIER OUTSTANDING) */
-.kpi-card:nth-child(4) {
-  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
-}
-.kpi-card:nth-child(4) .kpi-label,
-.kpi-card:nth-child(4) .kpi-value {
-  color: #eff6ff;
-}
+  .kpi-card {
+    padding: 12px 14px 12px 56px;
+  }
 
-/* 5 – ROYAL VIOLET (PRODUCTS) */
-.kpi-card:nth-child(5) {
-  background: linear-gradient(135deg, #4c1d95, #5b21b6);
-}
-.kpi-card:nth-child(5) .kpi-label,
-.kpi-card:nth-child(5) .kpi-value {
-  color: #f5f3ff;
-}
+  .kpi-icon {
+    width: 34px;
+    height: 34px;
+  }
 
-/* 6 – EXECUTIVE GREEN (CUSTOMERS) */
-.kpi-card:nth-child(6) {
-  background: linear-gradient(135deg, #14532d, #166534);
-}
-.kpi-card:nth-child(6) .kpi-label,
-.kpi-card:nth-child(6) .kpi-value {
-  color: #ecfdf5;
-}
-
-/* 7 – DEEP INDIGO (SUPPLIERS) */
-.kpi-card:nth-child(7) {
-  background: linear-gradient(135deg, #312e81, #3730a3);
-}
-.kpi-card:nth-child(7) .kpi-label,
-.kpi-card:nth-child(7) .kpi-value {
-  color: #eef2ff;
-}
-
-/* 8 – LUXURY CHARCOAL (ACTIVE BRANCHES) */
-.kpi-card.highlight {
-  background: linear-gradient(135deg, #020617, #111827);
-}
-.kpi-card.highlight .kpi-label,
-.kpi-card.highlight .kpi-value {
-  color: #f9fafb;
+  .kpi-card strong {
+    font-size: 17px;
+  }
 }

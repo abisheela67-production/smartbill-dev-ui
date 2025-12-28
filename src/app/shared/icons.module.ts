@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import {
   LucideAngularModule,
-
   // ===== CORE / COMMON =====
   Settings,
   Search,
@@ -9,6 +8,7 @@ import {
   Plus,
   Save,
   ChevronDown,
+  X,
 
   // ===== USER / AUTH =====
   User,
@@ -55,7 +55,17 @@ import {
   BarChart,
   BarChart2,
   AlertCircle,
-    Menu,
+  AlertTriangle,
+  Menu,
+        
+
+
+  // ===== DASHBOARD / CHARTS =====
+  Calendar,
+  PieChart,
+  TrendingUp,
+  ArrowRightLeft,
+  RefreshCw,
 
   // ===== MEASUREMENT =====
   Ruler,
@@ -73,6 +83,7 @@ import {
       Plus,
       Save,
       ChevronDown,
+      X,
 
       // USER / AUTH
       User,
@@ -99,7 +110,7 @@ import {
       LayoutGrid,
       Hash,
 
-      // FINANCE / TERMINAL DASHBOARD (🔥 FIXED)
+      // FINANCE / TERMINAL DASHBOARD
       DollarSign,
       Percent,
       Calculator,
@@ -117,13 +128,21 @@ import {
       FileCode,
       FileText,
 
+      // DASHBOARD / CHARTS
+      Calendar,
+      PieChart,
+      TrendingUp,
+      ArrowRightLeft,
+      RefreshCw,
+      AlertTriangle,
+
       // MEASUREMENT
       Ruler,
       Droplet,
       BarChart,
       BarChart2,
       AlertCircle,
-  Menu,
+      Menu,
     })
   ],
   exports: [LucideAngularModule]
