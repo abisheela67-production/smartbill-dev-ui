@@ -1036,6 +1036,25 @@ button,
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Reports section
 
 
@@ -1235,70 +1254,118 @@ html, body {
   .report-tabs {
     width: 220px;
   }
-}
-
-/* ================= MOBILE (320px – PERFECT FIX) ================= */
+}/* ================= MOBILE: HORIZONTAL REPORT TABS ================= */
+/* ================= MOBILE: PERFECT HORIZONTAL TABS ================= */
 @media (max-width: 768px) {
 
+  /* Page */
   .reports-page {
     flex-direction: column;
-    gap: 16px;
-    padding: 12px;
-    height: auto;
+    padding: 8px;
+    gap: 10px;
   }
 
-  .app-header {
-    height: 56px;
-    padding: 0 16px;
-  }
-
+  /* Tabs container */
   .report-tabs {
     width: 100%;
-    position: relative;
-    top: 0;
-    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 10px;
+    padding: 10px 12px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+
+    position: sticky;
+    top: 56px;
+    z-index: 100;
+
     border-radius: 14px;
-    padding: 16px;
   }
 
-  .report-title {
-    text-align: center;
-    font-size: 18px;
-  }
-
-  .tab-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 14px;
-    font-size: 15px;
-  }
-
-  .tab-btn i {
+  /* Hide scrollbar (mobile native feel) */
+  .report-tabs::-webkit-scrollbar {
     display: none;
   }
 
+  /* Remove title */
+  .report-title {
+    display: none;
+  }
+
+  /* Tab button */
+  .tab-btn {
+    flex-shrink: 0;              /* 🔥 prevents shrinking */
+    width: auto;
+
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    color: #e6e7ff;
+
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Active tab */
   .tab-btn.active {
-    box-shadow: none;
-    background: #4c3db2;
+    background: #ffffff;
+    color: #24126a;
+    font-weight: 600;
   }
 
+  /* Remove vertical indicator */
+  .tab-btn.active::before {
+    display: none;
+  }
+
+  /* Hide icons on mobile */
+  .tab-btn i,
+  .tab-btn lucide-icon {
+    display: none;
+  }
+
+  /* Content */
   .report-content {
-    padding: 16px;
+    padding: 14px;
     border-radius: 14px;
-    min-height: 300px;
-  }
-
-  input,
-  select {
-    height: 48px;
-    font-size: 15px;
-  }
-
-  .filter-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    min-height: 320px;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* =====================================================
    COMMON UI SYSTEM – SINGLE CSS FILE
@@ -1396,42 +1463,134 @@ body {
   border-color: var(--ui-primary);
 }
 
-/* ---------- KPI CARDS ---------- */
+
+
+
+
+
+
+
+
+/* =====================================================
+   KPI GRID
+===================================================== */
 .ui-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
 }
 
+/* =====================================================
+   KPI CARD
+===================================================== */
 .ui-kpi {
-  background: var(--ui-card);
-  border-radius: var(--ui-radius);
-  padding: 16px 18px;
-  border: 1px solid var(--ui-border);
-  box-shadow: var(--ui-shadow);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 22px 22px 24px;
+  border: 1.8px solid #e5e7eb;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
 }
 
+.ui-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   KPI HEADER (TITLE)
+===================================================== */
 .ui-kpi-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
 }
 
+/* =====================================================
+   HIDE LUCIDE ICON (NO HTML CHANGE)
+===================================================== */
+.ui-kpi-head lucide-icon {
+  display: none !important;
+}
+
+/* =====================================================
+   KPI VALUE
+===================================================== */
 .ui-kpi-value {
-  margin-top: 8px;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.3px;
 }
 
-/* KPI COLORS */
-.kpi-primary { color: var(--ui-primary); }
-.kpi-success { color: var(--ui-success); }
-.kpi-warning { color: var(--ui-warning); }
-.kpi-danger  { color: var(--ui-danger); }
-.kpi-info    { color: var(--ui-info); }
+/* =====================================================
+   KPI COLOR STYLES
+===================================================== */
+
+/* Primary – Total Sales */
+.ui-kpi:has(.kpi-primary) {
+  border-color: #2447fa;
+}
+.ui-kpi:has(.kpi-primary) .ui-kpi-head {
+  color: #4f46e5;
+}
+
+/* Info – Bills / Avg */
+.ui-kpi:has(.kpi-info) {
+  border-color: #024462;
+}
+.ui-kpi:has(.kpi-info) .ui-kpi-head {
+  color: #00293d;
+}
+
+/* Warning – GST */
+.ui-kpi:has(.kpi-warning) {
+  border-color: #fdba74;
+}
+.ui-kpi:has(.kpi-warning) .ui-kpi-head {
+  color: #c2410c;
+}
+
+/* Success – Cash */
+.ui-kpi:has(.kpi-success) {
+  border-color: #02772f;
+}
+.ui-kpi:has(.kpi-success) .ui-kpi-head {
+  color: #15803d;
+}
+
+/* Danger – Card */
+.ui-kpi:has(.kpi-danger) {
+  border-color: #5d0000;
+}
+.ui-kpi:has(.kpi-danger) .ui-kpi-head {
+  color: #dc2626;
+}
+
+/* =====================================================
+   MOBILE OPTIMIZATION
+===================================================== */
+@media (max-width: 640px) {
+  .ui-kpi {
+    padding: 18px 18px 20px;
+  }
+
+  .ui-kpi-head {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .ui-kpi-value {
+    font-size: 20px;
+  }
+}
+
+
+
+
+
 
 /* ---------- TABLE ---------- */
 .ui-table {
@@ -1487,26 +1646,36 @@ html, body {
   padding: 0 24px;
 }
 
-/* Make header-left full width */
 .header-left {
   display: flex;
   align-items: center;
-  width: 100%;
+  gap: 12px;
 }
-
-/* Push back button to right */
-.back-btn {
-  margin-left: auto;   /* 🔑 MAIN LINE */
-  background: transparent;
+.back-btn-left {
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
+
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;          /* 🔳 rounded square */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+.back-btn-left:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(-2px);
 }
+
+.back-btn-left lucide-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.2;
+}
+

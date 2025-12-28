@@ -69,50 +69,37 @@
         }}</strong
       >
     </div>
+  </div>
 
-   
-      <!-- KPI GRID
-        <div class="overall-card">
-      <div class="overall-header">
-        <div class="header-left">
-          <div class="info-icon">i</div>
-          <h3>Overall Information</h3>
-        </div>
-      </div>
+  
+<!-- OVERALL INFO CONTAINER -->
+<div class="overall-info" *ngIf="dashboardData && !loading">
 
-      <div class="overall-kpi-grid">
-        <div class="overall-kpi">
-          <div class="kpi-icon blue">
-            <lucide-icon name="box"></lucide-icon>
-          </div>
-          <span>Products</span>
-          <strong>{{ dashboardData.dashboard.productCount }}</strong>
-        </div>
-
-        <div class="overall-kpi">
-          <div class="kpi-icon orange">
-            <lucide-icon name="users"></lucide-icon>
-          </div>
-          <span>Customers</span>
-          <strong>{{ dashboardData.dashboard.customerCount }}</strong>
-        </div>
-
-        <div class="overall-kpi">
-          <div class="kpi-icon green">
-            <lucide-icon name="building-2"></lucide-icon>
-          </div>
-          <span>Suppliers</span>
-          <strong>{{ dashboardData.dashboard.supplierCount }}</strong>
-        </div>
-
-        <div class="overall-kpi">
-          <div class="kpi-icon purple">
-            <lucide-icon name="building-2"></lucide-icon>
-          </div>
-          <span>Active Branches</span>
-          <strong>{{ dashboardData.activeBranchCount }}</strong>
-        </div>
-      </div>
+  <div class="info-card customers">
+    <lucide-icon name="users" class="info-icon"></lucide-icon>
+    <div class="info-text">
+      <span>Total Customers</span>
+      <strong>{{ dashboardData.dashboard.customerCount }}</strong>
     </div>
   </div>
-</div> -->
+
+  <div class="info-card suppliers">
+    <lucide-icon name="user-check" class="info-icon"></lucide-icon>
+    <div class="info-text">
+      <span>Total Suppliers</span>
+      <strong>{{ dashboardData.dashboard.supplierCount }}</strong>
+    </div>
+  </div>
+
+  <div class="info-card products">
+    <lucide-icon name="package" class="info-icon"></lucide-icon>
+    <div class="info-text">
+      <span>Total Products</span>
+      <strong>{{ dashboardData.dashboard.productCount }}</strong>
+    </div>
+  </div>
+
+</div>
+
+</div>
+

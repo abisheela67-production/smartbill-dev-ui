@@ -8,6 +8,8 @@ import { ProfitReportsComponent } from './profit-reports/profit-reports.componen
 import { GstReportComponent } from './gst-report/gst-report.component';
 import { OutstandingReportsComponent } from './outstanding-reports/outstanding-reports.component'; // ✅ ADD
 import { StockReportsComponent } from './stock-reports/stock-reports.component';
+import { LucideAngularModule } from "lucide-angular";
+import { SharedModule } from '../../shared/shared.module';
 
 declare const lucide: any;
 
@@ -20,9 +22,11 @@ declare const lucide: any;
     TerminalReportsComponent,
     SalesReportsComponent,
     ProfitReportsComponent,
-    OutstandingReportsComponent, // ✅ ADD
-    GstReportComponent,StockReportsComponent
-  ],
+    OutstandingReportsComponent, 
+    GstReportComponent, StockReportsComponent,
+    LucideAngularModule,
+    SharedModule
+],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })
@@ -54,4 +58,8 @@ export class ReportsComponent implements AfterViewInit {
       lucide.createIcons();
     }
   }
+  goBack() {
+  history.back();
+}
+
 }

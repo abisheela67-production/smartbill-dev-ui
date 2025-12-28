@@ -42,6 +42,7 @@ import {
   IndianRupee,
   Wallet,
   CreditCard,
+  ArrowLeft,
 
   // ===== FILE / EXPORT =====
   FilePlus,
@@ -57,8 +58,6 @@ import {
   AlertCircle,
   AlertTriangle,
   Menu,
-        
-
 
   // ===== DASHBOARD / CHARTS =====
   Calendar,
@@ -69,13 +68,13 @@ import {
 
   // ===== MEASUREMENT =====
   Ruler,
-  Droplet
+  Droplet,
+  UserCheck,
 } from 'lucide-angular';
 
 @NgModule({
   imports: [
     LucideAngularModule.pick({
-
       // CORE
       Settings,
       Search,
@@ -92,12 +91,12 @@ import {
       IdCard,
       ShieldCheck,
       LockKeyhole,
-
+      UserCheck,
       // BUSINESS
       Building2,
       Landmark,
       Briefcase,
-
+      ArrowLeft,
       // INVENTORY
       Package,
       Box,
@@ -143,8 +142,8 @@ import {
       BarChart2,
       AlertCircle,
       Menu,
-    })
+    }),
   ],
-  exports: [LucideAngularModule]
+  exports: [LucideAngularModule],
 })
 export class IconsModule {}

@@ -1,24 +1,24 @@
-/* BASE */
+/* ================= BASE ================= */
 .dashboard-container {
   padding: 24px;
-  background: #ffffff;
   min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
+  background: #ffffff;
+  font-family: "Poppins", sans-serif;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
 .header-text h1 {
+  margin: 0;
   font-size: 22px;
   font-weight: 600;
   color: #1d1160;
-  margin: 0;
 }
 
 .header-text p {
@@ -26,55 +26,145 @@
   font-size: 13px;
   color: #6b7280;
 }
-
+/* ===== DATE FILTER WITH LABELS ===== */
 .date-filter {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 12px;
 }
 
+/* Wrap illusion */
 .date-filter input {
-  padding: 7px 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  position: relative;
+  height: 36px;
+  padding: 14px 12px 0;
   font-size: 13px;
-  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
 }
 
-.date-separator {
+/* FROM DATE LABEL */
+.date-filter input:first-child::before {
+  content: "From Date";
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  font-size: 10px;
   color: #6b7280;
-}/* ==============================
-   KPI GRID
-============================== */
+}
+
+/* TO DATE LABEL */
+.date-filter input:last-child::before {
+  content: "To Date";
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  font-size: 10px;
+  color: #6b7280;
+}
+
+/* SEPARATOR */
+.date-separator {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+
+/* =====================================================
+   OVERALL INFORMATION (ADMIN SUMMARY – NOT KPI)
+===================================================== */
+.overall-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  margin: 22px 0 34px;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px 20px;
+  background: #ffffff;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* ICON – SOFT ADMIN STYLE */
+.info-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* TEXT */
+.info-text span {
+  display: block;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.info-text strong {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* COLORS */
+.customers .info-icon { background: #2563eb; }
+.suppliers .info-icon { background: #16a34a; }
+.products  .info-icon { background: #f59e0b; }
+
+/* =====================================================
+   KPI GRID (BUSINESS METRICS – KEEP STRONG)
+===================================================== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 18px;
   margin-bottom: 32px;
 }
 
-/* ==============================
-   KPI CARD – BASE
-============================== */
 .kpi-card {
   position: relative;
-  border-radius: 10px;
-  padding: 16px 18px 16px 72px; /* space for icon */
   min-height: 90px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 16px 18px 16px 72px;
+  border-radius: 10px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 6px;
 
-  background: #ffffff;
-  color: #111827;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  color: #ffffff;
+  transition: transform .25s ease;
 }
 
-/* ==============================
-   ICON – WHITE BOX (LEFT CENTER)
-============================== */
+.kpi-card:hover {
+  transform: translateY(-3px);
+}
+
+/* KPI ICON */
 .kpi-icon {
   position: absolute;
   left: 18px;
@@ -83,29 +173,18 @@
 
   width: 40px;
   height: 40px;
-  background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* SVG ICON SIZE & COLOR */
-.kpi-icon svg {
-  width: 20px;
-  height: 20px;
-  color: inherit;
-}
-
-/* ==============================
-   TEXT
-============================== */
+/* KPI TEXT */
 .kpi-card span {
   font-size: 13px;
-  font-weight: 500;
-  opacity: 0.95;
+  opacity: .95;
 }
 
 .kpi-card strong {
@@ -113,123 +192,33 @@
   font-weight: 600;
 }
 
-/* ==============================
-   KPI COLOR VARIANTS
-============================== */
-.kpi-card.sales {
+/* KPI COLORS */
+.sales {
   background: linear-gradient(135deg, #1d1160, #140c44);
-  color: #ffffff;
 }
 
-.kpi-card.outstanding {
-  background: linear-gradient(135deg,#092C4C, #092C4C);
-  color: #ffffff;
+.purchase {
+  background: #0e9384;
 }
 
-.kpi-card.purchase {
-  background: linear-gradient(135deg, #0E9384,#0E9384);
-  color: #ffffff;
+.outstanding {
+  background: #092c4c;
 }
 
-.kpi-card.supplier {
+.supplier {
   background: linear-gradient(135deg, #2563eb, #3b82f6);
-  color: #ffffff;
-}
-
-.kpi-card.neutral {
-  background: #f8f6f6;
-  color: #111827;
-}
-
-.kpi-card.branch {
-  background: #ffffff;
-  color: #111827;
-  border: 2px solid #1d1160;
-}
-
-/* ==============================
-   ICON COLOR PER KPI
-============================== */
-.kpi-card.sales .kpi-icon svg,
-.kpi-card.outstanding .kpi-icon svg,
-.kpi-card.purchase .kpi-icon svg,
-.kpi-card.supplier .kpi-icon svg {
-  color: #1d1160;
-}
-
-.kpi-card.neutral .kpi-icon svg {
-  color: #4b5563;
-}
-
-.kpi-card.branch .kpi-icon svg {
-  color: #1d1160;
-}
-
-/* ==============================
-   HOVER EFFECT (PRO)
-============================== */
-.kpi-card:hover {
-  transform: translateY(-3px);
-  transition: all 0.25s ease;
-}
-
-
-/* CHART */
-.chart-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 22px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-}
-
-.chart-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.chart-subtitle {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.chart-placeholder {
-  height: 280px;
-  border: 1px dashed #c7c9d1;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
-  margin-top: 12px;
-}
-/* =====================================================
-   LARGE SCREENS (1440px+)
-===================================================== */
-@media (min-width: 1440px) {
-  .kpi-grid {
-    gap: 22px;
-  }
-
-  .kpi-card {
-    min-height: 100px;
-  }
 }
 
 /* =====================================================
-   TABLETS (≤1024px)
+   RESPONSIVE
 ===================================================== */
 @media (max-width: 1024px) {
-  .kpi-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  .overall-info {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* =====================================================
-   MOBILE (≤600px)
-===================================================== */
 @media (max-width: 600px) {
-
   .dashboard-container {
     padding: 14px;
   }
@@ -244,59 +233,23 @@
     font-size: 18px;
   }
 
-  .header-text p {
-    font-size: 12px;
-  }
-
-  .date-filter {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .date-filter input {
-    flex: 1;
-    min-width: 130px;
-  }
-
-  /* KPI STACK */
-  .kpi-grid {
+  .overall-info {
     grid-template-columns: 1fr;
     gap: 14px;
   }
 
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
   .kpi-card {
-    padding: 14px 16px 14px 60px;
     min-height: 80px;
+    padding: 14px 16px 14px 60px;
   }
 
   .kpi-icon {
     width: 36px;
     height: 36px;
     left: 14px;
-  }
-
-  .kpi-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-}
-
-/* =====================================================
-   EXTRA SMALL DEVICES (≤360px)
-===================================================== */
-@media (max-width: 360px) {
-
-  .kpi-card {
-    padding: 12px 14px 12px 56px;
-  }
-
-  .kpi-icon {
-    width: 34px;
-    height: 34px;
-  }
-
-  .kpi-card strong {
-    font-size: 17px;
   }
 }
