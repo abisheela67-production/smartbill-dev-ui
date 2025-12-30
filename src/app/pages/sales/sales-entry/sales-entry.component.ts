@@ -652,17 +652,42 @@ export class SalesEntryComponent {
 
     this.updateSerialNumbers();
   }
-  getProductQty(product: ProductStockPrice): number {
-    if (!product || !this.salesEntries || this.salesEntries.length === 0) {
-      return 0;
-    }
-
-    const row = this.salesEntries.find(
-      (r) => r.productCode === product.productCode
-    );
-
-    return row ? Number(row.quantity || 0) : 0;
+getProductQty(product: ProductStockPrice): number {
+  if (!product || !this.salesEntries || this.salesEntries.length === 0) {
+    return 0;
   }
+
+  const row = this.salesEntries.find(
+    r => r.productCode === product.productCode
+  );
+
+  return row ? Number(row.quantity || 0) : 0;
+}
+
+increaseQty(product: ProductStockPrice, event: Event) {
+  event.stopPropagation(); 
+  this.addProductToBill(product);
+}
+
+decreaseQty(product: ProductStockPrice, event: Event) {
+  event.stopPropagation(); 
+
+  const index = this.salesEntries.findIndex(
+    r => r.productCode === product.productCode
+  );
+
+  if (index === -1) return;
+
+  const row = this.salesEntries[index];
+
+  if (row.quantity > 1) {
+    row.quantity -= 1;
+  } else {
+    // qty = 1 → remove item
+    this.salesEntries.splice(index, 1);
+  }
+}
+
 
   applyTopSelectionsToRow(row: SalesInvoice) {
     row.companyID = this.selectedCompanyId ?? null;

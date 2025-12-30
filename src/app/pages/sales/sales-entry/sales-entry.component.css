@@ -841,9 +841,12 @@ body {
   opacity: 0.9;
   color: #ffffff;
 }
-/* ===============================
-   POS MODE
-================================ */
+
+
+
+/* ======================================================
+   POS MODE VIEW
+====================================================== */
 .pos-mode-view {
   display: flex;
   flex-direction: column;
@@ -851,9 +854,9 @@ body {
   height: 100%;
 }
 
-/* ===============================
-   SEARCH (CALM & ACCURATE)
-================================ */
+/* ======================================================
+   SEARCH
+====================================================== */
 .pos-search {
   position: relative;
 }
@@ -887,9 +890,9 @@ body {
   background-size: contain;
 }
 
-/* ===============================
+/* ======================================================
    CATEGORY
-================================ */
+====================================================== */
 .category-row {
   display: flex;
   gap: 10px;
@@ -916,28 +919,27 @@ body {
   background: #1d1160;
   color: #ffffff;
 }
-
-/* ===============================
+/* ======================================================
    PRODUCT GRID
-================================ */
+====================================================== */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 14px;
 }
 
-/* ===============================
-   PRODUCT CARD (FINAL)
-================================ */
+/* ======================================================
+   PRODUCT CARD
+====================================================== */
 .product-card {
   position: relative;
   background: #ffffff;
-  border-radius: 10px;
-  padding: 14px 12px;
-  min-height: 135px;
+  border-radius: 14px;
+  padding: 14px 12px 52px; /* space for qty */
+  min-height: 160px;
 
   border: 2px solid #1d1160;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 
   display: flex;
   flex-direction: column;
@@ -946,24 +948,24 @@ body {
   text-align: center;
 
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .product-card:hover {
-  box-shadow: 0 6px 16px rgba(29,17,96,0.25);
+  box-shadow: 0 10px 24px rgba(29,17,96,0.25);
 }
 
 .product-card:active {
   transform: scale(0.97);
 }
 
-/* ===============================
-   QTY BADGE (CONFIRMATION)
-================================ */
+/* ======================================================
+   QTY BADGE (TOP RIGHT – CONFIRMATION)
+====================================================== */
 .qty-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
 
   min-width: 24px;
   height: 24px;
@@ -981,75 +983,168 @@ body {
   justify-content: center;
 }
 
-/* ===============================
-   PRODUCT ICON (NEUTRAL)
-================================ */
+/* ======================================================
+   PRODUCT ICON
+====================================================== */
 .pos-product-icon {
-  width: 34px;
-  height: 34px;
-  color: #9ca3af;   /* neutral – no attention */
+  width: 36px;
+  height: 36px;
+  color: #9ca3af;
   margin-bottom: 8px;
 }
 
-/* ===============================
-   PRODUCT NAME
-================================ */
+/* ======================================================
+   PRODUCT NAME & PRICE
+====================================================== */
 .p-name {
   font-size: 14px;
   font-weight: 800;
-  margin-bottom: 4px;
   color: #1d1160;
-  line-height: 1.2;
+  margin-bottom: 4px;
 }
 
-/* ===============================
-   PRICE (PRIMARY SIGNAL)
-================================ */
 .p-price {
   font-size: 18px;
   font-weight: 900;
   color: #166534;
 }
 
-/* ===============================
-   PLUS ICON (ACTION HINT)
-   — NO HTML CHANGE
-================================ */
-.product-card::after {
-  content: "+";
+/* ======================================================
+   QTY CONTROLS – POS STANDARD
+====================================================== */
+.qty-controls {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 
-  width: 22px;
-  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: #f9fafb;
+  padding: 6px 14px;
+
   border-radius: 999px;
+  border: 1px solid #e5e7eb;
 
-  background: #e5e7eb;
-  color: #374151;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
 
-  font-size: 16px;
+/* ======================================================
+   DEFAULT STATE (QTY = 0)
+   SHOW ONLY ➕
+====================================================== */
+.product-card:not(:has(.qty-badge)) .qty-btn.minus,
+.product-card:not(:has(.qty-badge)) .qty-value {
+  display: none;
+}
+
+.product-card:not(:has(.qty-badge)) .qty-controls {
+  padding: 6px 18px;
+}
+
+/* ======================================================
+   QTY BUTTONS
+====================================================== */
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+
+  border: none;
+  cursor: pointer;
+
+  font-size: 18px;
   font-weight: 900;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  opacity: 0.8;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.18);
 }
 
-/* Hover = ready to add */
-.product-card:hover::after {
-  background: #1d1160;
+/* ➕ PLUS – GREEN (ADD) */
+.qty-btn.plus {
+  background: #16a34a;
   color: #ffffff;
-  opacity: 1;
 }
 
-/* Hide + when qty exists (no confusion) */
-.product-card:has(.qty-badge)::after {
-  display: none;
+.qty-btn.plus:hover {
+  background: #15803d;
 }
+
+/* ➖ MINUS – RED (REMOVE) */
+.qty-btn.minus {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.qty-btn.minus:hover {
+  background: #b91c1c;
+}
+
+/* Press feedback */
+.qty-btn:active {
+  transform: scale(0.9);
+}
+
+/* ======================================================
+   QTY VALUE
+====================================================== */
+.qty-value {
+  min-width: 22px;
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* ======================================================
+   MOBILE OPTIMIZATION
+====================================================== */
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .qty-controls {
+    padding: 6px 12px;
+    gap: 10px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ===============================
    MOBILE
@@ -1127,5 +1222,128 @@ body {
 
     background: linear-gradient(135deg, #16a34a, #025621);
     box-shadow: 0 8px 18px rgba(22,163,74,0.45);
+  }
+}
+
+@media (max-width: 420px) {
+
+  /* ONE CARD PER ROW — POS STANDARD */
+  .product-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-card {
+    padding: 14px 12px 64px;
+    min-height: auto;
+  }
+
+  .qty-controls {
+    gap: 8px;
+    padding: 6px 10px;
+    max-width: 90%;
+  }
+
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .qty-value {
+    font-size: 13px;
+    min-width: 18px;
+  }
+
+  .p-name {
+    font-size: 13px;
+  }
+
+  .p-price {
+    font-size: 16px;
+  }
+}
+
+
+/* ======================================================
+   MOBILE HEADER – BRAND ON TOP FIX
+====================================================== */
+@media (max-width: 768px) {
+
+  .pos-header {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "back"
+      "brand"
+      "mode";
+    gap: 10px;
+    padding: 12px;
+    height: auto;
+  }
+
+  /* BACK BUTTON */
+  .header-left {
+    grid-area: back;
+    justify-self: flex-start;
+  }
+
+  .back-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 999px;
+  }
+
+  /* BRAND – TOP CENTER */
+  .header-center {
+    grid-area: brand;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .brand {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  /* MODE SWITCH – BELOW BRAND */
+  .header-right {
+    grid-area: mode;
+    width: 100%;
+  }
+
+  .mode-switch {
+    width: 100%;
+    padding: 6px;
+    border-radius: 999px;
+    justify-content: center;
+  }
+
+  /* Hide inactive mode */
+  .mode-switch .mode-btn:not(.active) {
+    display: none;
+  }
+
+  /* POS MODE – FULL WIDTH PILL */
+  .mode-switch .mode-btn.active {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 800;
+    border-radius: 999px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand {
+    font-size: 18px;
+  }
+
+  .back-btn {
+    font-size: 12px;
+    padding: 5px 10px;
   }
 }

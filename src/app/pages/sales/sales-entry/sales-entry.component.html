@@ -112,69 +112,89 @@
 
     <div class="big-grid-card">
       <!-- POS MODE -->
-<div *ngIf="billMode === 'POS'" class="pos-mode-view">
+      <div *ngIf="billMode === 'POS'" class="pos-mode-view">
+        <!-- SEARCH -->
+        <div class="pos-search">
+          <input
+            type="text"
+            placeholder="Search Products by Name or Code..."
+            [(ngModel)]="posSearchText"
+            (input)="applyPosSearch()"
+          />
+        </div>
 
-  <!-- SEARCH -->
-  <div class="pos-search">
-    <input
-      type="text"
-      placeholder="Search Products by Name or Code..."
-      [(ngModel)]="posSearchText"
-      (input)="applyPosSearch()"
-    />
-  </div>
+        <!-- CATEGORY FILTER -->
+        <div class="category-row">
+          <button
+            class="cat-btn"
+            [class.active]="selectedCategoryId === null"
+            (click)="filterByCategory(null)"
+          >
+            All
+          </button>
 
-  <!-- CATEGORY FILTER -->
-  <div class="category-row">
-    <button
-      class="cat-btn"
-      [class.active]="selectedCategoryId === null"
-      (click)="filterByCategory(null)"
-    >
-      All
-    </button>
+          <button
+            class="cat-btn"
+            *ngFor="let c of categories"
+            [class.active]="selectedCategoryId === c.categoryID"
+            (click)="filterByCategory(c.categoryID)"
+          >
+            {{ c.categoryName }}
+          </button>
+        </div>
 
-    <button
-      class="cat-btn"
-      *ngFor="let c of categories"
-      [class.active]="selectedCategoryId === c.categoryID"
-      (click)="filterByCategory(c.categoryID)"
-    >
-      {{ c.categoryName }}
-    </button>
-  </div>
+        <!-- PRODUCT GRID -->
+        <!-- PRODUCT GRID -->
+        <div class="product-grid">
+          <div
+            class="product-card"
+            *ngFor="let p of filteredProducts"
+            (click)="addProductToBill(p)"
+          >
+            <!-- QTY BADGE -->
+            <div class="qty-badge" *ngIf="getProductQty(p) > 0">
+              {{ getProductQty(p) }}
+            </div>
 
-  <!-- PRODUCT GRID -->
-  <div class="product-grid">
+            <!-- ICON -->
+            <lucide-icon name="package" class="pos-product-icon"></lucide-icon>
 
-    <div
-      class="product-card"
-      *ngFor="let p of filteredProducts"
-      (click)="addProductToBill(p)">
-      <!-- QTY BADGE -->
-      <div class="qty-badge" *ngIf="getProductQty(p) > 0">
-        {{ getProductQty(p) }}
+            <!-- NAME -->
+            <div class="p-name">{{ p.productName }}</div>
+
+            <!-- PRICE -->
+            <div class="p-price">
+              ₹{{
+                selectedBusinessType?.businessTypeID === 2
+                  ? p.wholesalePrice
+                  : p.retailPrice
+              }}
+            </div>
+
+            <!-- QTY CONTROLS (ALWAYS PRESENT) -->
+            <div class="qty-controls" (click)="$event.stopPropagation()">
+              <!-- MINUS -->
+              <button
+                class="qty-btn minus"
+                *ngIf="getProductQty(p) > 0"
+                (click)="decreaseQty(p, $event)"
+              >
+                −
+              </button>
+
+              <!-- QTY VALUE -->
+              <span class="qty-value" *ngIf="getProductQty(p) > 0">
+                {{ getProductQty(p) }}
+              </span>
+
+              <!-- PLUS (ALWAYS VISIBLE) -->
+              <button class="qty-btn plus" (click)="increaseQty(p, $event)">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <!-- ICON -->
-      <lucide-icon name="package" class="pos-product-icon"></lucide-icon>
-
-      <!-- NAME -->
-      <div class="p-name">{{ p.productName }}</div>
-
-      <!-- PRICE -->
-      <div class="p-price">
-        ₹{{
-          selectedBusinessType?.businessTypeID === 2
-            ? p.wholesalePrice
-            : p.retailPrice
-        }}
-      </div>
-    </div>
-
-  </div>
-
-</div>
 
       <div *ngIf="billMode === 'HOTKEY'" class="hotkey-mode-view">
         <div class="product-table">
