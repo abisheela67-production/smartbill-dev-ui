@@ -23,6 +23,7 @@ export interface GstTransactionType {
 }
 
 export interface ProductStockPrice {
+  categoryID: number;
   sno: number;
   productID: number;
   productCode: string;

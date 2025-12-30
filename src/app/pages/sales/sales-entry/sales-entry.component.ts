@@ -35,6 +35,7 @@ import { SalesService } from '../sales.service';
 import { SmallGridComponent } from '../../components/small-grid/small-grid.component';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
 import { IconsModule } from '../../../shared/icons.module';
+import { Location } from '@angular/common';
 
 export interface BillTab {
   id: number; // Unique internal tab ID
@@ -97,6 +98,10 @@ export class SalesEntryComponent {
 
   selectedCompanyId: number | null = null;
   selectedBranchId: number | null = null;
+  filteredProducts: any[] = [];
+  selectedCategoryId: number | null = null;
+
+  posSearchText = '';
 
   companies: Company[] = [];
   branches: Branch[] = [];
@@ -118,6 +123,55 @@ export class SalesEntryComponent {
   // Flags
   smallGridVisible = false;
   salesEntries: SalesInvoice[] = [];
+  filterByCategory(categoryId: number | null) {
+    this.selectedCategoryId = categoryId;
+
+    if (categoryId === null) {
+      this.filteredProducts = [...this.products];
+    } else {
+      this.filteredProducts = this.products.filter(
+        (p) => p.categoryID === categoryId
+      );
+    }
+  }
+
+  applyPosSearch() {
+    const text = this.posSearchText.toLowerCase().trim();
+
+    this.filteredProducts = this.products.filter(
+      (p) =>
+        p.productName.toLowerCase().includes(text) ||
+        p.productCode?.toLowerCase().includes(text)
+    );
+  }
+  addProductToBill(product: ProductStockPrice) {
+    if (!product) return;
+
+    const existingIndex = this.salesEntries.findIndex(
+      (r) => r.productCode === product.productCode
+    );
+
+    if (existingIndex !== -1) {
+      const row = this.salesEntries[existingIndex];
+      row.quantity = Number(row.quantity || 0) + 1;
+
+      this.calculateRowTotals(row, 'quantity');
+      this.calculateOverallTotals();
+
+      setTimeout(() => {
+        this.grid?.focusCell(existingIndex, 4); // QTY column index
+      }, 50);
+
+      return;
+    }
+
+    this.addNewProduct();
+
+    const rowIndex = this.salesEntries.length - 1;
+    this.activeProductRow = rowIndex;
+
+    this.onProductSelected(product);
+  }
 
   // CUSTOMER INFO
   selectedCustomerId: number | null = null;
@@ -328,11 +382,13 @@ export class SalesEntryComponent {
     private swall: SweetAlertService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
     this.loggedInUser = this.authService.userName ?? 'SYSTEM';
+    this.applyDeviceMode();
 
     this.selectedInvoiceDate = this.getTodayDate();
     this.loadDropdowns();
@@ -402,6 +458,16 @@ export class SalesEntryComponent {
     this.smallGridVisible = false;
 
     setTimeout(() => this.grid.focusCell(this.activeProductRow!, 4), 50);
+  }
+
+  private applyDeviceMode() {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      this.billMode = 'POS'; // 🔒 FORCE POS
+    } else {
+      this.billMode = 'HOTKEY'; // 🖥 Desktop default
+    }
   }
 
   loadBusinessTypes() {
@@ -528,6 +594,10 @@ export class SalesEntryComponent {
     this.productGridColumns = [...this.productGridColumns];
   }
 
+  goBack() {
+    this.location.back(); // browser history back
+  }
+
   loadProducts() {
     const companyId = this.selectedCompanyId;
     const branchId = this.selectedBranchId;
@@ -543,12 +613,20 @@ export class SalesEntryComponent {
       )
       .subscribe((res) => {
         if (res && res.success) {
-          this.products = res.data ?? [];
-          this.smallGridData = [...this.products];
+          // 🔥 CRITICAL FIX: map saleRate for POS
+          this.products = (res.data ?? []).map((p: ProductStockPrice) => ({
+            ...p,
+            saleRate:
+              this.selectedBusinessType?.businessTypeID === 2
+                ? p.wholesalePrice
+                : p.retailPrice,
+          }));
 
-          this.adjustColumnsForBusinessType();
+          this.filteredProducts = [...this.products];
+          this.smallGridData = [...this.products];
         } else {
           this.products = [];
+          this.filteredProducts = [];
           this.smallGridData = [];
         }
       });
@@ -573,6 +651,17 @@ export class SalesEntryComponent {
     this.applyTopSelectionsToRow(newRow);
 
     this.updateSerialNumbers();
+  }
+  getProductQty(product: ProductStockPrice): number {
+    if (!product || !this.salesEntries || this.salesEntries.length === 0) {
+      return 0;
+    }
+
+    const row = this.salesEntries.find(
+      (r) => r.productCode === product.productCode
+    );
+
+    return row ? Number(row.quantity || 0) : 0;
   }
 
   applyTopSelectionsToRow(row: SalesInvoice) {
@@ -644,6 +733,22 @@ export class SalesEntryComponent {
     row.netAmount = taxableAmount + gstAmount;
 
     row.grossAmount = baseAmount;
+  }
+
+  hasValidSalesRows(): boolean {
+    if (!this.salesEntries || this.salesEntries.length === 0) return false;
+
+    return this.salesEntries.some(
+      (row) =>
+        row.productCode &&
+        Number(row.quantity) > 0 &&
+        Number(row.saleRate) > 0 &&
+        Number(row.netAmount) > 0
+    );
+  }
+  isPaymentComplete(): boolean {
+    const paid = this.getPaidAmount();
+    return paid >= Number(this.totalInvoiceAmount || 0);
   }
 
   calculateOverallTotals() {
@@ -1177,7 +1282,16 @@ export class SalesEntryComponent {
     };
   }
   saveSalesEntry() {
-    if (!this.validateHeaderFields()) return;
+    // POS payment safety check
+    if (this.billMode === 'POS' && !this.isPaymentComplete()) {
+      this.swall.warning(
+        'Payment Incomplete',
+        'Please complete payment before saving.'
+      );
+      if (!this.validateHeaderFields()) return;
+
+      return;
+    }
 
     const cleanedRows = this.salesEntries.filter(
       (r) =>
