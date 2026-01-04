@@ -107,7 +107,12 @@ export const routes: Routes = [
         component: SalesEntryComponent,
         data: { hideHeader: true },
       },
-      { path: 'SalesView', component: SalesViewComponent },
+      { path: 'SalesView', 
+        component: SalesViewComponent,
+        data: { hideHeader: true, renderMode: 'client' },
+      
+      },
+      
       {
         path: 'SalesCancel',
         component: SalesEditComponent,
