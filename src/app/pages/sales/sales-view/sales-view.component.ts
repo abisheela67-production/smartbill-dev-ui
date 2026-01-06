@@ -19,13 +19,11 @@ import { Company } from '../../models/common-models/companyMaster';
 })
 export class SalesViewComponent {
   selectedPageSize = 'a4';
-  orientation = 'portrait';
+  orientation: 'portrait' | 'landscape' = 'portrait';
 
   company: any = {};
   invoice: any = { items: [] };
   taxSummary: any[] = [];
-
-  menuOpen = false;
 
   pageLabel = '';
   pageSizeText = '';
@@ -38,60 +36,68 @@ export class SalesViewComponent {
     private masterService: MasterService
   ) {}
 
-ngOnInit() {
-  this.route.paramMap.subscribe((params) => {
-    const id = params.get('id');
-    if (id) {
-      this.load(id);
-    }
-  });
+  // ================================
+  // INIT
+  // ================================
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (id) {
+        this.load(id);
+      }
+    });
 
-  this.updateSizeInfo();
-}
-
+    this.updateSizeInfo();
+  }
 
   // ================================
-  // LOAD INVOICE FROM API
+  // LOAD INVOICE
   // ================================
   load(id: string) {
     this.salesService.getSalesEntries(null, null, id).subscribe((rows) => {
       if (!rows || rows.length === 0) return;
 
       const header = rows[0];
-      this.invoice = header;
+      this.invoice = { ...header };
 
+      // ---------------- Payments
       this.invoice.cash = header.cashAmount ?? 0;
-      this.invoice.upi = header.upiAmount ?? 0;
       this.invoice.card = header.cardAmount ?? 0;
+      this.invoice.upi = header.upiAmount ?? 0;
 
-      this.invoice.totalPaid = header.paidAmount ?? 0;
+      this.invoice.totalPaid =
+        header.totalPaidAmount ?? header.paidAmount ?? 0;
+
       this.invoice.customerGiven =
-        (header.cashAmount ?? 0) +
-        (header.upiAmount ?? 0) +
-        (header.cardAmount ?? 0);
+        this.invoice.cash + this.invoice.card + this.invoice.upi;
 
-      this.invoice.balance = header.balanceAmount ?? 0;
+      this.invoice.balance =
+        header.totalBalanceAmount ?? header.balanceAmount ?? 0;
 
-      // Company
+      // ---------------- Company
       this.commonService
         .getCompanyById(header.companyID)
-        .subscribe((c: Company) => {
-          this.company = c;
-        });
+        .subscribe((c: Company) => (this.company = c));
 
-      // Items
+      // ---------------- Items
       this.invoice.items = rows.map((r) => ({
         productName: r.productName,
-        hsnid: r.hsnid,
-        quantity: r.quantity,
-        saleRate: r.saleRate,
-        taxableAmount: r.taxableAmount,
-        gstPercentage: r.gstPercentage,
-        gstAmount: r.gstAmount ?? 0,
-        netAmount: r.netAmount,
+        hsnid: r.hsnid || 'NA',
+        quantity: r.quantity ?? 0,
+        saleRate: r.saleRate ?? 0,
+        taxableAmount: r.taxableAmount ?? 0,
+        gstPercentage: r.gstPercentage ?? 0,
+        cgstRate: r.cgstRate ?? 0,
+        cgstAmount: r.cgstAmount ?? 0,
+        sgstRate: r.sgstRate ?? 0,
+        sgstAmount: r.sgstAmount ?? 0,
+        igstRate: r.igstRate ?? 0,
+        igstAmount: r.igstAmount ?? 0,
+        discountAmount: r.discountAmount ?? 0,
+        netAmount: r.netAmount ?? 0,
       }));
 
-      // ================= TOTALS =================
+      // ---------------- Totals
       this.invoice.totalQuantity = header.totalQuantity ?? 0;
       this.invoice.totalGrossAmount = header.totalGrossAmount ?? 0;
       this.invoice.totalDiscAmount = header.totalDiscAmount ?? 0;
@@ -107,70 +113,169 @@ ngOnInit() {
       this.invoice.totalInvoiceAmount = header.totalInvoiceAmount ?? 0;
       this.invoice.totalRoundOff = header.totalRoundOff ?? 0;
 
-      // ================= PAYMENTS =================
-      this.invoice.cash = header.cashAmount ?? 0;
-      this.invoice.card = header.cardAmount ?? 0;
-      this.invoice.upi = header.upiAmount ?? 0;
-
-      this.invoice.totalPaid = header.totalPaidAmount ?? header.paidAmount ?? 0;
-      this.invoice.customerGiven =
-        this.invoice.cash + this.invoice.card + this.invoice.upi;
-
-      this.invoice.balance =
-        header.totalBalanceAmount ?? header.balanceAmount ?? 0;
+      // ---------------- GST Summary + Words
+      this.calculateGSTSummary();
+      this.invoice.totalInvoiceAmountWords =
+        this.numberToWords(this.invoice.totalInvoiceAmount);
     });
-    console.log('Loaded Invoice:', this.invoice);
   }
 
   // ================================
-  // PRINT MENU
+  // GST SUMMARY (HSN SPLIT)
   // ================================
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
+calculateGSTSummary() {
+  const map = new Map<string, any>();
+
+  let totalTaxable = 0;
+  let totalCGST = 0;
+  let totalSGST = 0;
+  let totalIGST = 0;
+  let totalTax = 0;
+
+  for (const item of this.invoice.items) {
+    const key = `${item.hsnid}_${item.gstPercentage}`;
+
+    if (!map.has(key)) {
+      map.set(key, {
+        hsn: item.hsnid || 'NA',
+        taxable: 0,
+        cgstRate: item.cgstRate ?? 0,
+        cgstAmount: 0,
+        sgstRate: item.sgstRate ?? 0,
+        sgstAmount: 0,
+        igstRate: item.igstRate ?? 0,
+        igstAmount: 0,
+        totalTax: 0,
+      });
+    }
+
+    const row = map.get(key);
+
+    row.taxable += item.taxableAmount;
+    row.cgstAmount += item.cgstAmount;
+    row.sgstAmount += item.sgstAmount;
+    row.igstAmount += item.igstAmount;
+
+    row.totalTax =
+      row.cgstAmount + row.sgstAmount + row.igstAmount;
+
+    // ===== GRAND TOTALS =====
+    totalTaxable += item.taxableAmount;
+    totalCGST += item.cgstAmount;
+    totalSGST += item.sgstAmount;
+    totalIGST += item.igstAmount;
+    totalTax += item.cgstAmount + item.sgstAmount + item.igstAmount;
   }
 
-  printInvoice() {
-    window.print();
+  // HSN rows
+  this.taxSummary = Array.from(map.values());
+
+  // ===== TOTAL ROW (IMPORTANT) =====
+  this.taxSummary.push({
+    hsn: 'TOTAL',
+    taxable: totalTaxable,
+    cgstRate: '',
+    cgstAmount: totalCGST,
+    sgstRate: '',
+    sgstAmount: totalSGST,
+    igstRate: '',
+    igstAmount: totalIGST,
+    totalTax: totalTax,
+  });
+}
+
+
+  // ================================
+  // AMOUNT IN WORDS (INDIAN)
+  // ================================
+  numberToWords(amount: number): string {
+    if (!amount) return '';
+
+    const a = [
+      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six',
+      'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve',
+      'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+      'Seventeen', 'Eighteen', 'Nineteen',
+    ];
+    const b = [
+      '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty',
+      'Sixty', 'Seventy', 'Eighty', 'Ninety',
+    ];
+
+    const inWords = (num: number): string => {
+      if (num < 20) return a[num];
+      if (num < 100)
+        return b[Math.floor(num / 10)] + ' ' + a[num % 10];
+      if (num < 1000)
+        return (
+          a[Math.floor(num / 100)] +
+          ' Hundred ' +
+          inWords(num % 100)
+        );
+      if (num < 100000)
+        return (
+          inWords(Math.floor(num / 1000)) +
+          ' Thousand ' +
+          inWords(num % 1000)
+        );
+      if (num < 10000000)
+        return (
+          inWords(Math.floor(num / 100000)) +
+          ' Lakh ' +
+          inWords(num % 100000)
+        );
+      return '';
+    };
+
+    return inWords(Math.floor(amount)) + ' Rupees Only';
   }
 
   // ================================
-  // PAGE SIZE INFO
+  // PAGE SIZE
   // ================================
   updateSizeInfo() {
     switch (this.selectedPageSize) {
       case 'a4':
-        this.pageLabel = 'A4 (' + this.orientation + ')';
+        this.pageLabel = 'A4';
         this.pageSizeText =
-          this.orientation === 'portrait' ? '210mm × 297mm' : '297mm × 210mm';
+          this.orientation === 'portrait'
+            ? '210 × 297 mm'
+            : '297 × 210 mm';
         break;
-
       case 'a5':
-        this.pageLabel = 'A5 (' + this.orientation + ')';
+        this.pageLabel = 'A5';
         this.pageSizeText =
-          this.orientation === 'portrait' ? '148mm × 210mm' : '210mm × 148mm';
+          this.orientation === 'portrait'
+            ? '148 × 210 mm'
+            : '210 × 148 mm';
         break;
-
       case 'a6':
-        this.pageLabel = 'A6 (' + this.orientation + ')';
+        this.pageLabel = 'A6';
         this.pageSizeText =
-          this.orientation === 'portrait' ? '105mm × 148mm' : '148mm × 105mm';
+          this.orientation === 'portrait'
+            ? '105 × 148 mm'
+            : '148 × 105 mm';
         break;
-
       case 'thermal58':
-        this.pageLabel = '58mm Thermal';
-        this.pageSizeText = '58mm width × Auto Height';
+        this.pageLabel = 'Thermal 58mm';
+        this.pageSizeText = '58mm × Auto';
         break;
-
       case 'thermal80':
-        this.pageLabel = '80mm Thermal';
-        this.pageSizeText = '80mm width × Auto Height';
+        this.pageLabel = 'Thermal 80mm';
+        this.pageSizeText = '80mm × Auto';
         break;
-
       case 'thermal110':
-        this.pageLabel = '110mm Thermal';
-        this.pageSizeText = '110mm width × Auto Height';
+        this.pageLabel = 'Thermal 110mm';
+        this.pageSizeText = '110mm × Auto';
         break;
     }
+  }
+
+  // ================================
+  // PRINT / PDF
+  // ================================
+  printInvoice() {
+    window.print();
   }
 
   getPdfSize() {
@@ -194,29 +299,28 @@ ngOnInit() {
     const element = document.getElementById('invoicePDF');
     if (!element) return;
 
-    html2canvas(element, {
-      scale: 3,
-      useCORS: true,
-    }).then((canvas) => {
-      const pdf = new jsPDF({
-        orientation: this.orientation as 'portrait' | 'landscape',
-        unit: 'mm',
-        format: this.getPdfSize(),
-      });
+    html2canvas(element, { scale: 3, useCORS: true }).then(
+      (canvas) => {
+        const pdf = new jsPDF({
+          orientation: this.orientation,
+          unit: 'mm',
+          format: this.getPdfSize(),
+        });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = (canvas.height * pageWidth) / canvas.width;
+        const width = pdf.internal.pageSize.getWidth();
+        const height = (canvas.height * width) / canvas.width;
 
-      pdf.addImage(
-        canvas.toDataURL('image/png'),
-        'PNG',
-        0,
-        0,
-        pageWidth,
-        pageHeight
-      );
+        pdf.addImage(
+          canvas.toDataURL('image/png'),
+          'PNG',
+          0,
+          0,
+          width,
+          height
+        );
 
-      pdf.save(`Invoice-${this.invoice.invoiceNumber}.pdf`);
-    });
+        pdf.save(`Invoice-${this.invoice.invoiceNumber}.pdf`);
+      }
+    );
   }
 }
