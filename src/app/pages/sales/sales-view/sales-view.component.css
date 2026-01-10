@@ -1,16 +1,16 @@
-/* =====================================================
-   GLOBAL
-===================================================== */
-* {
-  box-sizing: border-box;
-}
 
-body {
-  margin: 0;
-  background: #eef1f5;
+/* =========================================
+   FORCE ARIAL SANS-SERIF (GLOBAL + PRINT)
+========================================= */
+
+html, body,
+*,
+*::before,
+*::after,
+table, th, td, tr,
+input, select, button, textarea {
   font-family: Arial, Helvetica, sans-serif !important;
 }
-
 
 /* =====================================================
    SIDEBAR

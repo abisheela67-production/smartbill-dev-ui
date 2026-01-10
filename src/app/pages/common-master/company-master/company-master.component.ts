@@ -7,8 +7,9 @@ import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive'
 import { InputRestrictDirective } from '../../../directives/input-restrict.directive';
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
-import { group } from 'console';
-import { GroupBoxComponent } from '../../../shared/group-box/group-box.component';
+import { MasterDashboardComponent } from '../../master/master-dashboard/master-dashboard.component';
+import { MasterTableViewComponent } from "../../components/master-table-view/master-table-view.component";
+import { SharedModule } from '../../../shared/shared.module';
 
 InputDataGridComponent
 @Component({
@@ -18,17 +19,24 @@ InputDataGridComponent
     FormsModule,
     FocusOnKeyDirective,
     InputRestrictDirective,
-    GroupBoxComponent   
-  ],
+    MasterTableViewComponent,
+    SharedModule
+],
   templateUrl: './company-master.component.html',
   styleUrls: ['./company-master.component.css']
 })
 export class CompanyMasterComponent {
   selectedLogoFile: File | null = null;
   selectedImageFile: File | null = null;
-  @ViewChild(GroupBoxComponent) groupBox!: GroupBoxComponent;
   companies: Company[] = [];
   company: Company = {} as Company;
+  companyColumns = [
+  { field: 'companyName', header: 'Company Name' },
+  { field: 'companyCode', header: 'Code' },
+  { field: 'phone', header: 'Phone' },
+  { field: 'isActive', header: 'Active' }
+];
+
   constructor(private commonservice: CommonserviceService,
     private swallservice:SweetAlertService
   ) { }
