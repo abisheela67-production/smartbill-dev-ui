@@ -1,5 +1,5 @@
-import { Component,ViewChild } from '@angular/core';
-import { Company } from '../../models/common-models/companyMaster'
+import { Component, ViewChild } from '@angular/core';
+import { Company } from '../../models/common-models/companyMaster';
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,10 +8,10 @@ import { InputRestrictDirective } from '../../../directives/input-restrict.direc
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
 import { InputDataGridComponent } from '../../components/input-data-grid/input-data-grid.component';
 import { MasterDashboardComponent } from '../../master/master-dashboard/master-dashboard.component';
-import { MasterTableViewComponent } from "../../components/master-table-view/master-table-view.component";
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
 import { SharedModule } from '../../../shared/shared.module';
 
-InputDataGridComponent
+InputDataGridComponent;
 @Component({
   selector: 'app-company-master',
   imports: [
@@ -20,10 +20,10 @@ InputDataGridComponent
     FocusOnKeyDirective,
     InputRestrictDirective,
     MasterTableViewComponent,
-    SharedModule
-],
+    SharedModule,
+  ],
   templateUrl: './company-master.component.html',
-  styleUrls: ['./company-master.component.css']
+  styleUrls: ['./company-master.component.css'],
 })
 export class CompanyMasterComponent {
   selectedLogoFile: File | null = null;
@@ -31,57 +31,85 @@ export class CompanyMasterComponent {
   companies: Company[] = [];
   company: Company = {} as Company;
   companyColumns = [
-  { field: 'companyName', header: 'Company Name' },
-  { field: 'companyCode', header: 'Code' },
-  { field: 'phone', header: 'Phone' },
-  { field: 'isActive', header: 'Active' }
-];
-
-  constructor(private commonservice: CommonserviceService,
-    private swallservice:SweetAlertService
-  ) { }
+    { field: 'companyName', header: 'Company Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
+  isEditMode = false;
+  isFormEnabled = false;
+  constructor(
+    private commonservice: CommonserviceService,
+    private swallservice: SweetAlertService
+  ) {}
   ngOnInit(): void {
     this.resetForm();
     this.loadCompanies();
-  } 
+    this.isFormEnabled = false; 
+  }
+newCompany() {
+  this.resetForm();
+  this.isEditMode = false;
+  this.isFormEnabled = true;  
+
+}
+
+
+Refresh(){
+  this.resetForm();
+  this.isEditMode = false;
+  this.isFormEnabled = false;
+}
 
   async saveOrDeleteCompany() {
-  if (!this.company.companyName) {
-    this.swallservice.error("Validation Error", "Company Name is required!");
-    return;
-  }
-
-  if (this.selectedLogoFile) {
-    this.company.companyLogo = await this.fileToByteArray(this.selectedLogoFile);
-  }
-  if (this.selectedImageFile) {
-    this.company.companyImage = await this.fileToByteArray(this.selectedImageFile);
-  }
-
-  this.commonservice.saveCompany(this.company).subscribe({
-    next: (response: any) => {
-      if (response) {
-        this.swallservice.success(
-          "Success",
-          this.company.companyID > 0 ? "Company updated!" : "Company created!"
-        );
-        this.loadCompanies();
-        this.resetForm();
-        this.selectedLogoFile = null;
-        this.selectedImageFile = null;
-      } else {
-        this.swallservice.error("Error", "No response from server!");
-      }
-    },
-    error: (err) => {
-      console.error("Error saving company:", err);
-      this.swallservice.error("Error", "Unable to save company!");
+    if (!this.company.companyName) {
+      this.swallservice.warning(
+        'Validation Error',
+        'Company Name is required!'
+      );
+      return;
     }
-  });
+
+    if (this.selectedLogoFile) {
+      this.company.companyLogo = await this.fileToByteArray(
+        this.selectedLogoFile
+      );
+    }
+    if (this.selectedImageFile) {
+      this.company.companyImage = await this.fileToByteArray(
+        this.selectedImageFile
+      );
+    }
+
+    this.commonservice.saveCompany(this.company).subscribe({
+      next: (response: any) => {
+        if (response) {
+          this.swallservice.success(
+            'Success',
+            this.company.companyID > 0 ? 'Company updated!' : 'Company created!'
+          );
+          this.loadCompanies();
+          this.resetForm();
+          this.selectedLogoFile = null;
+          this.selectedImageFile = null;
+        } else {
+          this.swallservice.error('Error', 'No response from server!');
+        }
+      },
+      error: (err) => {
+        console.error('Error saving company:', err);
+        this.swallservice.error('Error', 'Unable to save company!');
+      },
+    });
+  }
+
+  get totalCompanies(): number {
+  return this.companies.length;
 }
+
 
   editCompany(c: Company) {
     this.company = { ...c }; // populate form for editing
+    this.isEditMode = true;
+    this.isFormEnabled = false;
   }
 
   deleteCompany(c: Company) {
@@ -91,22 +119,22 @@ export class CompanyMasterComponent {
 
     c.isActive = false; // soft delete
     this.commonservice.saveCompany(c).subscribe({
-      next: id => {
+      next: (id) => {
         console.log('Company deleted (soft delete), ID:', id);
-        this.swallservice.success("Success", "Company deleted successfully!");
+        this.swallservice.success('Success', 'Company deleted successfully!');
         this.loadCompanies();
       },
-      error: err => {
+      error: (err) => {
         console.error(' Error deleting company:', err);
-        this.swallservice.error("Error", "Error deleting company.");
-      }
+        this.swallservice.error('Error', 'Error deleting company.');
+      },
     });
   }
 
   loadCompanies() {
     this.commonservice.getCompanies().subscribe({
-      next: res => this.companies = res,
-      error: err => console.error(err)
+      next: (res) => (this.companies = res),
+      error: (err) => console.error(err),
     });
   }
   resetForm() {
@@ -136,8 +164,11 @@ export class CompanyMasterComponent {
       companyImage: null,
       isActive: true,
       createdByUserID: this.commonservice.getCurrentUserId(),
-      createdSystemName: 'AngularApp'
+      createdSystemName: 'AngularApp',
     };
+    this.isEditMode = false;
+    this.selectedLogoFile = null;
+    this.selectedImageFile = null;
   }
   onFileSelected(event: any, type: 'logo' | 'image') {
     const file: File = event.target.files[0];
@@ -146,18 +177,16 @@ export class CompanyMasterComponent {
       else this.selectedImageFile = file;
     }
   }
-private fileToByteArray(file: File): Promise<number[]> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const base64 = e.target.result.split(',')[1]; // remove data:image/...;base64,
-      const byteArray = Array.from(atob(base64), c => c.charCodeAt(0));
-      resolve(byteArray);
-    };
-    reader.onerror = err => reject(err);
-    reader.readAsDataURL(file);
-  });
-}
-
-
+  private fileToByteArray(file: File): Promise<number[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const base64 = e.target.result.split(',')[1]; // remove data:image/...;base64,
+        const byteArray = Array.from(atob(base64), (c) => c.charCodeAt(0));
+        resolve(byteArray);
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
 }

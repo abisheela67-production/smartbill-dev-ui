@@ -1,122 +1,154 @@
-<div class="container mt-5">
+<div class="master-layout">
 
-  <div class="row g-4">
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-    <!-- Branch Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container">
-  <h2 class="mb-4 text-primary fw-bold text-center">Branch Master</h2>
-
-        <form (ngSubmit)="saveOrDeleteBranch()">
-          <!-- Company Select -->
-          <div class="form-column mb-3">
-            <label for="company">Company</label>
-            <select 
-              id="company" 
-              class="form-select" 
-              [(ngModel)]="branch.companyID" 
-              name="companyID" 
-              required>
-              <option value="">Select Company</option>
-              <option *ngFor="let c of companies" [value]="c.companyID">{{c.companyName}}</option>
-            </select>
-          </div>
-
-          <!-- Branch Code 
-          <div class="form-column mb-3">
-            <label for="branchCode">Branch Code</label>
-            <input 
-              type="text" 
-              id="branchCode" 
-              class="form-control" 
-              [(ngModel)]="branch.branchCode" 
-              name="branchCode" 
-              required>
-          </div>-->
-
-          <!-- Branch Name -->
-          <div class="form-column mb-3">
-            <label for="branchName">Branch Name</label>
-            <input 
-              type="text" 
-              id="branchName" 
-              class="form-control" 
-              [(ngModel)]="branch.branchName" 
-              name="branchName" 
-              autofocus 
-              appFocusOnKey="true"
-              required>
-          </div>
-
-          <!-- Address -->
-          <div class="form-column mb-3">
-            <label for="address">Address</label>
-            <textarea 
-              id="address" 
-              class="form-control" 
-              [(ngModel)]="branch.address" 
-              name="address" 
-              rows="3"></textarea>
-          </div>
-
-          <!-- Buttons -->
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-save"></i> {{ branch.branchID ? 'Update' : 'Save' }}
-            </button>
-            <button type="button" class="btn btn-outline" (click)="resetBranch()">
-              <i class="bi bi-arrow-clockwise"></i> Reset
-            </button>
-          </div>
-        </form>
+    <div class="master-top-left">
+      <!-- FIXED ICON -->
+      <lucide-icon name="building-2"></lucide-icon>
+      <div>
+        <div class="master-title-text">BRANCH MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Branch Table -->
-    <div class="col-lg-8 col-md-7">
-      <div class="form-container">
-        <h5 class="mb-3 text-secondary">Branch List</h5>
-        <div class="table-responsive">
-          <table class="table-common align-middle">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Company</th>
-                <th>Branch Code</th>
-                <th>Branch Name</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let b of branches; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ getCompanyName(b.companyID) }}</td>
-                <td>{{ b.branchCode }}</td>
-                <td>{{ b.branchName }}</td>
-                <td>{{ b.address }}</td>
-                <td>
-                  <span class="badge" [ngClass]="b.isActive ? 'bg-success' : 'bg-danger'">
-                    {{ b.isActive ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-outline-warning me-1" title="Edit" (click)="editBranch(b)">
-                    <i class="bi bi-pencil-fill"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" title="Delete" (click)="deleteBranch(b)">
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="branches.length === 0">
-                <td colspan="7" class="text-center text-muted">No branches found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newBranch()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD BRANCH
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="Refresh()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
     </div>
+
+    <div class="total-badge saas">
+      TOTAL BRANCHES : {{ totalBranches }}
+    </div>
+
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <!-- FIXED ICON -->
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>NEW BRANCH</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrDeleteBranch()">
+          {{ isEditMode ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetBranch()">
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+
+<div class="form-grid">
+
+  <!-- Company -->
+  <div class="form-column">
+    <label>Company</label>
+    <select
+      class="input-common"
+      [(ngModel)]="branch.companyID"
+      name="companyID"
+      appFocusOnKey
+      [autoFocus]="true"
+      [autoSelectNext]="true"
+      required>
+      <option value="">Select Company</option>
+      <option *ngFor="let c of companies" [value]="c.companyID">
+        {{ c.companyName }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Branch Name -->
+  <div class="form-column">
+    <label>Branch Name</label>
+    <input
+      type="text"
+      class="input-common"
+      [(ngModel)]="branch.branchName"
+      name="branchName"
+      appFocusOnKey
+      [autoSelectNext]="true"
+      required />
+  </div>
+
+  <!-- Branch Code -->
+  <div class="form-column">
+    <label>Branch Code</label>
+    <input
+      type="text"
+      class="input-common"
+      [(ngModel)]="branch.branchCode"
+      name="branchCode"
+      appFocusOnKey
+      [autoSelectNext]="true" />
+  </div>
+
+  <!-- Address (full row) -->
+  <div class="form-column full-width">
+    <label>Address</label>
+    <textarea
+      rows="3"
+      class="input-common"
+      [(ngModel)]="branch.address"
+      name="address"
+      appFocusOnKey
+      [autoSelectNext]="true"></textarea>
+  </div>
+
+<div class="form-column">
+  <label>Status</label>
+
+  <label class="switch">
+    <input
+      type="checkbox"
+      [(ngModel)]="branch.isActive"
+      name="isActive"
+      appFocusOnKey
+    />
+    <span class="slider"></span>
+    <span class="switch-text">
+      {{ branch.isActive ? 'Active' : 'Inactive' }}
+    </span>
+  </label>
+</div>
+
+</div>
+
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="branches"
+      [columns]="branchColumns"
+      title="ALL BRANCHES"
+      companyName="SmartBillPro"
+      (edit)="editBranch($event)"
+      (delete)="deleteBranch($event)">
+    </app-master-table-view>
+
+  </div>
+
 </div>

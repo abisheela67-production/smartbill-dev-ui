@@ -1,128 +1,203 @@
-/* ================================
-   MASTER TABLE CONTAINER
-================================ */
-.master-table-box {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 16px 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-  margin-top: 20px;
+/* =====================================================
+   GLOBAL RESET & SAFETY
+===================================================== */
+* {
+  box-sizing: border-box;
 }
 
-/* ================================
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+.master-table-box {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* =====================================================
    TOOLBAR
-================================ */
+===================================================== */
 .mt-toolbar {
+  background: linear-gradient(135deg, #1c0f5c, #2b1a85);
+  padding: 14px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
 .mt-title {
-  font-size: 17px;
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 700;
-  color: #1d1160;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
 }
 
+/* =====================================================
+   ACTION AREA
+===================================================== */
 .mt-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: center;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 520px;
+  justify-content: flex-end;
 }
 
+/* =====================================================
+   SEARCH INPUT
+===================================================== */
 .mt-actions input {
-  height: 34px;
-  padding: 0 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+  height: 36px;
+  padding: 0 12px 0 36px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
   font-size: 13px;
   outline: none;
-  transition: 0.2s;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 14px;
+  background-position: 12px center;
 }
 
-.mt-actions input:focus {
-  border-color: #1d1160;
-  box-shadow: 0 0 0 2px rgba(29, 17, 96, 0.12);
+.mt-actions input::placeholder {
+  color: #dcdcff;
 }
 
+/* =====================================================
+   EXPORT BUTTONS
+===================================================== */
 .mt-actions button {
-  height: 34px;
+  height: 36px;
   padding: 0 14px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #1d1160, #2a1f9d);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.25s ease;
+  background: #1d1160;
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .mt-actions button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(29, 17, 96, 0.25);
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  background: #24146d;
 }
 
-/* ================================
-   TABLE
-================================ */
+.mt-actions button lucide-icon {
+  width: 14px;
+  height: 14px;
+  stroke: #ffffff;
+}
+
+/* =====================================================
+   TABLE WRAPPER
+===================================================== */
 .mt-table-wrapper {
+  width: 100%;
   overflow-x: auto;
-  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* =====================================================
+   TABLE
+===================================================== */
 .mt-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  min-width: 720px;
+  border-collapse: collapse;
   font-size: 13px;
-  min-width: 600px;
+  table-layout: fixed;
 }
 
-.mt-table th {
-  background: linear-gradient(135deg, #1d1160, #241a85);
-  color: #ffffff;
-  padding: 10px 10px;
+.mt-table thead th {
+  background: #f8fafc;
+  color: #64748b;
+  padding: 12px 14px;
   text-align: left;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.mt-table th:first-child {
-  border-top-left-radius: 10px;
-}
-
-.mt-table th:last-child {
-  border-top-right-radius: 10px;
-}
-
-.mt-table td {
-  padding: 9px 10px;
+  font-weight: 700;
   border-bottom: 1px solid #e5e7eb;
-  color: #374151;
-  background: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 12px;
 }
 
-.mt-table tr:hover td {
-  background: #f4f6ff;
+.mt-table tbody td {
+  padding: 14px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+  word-break: break-word;
 }
 
-/* ================================
+.mt-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+/* Column sizing */
+.mt-table th:first-child,
+.mt-table td:first-child {
+  width: 60px;
+  text-align: center;
+}
+
+.mt-table th:nth-child(3),
+.mt-table td:nth-child(3) {
+  width: 140px;
+  text-align: center;
+}
+
+.mt-table th:last-child,
+.mt-table td:last-child {
+  width: 120px;
+  text-align: center;
+}
+
+/* =====================================================
    STATUS BADGE
-================================ */
+===================================================== */
 .mt-status {
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 5px 14px;
+  border-radius: 14px;
   font-size: 11px;
-  font-weight: 600;
-  display: inline-block;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mt-status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .mt-status.active {
@@ -131,93 +206,157 @@
 }
 
 .mt-status.inactive {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #e5e7eb;
+  color: #64748b;
 }
 
-/* ================================
+/* =====================================================
    ACTION BUTTONS
-================================ */
-.edit,
-.del {
-  border: none;
-  padding: 5px 8px;
+===================================================== */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.edit, .del {
+  width: 34px;
+  height: 34px;
   border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   cursor: pointer;
-  font-size: 12px;
-  transition: 0.2s ease;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.edit {
-  background: #22c55e;
-  color: #fff;
+.edit { color: #4f46e5; }
+.del { color: #ef4444; }
+
+.edit:hover { background: #eef2ff; }
+.del:hover { background: #fee2e2; }
+
+.edit lucide-icon, .del lucide-icon {
+  width: 16px;
+  height: 16px;
 }
 
-.edit:hover {
-  background: #16a34a;
-}
-
-.del {
-  background: #ef4444;
-  color: #fff;
-}
-
-.del:hover {
-  background: #dc2626;
-}
-
-/* ================================
+/* =====================================================
    PAGINATION
-================================ */
+===================================================== */
 .mt-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  margin-top: 14px;
+  gap: 8px;
+  padding: 14px 0 18px;
   flex-wrap: wrap;
 }
 
 .mt-pagination button {
-  min-width: 30px;
-  height: 30px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 12px;
   border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #fff;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   font-size: 12px;
   cursor: pointer;
 }
 
 .mt-pagination button.active {
-  background: #1d1160;
-  color: #fff;
-  border-color: #1d1160;
+  background: #1c0f5c;
+  color: #ffffff;
+  border-color: #1c0f5c;
 }
 
-/* ================================
-   MOBILE RESPONSIVE
-================================ */
+.mt-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =====================================================
+   TABLET & MOBILE
+===================================================== */
 @media (max-width: 768px) {
+
+  .master-table-box {
+    border-radius: 0;
+  }
+
+  .mt-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .mt-title {
+    text-align: center;
     font-size: 15px;
   }
 
   .mt-actions {
     width: 100%;
-    justify-content: space-between;
+    justify-content: stretch;
+    flex-direction: column;
   }
 
   .mt-actions input {
-    flex: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .master-table-box {
-    padding: 12px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .mt-actions button {
     width: 100%;
+    justify-content: center;
+  }
+
+  .mt-table {
+    font-size: 12px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .edit, .del {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* =====================================================
+   SMALL PHONES
+===================================================== */
+@media (max-width: 480px) {
+
+  .mt-title {
+    font-size: 14px;
+  }
+
+  .mt-actions button {
+    height: 34px;
+    font-size: 11px;
+  }
+
+  .mt-table th,
+  .mt-table td {
+    padding: 8px 6px;
+  }
+}
+
+/* =====================================================
+   LARGE SCREENS
+===================================================== */
+@media (min-width: 1600px) {
+
+  .master-table-box {
+    max-width: 1400px;
+    margin: auto;
+  }
+
+  .mt-table {
+    font-size: 14px;
   }
 }

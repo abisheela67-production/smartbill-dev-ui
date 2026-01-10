@@ -9,7 +9,8 @@ import {
   Save,
   ChevronDown,
   X,
-
+  Pencil,
+  Trash2,
   // ===== USER / AUTH =====
   User,
   Users,
@@ -58,19 +59,20 @@ import {
   AlertCircle,
   AlertTriangle,
   Menu,
-
+Edit,
   // ===== DASHBOARD / CHARTS =====
   Calendar,
   PieChart,
   TrendingUp,
   ArrowRightLeft,
   RefreshCw,
-
+GitBranch,
   // ===== MEASUREMENT =====
   Ruler,
   Droplet,
   UserCheck,
 } from 'lucide-angular';
+import { File } from 'lucide-angular';
 
 @NgModule({
   imports: [
@@ -83,7 +85,7 @@ import {
       Save,
       ChevronDown,
       X,
-
+      File,
       // USER / AUTH
       User,
       Users,
@@ -102,8 +104,9 @@ import {
       Box,
       Tag,
       Truck,
+      Edit,
       ShoppingCart,
-
+GitBranch,
       // LAYOUT
       Grid,
       LayoutGrid,
@@ -142,6 +145,8 @@ import {
       BarChart2,
       AlertCircle,
       Menu,
+      Pencil,
+      Trash2,
     }),
   ],
   exports: [LucideAngularModule],

@@ -5,11 +5,15 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { SharedModule } from '../../../shared/shared.module';
+import { IconsModule } from '../../../shared/icons.module';
+IconsModule
+SharedModule
 
 @Component({
   selector: 'app-master-table-view',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,SharedModule,IconsModule],
   templateUrl: './master-table-view.component.html',
   styleUrls: ['./master-table-view.component.css']
 })

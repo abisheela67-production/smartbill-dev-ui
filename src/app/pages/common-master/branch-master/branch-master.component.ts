@@ -6,17 +6,27 @@ import { CommonModule } from '@angular/common';
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { ValidationService } from '../../../services/properties/validation.service';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
+MasterTableViewComponent;
 
 @Component({
   selector: 'app-branch-master',
-  imports: [CommonModule, FormsModule, FocusOnKeyDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FocusOnKeyDirective,
+    MasterTableViewComponent,
+    SharedModule,
+  ],
   templateUrl: './branch-master.component.html',
   styleUrls: ['./branch-master.component.css'],
 })
 export class BranchMasterComponent implements OnInit {
   companies: Company[] = [];
   branches: Branch[] = [];
-
+  isEditMode = false;
+  isFormEnabled = false;
   branch: Branch = this.getEmptyBranch();
 
   constructor(
@@ -30,7 +40,10 @@ export class BranchMasterComponent implements OnInit {
     this.loadBranches();
   }
 
-  /** Load companies from API */
+  branchColumns = [
+    { field: 'branchName', header: 'Branch Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
   loadCompanies() {
     this.commonservice.getCompanies().subscribe({
       next: (res) => (this.companies = res),
@@ -38,21 +51,25 @@ export class BranchMasterComponent implements OnInit {
     });
   }
 
-  /** Load branches from API */
   loadBranches() {
     this.commonservice.getBranches().subscribe({
       next: (data) => (this.branches = data),
       error: (err) => console.error('Error fetching branches:', err),
     });
   }
-
-  /** Get company name by ID */
+  get totalBranches(): number {
+    return this.branches.length;
+  }
   getCompanyName(companyID: number): string {
     const company = this.companies.find((c) => c.companyID === companyID);
     return company ? company.companyName : '';
   }
+  Refresh() {
+    this.resetBranch();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
 
-  /** Returns a new empty branch object */
   getEmptyBranch(): Branch {
     return {
       branchID: 0,
@@ -64,18 +81,22 @@ export class BranchMasterComponent implements OnInit {
       createdByUserID: 0,
       createdSystemName: 'AngularApp',
       createdAt: new Date().toISOString(),
-      updatedByUserID: 0,
+      updatedByUserID:  0,
       updatedSystemName: 'AngularApp',
       updatedAt: new Date().toISOString(),
     };
   }
 
-  /** Reset the form */
   resetBranch() {
     this.branch = this.getEmptyBranch();
   }
 
-  /** Save or update branch */
+  newBranch() {
+    this.resetBranch();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+
   saveOrDeleteBranch() {
     if (!this.branch.branchName || !this.branch.companyID) {
       this.swallservice.error(
@@ -95,18 +116,16 @@ export class BranchMasterComponent implements OnInit {
         this.resetBranch();
       },
       error: (err) => {
-        console.error('❌ Error saving branch:', err);
+        console.error(' Error saving branch:', err);
         this.swallservice.error('Error', 'Error saving branch!');
       },
     });
   }
 
-  /** Edit branch */
   editBranch(b: Branch) {
     this.branch = { ...b };
   }
 
-  /** Soft delete branch */
   deleteBranch(b: Branch) {
     if (!confirm(`Are you sure you want to delete ${b.branchName}?`)) return;
 
