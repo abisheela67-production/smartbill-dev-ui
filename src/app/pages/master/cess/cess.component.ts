@@ -7,9 +7,15 @@ import { SweetAlertService } from '../../../services/properties/sweet-alert.serv
 import { InputRestrictDirective } from '../../../directives/input-restrict.directive';
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { Cess } from '../../models/common-models/master-models/master';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
 @Component({
   selector: 'app-cess',
-  imports: [FormsModule, CommonModule, InputRestrictDirective, FocusOnKeyDirective],
+  imports: [FormsModule, CommonModule, InputRestrictDirective,
+     FocusOnKeyDirective,
+     SharedModule,
+     MasterTableViewComponent
+    ],
   templateUrl: './cess.component.html',
   styleUrl: './cess.component.css'
 })
@@ -17,7 +23,12 @@ export class CessComponent {
   cesses: Cess[] = [];
   cess!: Cess;
   duplicateError = false;
-
+  isEditMode = false;
+  isFormEnabled = false;
+ cessColumns = [
+    { field: 'cessName', header: 'CESS Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
   constructor(
     private readonly masterService: MasterService,
     private readonly validationService: ValidationService,
@@ -29,7 +40,16 @@ export class CessComponent {
     this.loadCesses();
   }
 
- 
+   newCesscreate() {
+    this.resetCess();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshCesses() {
+    this.resetCess();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   /** Create new Cess object */
   private newCess(): Cess {
     const now = new Date().toISOString();

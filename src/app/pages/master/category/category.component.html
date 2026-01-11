@@ -1,123 +1,142 @@
-<div class="container mt-5">
-  <div class="row g-4">
-    <!-- Category Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container p-4">
-        <h2>Category Master</h2>
+<div class="master-layout">
 
-        <form #categoryForm="ngForm">
-          <!-- Category Name -->
-          <div class="form-column mb-3">
-            <label for="categoryName" class="required">Category Name</label>
-            <input
-              type="text"
-              id="categoryName"
-              class="form-control"
-              [(ngModel)]="category.categoryName"
-              name="categoryName"
-              required
-              [autoFocus]="true"
-              #categoryName="ngModel"
-              (ngModelChange)="checkDuplicate()"
-              appFocusOnKey="description"
-              [autoSelectNext]="true"
-              appInputRestrict="text"
-              [ngClass]="{ 'is-warning': duplicateError }"
-            />
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-            <div class="text-danger" *ngIf="categoryName.invalid">
-              Category Name is required.
-            </div>
-            <div class="text-warning small mt-1" *ngIf="duplicateError">
-              This category already exists!
-            </div>
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="folder"></lucide-icon>
+
+      <div>
+        <div class="master-title-text">CATEGORY MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newCategories()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD CATEGORY
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshCategories()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL CATEGORIES : {{ categories.length }}
+    </div>
+
+  </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE CATEGORY</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateCategory()"
+          [disabled]="duplicateError"
+        >
+          {{ category.categoryID ? "UPDATE" : "SAVE" }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetCategory()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+    <fieldset class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Category Name -->
+        <div class="form-column full-width">
+          <label>Category Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="category.categoryName"
+            name="categoryName"
+            required
+            [autoFocus]="true"
+            (ngModelChange)="checkDuplicate()"
+            appFocusOnKey="description"
+            [autoSelectNext]="true"
+            appInputRestrict="text"
+            [ngClass]="{ 'is-warning': duplicateError }"
+          />
+
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            This category already exists!
           </div>
+        </div>
 
-          <!-- Description -->
-          <div class="form-column mb-3">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              [(ngModel)]="category.description"
-              name="description"
-              rows="3"
-              appFocusOnKey="isActive"
-            ></textarea>
-          </div>
+        <!-- Description -->
+        <div class="form-column full-width">
+          <label>Description</label>
+          <textarea
+            class="input-common"
+            rows="3"
+            [(ngModel)]="category.description"
+            name="description"
+            appFocusOnKey="isActive"
+          ></textarea>
+        </div>
 
-          <!-- Active Toggle -->
-          <div class="form-check form-switch mb-3">
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+
+          <label class="switch">
             <input
               type="checkbox"
-              class="form-check-input"
-              id="isActive"
               [(ngModel)]="category.isActive"
               name="isActive"
               appFocusOnKey="saveBtn"
             />
-            <label class="form-check-label" for="isActive">
+            <span class="slider"></span>
+            <span class="switch-text">
               {{ category.isActive ? "Active" : "Inactive" }}
-            </label>
-          </div>
+            </span>
+          </label>
+        </div>
 
-          <!-- Buttons -->
-          <div class="form-actions d-flex gap-2">
-            <button
-              (click)="saveOrUpdateCategory()"
-              type="submit"
-              id="saveBtn"
-              class="btn btn-primary flex-fill"
-              [disabled]="categoryForm.invalid || duplicateError"
-            >
-              <i class="bi bi-save me-1"></i>
-              {{ category.categoryID ? "Update" : "Save" }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline flex-fill"
-              (click)="resetCategory()"
-            >
-              <i class="bi bi-arrow-clockwise me-1"></i> Reset
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
-<div class="table-container">
-  <table class="table-common">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Category Name</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let c of categories; let i = index" [class.table-warning]="category.categoryID === c.categoryID">
-        <td>{{ i + 1 }}</td>
-        <td>{{ c.categoryName }}</td>
-        <td>{{ c.description }}</td>
-        <td>
-          <span class="badge" [ngClass]="c.isActive ? 'bg-success' : 'bg-danger'">
-            {{ c.isActive ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-        <td class="text-center">
-          <button class="btn btn-sm" title="Edit" (click)="editCategory(c)">
-            <i class="bi bi-pencil-fill"></i>
-          </button>
-          <button class="btn btn-sm" title="Delete" (click)="deleteCategory(c)">
-            <i class="bi bi-trash-fill"></i>
-          </button>
-        </td>
-      </tr>
-      <tr *ngIf="categories.length === 0">
-        <td colspan="5" class="text-center text-muted">No categories found.</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
 
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="categories"
+      [columns]="categoryColumns"
+      title="ALL CATEGORIES"
+      companyName="SmartBillPro"
+      (edit)="editCategory($event)"
+      (delete)="deleteCategory($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
+</div>

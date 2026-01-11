@@ -11,6 +11,7 @@ import {
   X,
   Pencil,
   Trash2,
+  Layers,
   // ===== USER / AUTH =====
   User,
   Users,
@@ -30,6 +31,7 @@ import {
   Tag,
   Truck,
   ShoppingCart,
+  Shield,
 
   // ===== LAYOUT =====
   Grid,
@@ -67,10 +69,13 @@ Edit,
   ArrowRightLeft,
   RefreshCw,
 GitBranch,
+  UploadCloud,
   // ===== MEASUREMENT =====
   Ruler,
   Droplet,
   UserCheck,
+  Folder,
+  PlusCircle,
 } from 'lucide-angular';
 import { File } from 'lucide-angular';
 
@@ -85,6 +90,7 @@ import { File } from 'lucide-angular';
       Save,
       ChevronDown,
       X,
+      Shield,
       File,
       // USER / AUTH
       User,
@@ -147,6 +153,10 @@ GitBranch,
       Menu,
       Pencil,
       Trash2,
+      Layers,
+      Folder,
+      UploadCloud,
+      PlusCircle
     }),
   ],
   exports: [LucideAngularModule],

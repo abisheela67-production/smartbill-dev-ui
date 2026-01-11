@@ -1,95 +1,153 @@
-<div class="container mt-5">
-  <div class="row g-4">
+<div class="master-layout">
 
-    <!-- Cess Form -->
-    <div class="col-12">
-      <div class="form-container p-4 rounded shadow-sm bg-light">
-        <h2>Cess Master</h2>
-        <form #cessForm="ngForm">
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-          <div class="form-row-three">
-            <div class="form-column">
-              <label for="cessName" class="required">Name</label>
-              <input type="text" id="cessName" class="form-control"
-                     [(ngModel)]="cess.cessName" name="cessName"
-                     required appInputRestrict="letter" appFocusOnKey targetId="cessRate"
-                     (ngModelChange)="checkDuplicate()" />
-              <small *ngIf="duplicateError" class="text-danger">
-                Cess Name already exists!
-              </small>
-            </div>
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="percent"></lucide-icon>
 
-            <div class="form-column">
-              <label for="cessRate">Rate (%)</label>
-              <input type="text" id="cessRate" class="form-control"
-                     [(ngModel)]="cess.cessRate" name="cessRate"
-                     appInputRestrict="number" appFocusOnKey targetId="description" />
-            </div>
-
-            <div class="form-column">
-              <label for="description">Description</label>
-              <input type="text" id="description" class="form-control"
-                     [(ngModel)]="cess.description" name="description"
-                     appInputRestrict="text" appFocusOnKey targetId="isActive" />
-            </div>
-          </div>
-
-          <div class="form-row-three align-items-center mt-2">
-            <div class="form-column d-flex align-items-center">
-              <input type="checkbox" id="isActive" [(ngModel)]="cess.isActive" name="isActive"
-                     appFocusOnKey targetId="saveBtn" />
-              <label for="isActive">Active</label>
-            </div>
-
-            <div class="form-column">
-              <button type="button" id="saveBtn" class="btn btn-primary w-100"
-                      (click)="saveOrUpdateCess()" [disabled]="cessForm.invalid || duplicateError">
-                {{ cess.cessID ? 'Update' : 'Save' }}
-              </button>
-            </div>
-          </div>
-
-        </form>
+      <div>
+        <div class="master-title-text">CESS MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Cess Table -->
-    <div class="col-12 mt-4">
-      <div class="table-container">
-        <table class="table table-bordered table-hover table-common">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Rate (%)</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of cesses; let i = index" [class.table-warning]="cess.cessID === c.cessID">
-              <td>{{ i + 1 }}</td>
-              <td>{{ c.cessName }}</td>
-              <td>{{ c.cessRate }}</td>
-              <td>{{ c.description }}</td>
-              <td>
-                <span class="badge" [ngClass]="c.isActive ? 'bg-success' : 'bg-danger'">
-                  {{ c.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-primary me-1" (click)="editCess(c)"><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn btn-sm btn-danger" (click)="deleteCess(c)"><i class="bi bi-trash-fill"></i></button>
-              </td>
-            </tr>
-            <tr *ngIf="cesses.length === 0">
-              <td colspan="6" class="text-center text-muted">No Cess found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newCesscreate()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD CESS
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshCesses()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL CESS : {{ cesses.length }}
     </div>
 
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE CESS</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateCess()"
+          [disabled]="duplicateError"
+        >
+          {{ cess.cessID ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetCess()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+   <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Cess Name -->
+        <div class="form-column">
+          <label>Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="cess.cessName"
+            name="cessName"
+            required
+            appInputRestrict="letter"
+            appFocusOnKey
+            (ngModelChange)="checkDuplicate()"
+            [ngClass]="{ 'is-warning': duplicateError }"
+          />
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            Cess name already exists!
+          </div>
+        </div>
+
+        <!-- Rate -->
+        <div class="form-column">
+          <label>Rate (%)</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="cess.cessRate"
+            name="cessRate"
+            appInputRestrict="number"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="form-column">
+          <label>Description</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="cess.description"
+            name="description"
+            appInputRestrict="text"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="cess.isActive"
+              name="isActive"
+              appFocusOnKey
+            />
+            <span class="slider"></span>
+            <span class="switch-text">
+              {{ cess.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="cesses"
+      [columns]="cessColumns"
+      title="ALL CESS"
+      companyName="SmartBillPro"
+      (edit)="editCess($event)"
+      (delete)="deleteCess($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

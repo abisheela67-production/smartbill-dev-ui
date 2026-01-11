@@ -8,13 +8,16 @@ import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive'
 import { InputRestrictDirective } from '../../../directives/input-restrict.directive';
 import { Customer } from '../../models/common-models/master-models/master';
 import { CommonserviceService } from '../../../services/commonservice.service';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 interface ApiResponse { success: boolean; message?: string; }
 
 @Component({
   selector: 'app-customer',
   standalone: true,
-  imports: [FormsModule, CommonModule, InputRestrictDirective, FocusOnKeyDirective],
+  imports: [FormsModule, CommonModule, InputRestrictDirective,
+     FocusOnKeyDirective,MasterTableViewComponent,SharedModule],
   templateUrl: './customer.component.html',
   styleUrls: ['./customer.component.css']
 })
@@ -22,7 +25,14 @@ export class CustomerComponent {
   customers: Customer[] = [];
   customer!: Customer;  
   duplicateError = false;
-
+  isEditMode = false;
+  isFormEnabled = false;
+ customerColumns = [
+    { field: 'customerName', header: 'Customer Name' },
+    { field: 'phone', header: 'Phone' },
+    { field: 'email', header: 'Email' },
+    { field: 'isActive', header: 'Active' },
+  ];
   constructor(
     private readonly masterService: MasterService,
     private readonly validationService: ValidationService,
@@ -33,8 +43,20 @@ export class CustomerComponent {
   ngOnInit() {
     this.resetCustomer();
     this.loadCustomers();
-  }
+    this.isFormEnabled = false;
+;
 
+  }
+  newCustomerCreate() {
+    this.refreshCustomers();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshCustomers() {
+    this.resetCustomer();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   private newCustomer(): Customer {
     const now = new Date().toISOString();
     return {

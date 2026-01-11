@@ -1,22 +1,11 @@
-/* ======================================================
-   GLOBAL
-====================================================== */
-* {
-  box-sizing: border-box;
-}
 
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: #f5f6fb;
-}
 
 /* ======================================================
    HEADER
 ====================================================== */
 .pos-header {
   height: 65px;
-  background: #1a1445;
+  background: #1d1160;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;

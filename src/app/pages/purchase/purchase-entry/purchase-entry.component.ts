@@ -43,6 +43,7 @@ import { CommonserviceService } from '../../../services/commonservice.service';
 import { GroupBoxComponent } from '../../../shared/group-box/group-box.component';
 import { Router } from '@angular/router';
 import { PurchaseOrderServiceService } from '../../../purchase-order/services/purchase-order-service.service';
+import { SharedModule } from '../../../shared/shared.module';
 @Component({
   selector: 'app-purchase-entry',
   imports: [
@@ -51,6 +52,7 @@ import { PurchaseOrderServiceService } from '../../../purchase-order/services/pu
     CommonModule,
     SmallGridComponent,
     FocusOnKeyDirective,
+    SharedModule,
   ],
   templateUrl: './purchase-entry.component.html',
   styleUrl: './purchase-entry.component.css',
@@ -231,7 +233,7 @@ export class PurchaseEntryComponent {
     { field: 'barcode', header: 'Barcode', type: 'text', visible: false },
     {
       field: 'productCode',
-      header: 'Product Code',
+      header: 'P CODE',
       type: 'text',
       visible: true,
       readOnly: true,
@@ -239,7 +241,7 @@ export class PurchaseEntryComponent {
 
     {
       field: 'productName',
-      header: 'Product Name',
+      header: 'P NAME',
       type: 'text',
       openSmallGrid: true,
       requiredForNextRow: true,
@@ -248,34 +250,34 @@ export class PurchaseEntryComponent {
 
     {
       field: 'productRate',
-      header: 'Product Rate',
+      header: 'PRATE',
       type: 'number',
       visible: false,
     },
 
     {
       field: 'purchaseRate',
-      header: 'Purchase Rate',
+      header: 'P RATE',
       type: 'number',
       visible: true,
       requiredForNextRow: true,
     },
     {
       field: 'retailPrice',
-      header: 'Retail Price',
+      header: 'R RATE',
       type: 'number',
       visible: true,
       requiredForNextRow: true,
     },
     {
       field: 'wholesalePrice',
-      header: 'Wholesale Price',
+      header: 'WH RATE',
       type: 'number',
       visible: true,
     },
     {
       field: 'quantity',
-      header: 'Quantity',
+      header: 'QTY',
       type: 'number',
       visible: true,
 
@@ -287,15 +289,15 @@ export class PurchaseEntryComponent {
 
     {
       field: 'discountAmount',
-      header: 'Discount Amount',
+      header: 'DISC AMT',
       type: 'number',
-      visible: false,
+      visible: true,
     },
     {
       field: 'discountPercentage',
-      header: 'Discount %',
+      header: 'DISC %',
       type: 'number',
-      visible: false,
+      visible: true,
     },
     {
       field: 'inclusiveAmount',
@@ -320,7 +322,7 @@ export class PurchaseEntryComponent {
     },
     {
       field: 'gstAmount',
-      header: 'GST Amount',
+      header: 'GST AMT',
       type: 'number',
       visible: true,
       readOnly: true,
@@ -450,7 +452,7 @@ export class PurchaseEntryComponent {
 
     {
       field: 'totalAmount',
-      header: 'Total Amount',
+      header: 'TOTAL AMT',
       type: 'number',
       visible: true,
     },

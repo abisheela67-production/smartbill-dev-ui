@@ -1,247 +1,245 @@
-<div class="container mt-5">
-  <div class="row g-4">
+<div class="master-layout">
 
-    <!-- Customer Form -->
-    <div class="col-12">
-      <div class="form-container p-4 rounded shadow-sm bg-light">
-        <h2>Customer Master</h2>
-        <form #customerForm="ngForm">
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-          <!-- Row 1: Code, Name, Phone -->
-          <div class="form-row-three">
-            <div class="form-column">
-              <label for="customerCode">Code</label>
-              <input
-                type="text"
-                id="customerCode"
-                class="form-control"
-                [(ngModel)]="customer.customerCode"
-                name="customerCode"
-                readonly
-                appInputRestrict="text"
-                appFocusOnKey targetId="customerName" [autoFocus]="true"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="customerName" class="required">Name</label>
-              <input
-                type="text"
-                id="customerName"
-                class="form-control"
-                [(ngModel)]="customer.customerName"
-                name="customerName"
-                required
-                appInputRestrict="letter"
-                appFocusOnKey targetId="phone"
-                (ngModelChange)="checkDuplicate()"
-              />
-              <small *ngIf="duplicateError" class="text-danger">
-                Customer Name already exists!
-              </small>
-            </div>
-
-            <div class="form-column">
-              <label for="phone">Phone</label>
-              <input
-                type="text"
-                id="phone"
-                class="form-control"
-                [(ngModel)]="customer.phone"
-                name="phone"
-                appInputRestrict="number"
-                appFocusOnKey targetId="alternatePhone"
-              />
-            </div>
-          </div>
-
-          <!-- Row 2: Alt Phone, Email, Postal -->
-          <div class="form-row-three">
-            <div class="form-column">
-              <label for="alternatePhone">Alt Phone</label>
-              <input
-                type="text"
-                id="alternatePhone"
-                class="form-control"
-                [(ngModel)]="customer.alternatePhone"
-                name="alternatePhone"
-                appInputRestrict="number"
-                appFocusOnKey targetId="email"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                class="form-control"
-                [(ngModel)]="customer.email"
-                name="email"
-                appInputRestrict="email"
-                appFocusOnKey targetId="postalCode"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="postalCode">Postal</label>
-              <input
-                type="text"
-                id="postalCode"
-                class="form-control"
-                [(ngModel)]="customer.postalCode"
-                name="postalCode"
-                appInputRestrict="number"
-                appFocusOnKey targetId="addressLine1"
-              />
-            </div>
-          </div>
-
-          <!-- Row 3: Address1, Address2, City -->
-          <div class="form-row-three">
-            <div class="form-column">
-              <label for="addressLine1">Address 1</label>
-              <input
-                type="text"
-                id="addressLine1"
-                class="form-control"
-                [(ngModel)]="customer.addressLine1"
-                name="addressLine1"
-                appInputRestrict="address"
-                appFocusOnKey targetId="addressLine2"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="addressLine2">Address 2</label>
-              <input
-                type="text"
-                id="addressLine2"
-                class="form-control"
-                [(ngModel)]="customer.addressLine2"
-                name="addressLine2"
-                appInputRestrict="address"
-                appFocusOnKey targetId="city"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="city">City</label>
-              <input
-                type="text"
-                id="city"
-                class="form-control"
-                [(ngModel)]="customer.city"
-                name="city"
-                appInputRestrict="letter"
-                appFocusOnKey targetId="state"
-              />
-            </div>
-          </div>
-
-          <!-- Row 4: State, Country, Active -->
-          <div class="form-row-three align-items-center">
-            <div class="form-column">
-              <label for="state">State</label>
-              <input
-                type="text"
-                id="state"
-                class="form-control"
-                [(ngModel)]="customer.state"
-                name="state"
-                appInputRestrict="letter"
-                appFocusOnKey targetId="country"
-              />
-            </div>
-
-            <div class="form-column">
-              <label for="country">Country</label>
-              <input
-                type="text"
-                id="country"
-                class="form-control"
-                [(ngModel)]="customer.country"
-                name="country"
-                appInputRestrict="letter"
-                appFocusOnKey targetId="isActive"
-              />
-            </div>
-
-            <div class="form-column d-flex align-items-center">
-              <input
-                type="checkbox"
-                id="isActive"
-                [(ngModel)]="customer.isActive"
-                name="isActive"
-                appFocusOnKey targetId="saveBtn"
-              />
-              <label for="isActive">Active</label>
-            </div>
-          </div>
-
-          <!-- Row 5: Save Button -->
-          <div class="form-row-three">
-            <div class="form-column">
-              <button
-                type="button"
-                id="saveBtn"
-                class="btn btn-primary w-100"
-                (click)="saveOrUpdateCustomer()"
-                [disabled]="customerForm.invalid || duplicateError"
-              >
-                {{ customer.customerID ? 'Update' : 'Save' }}
-              </button>
-            </div>
-          </div>
-        </form>
+    <div class="master-top-left">
+      <lucide-icon name="user"></lucide-icon>
+      <div>
+        <div class="master-title-text">CUSTOMER MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Customer Table -->
-    <div class="col-12 mt-4">
-      <div class="table-container">
-        <table class="table table-bordered table-hover table-common">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Alt Phone</th>
-              <th>Email</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Country</th>
-              <th>Postal</th>
-              <th>Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of customers; let i = index" [class.table-warning]="customer.customerID === c.customerID">
-              <td>{{ i + 1 }}</td>
-              <td>{{ c.customerCode }}</td>
-              <td>{{ c.customerName }}</td>
-              <td>{{ c.phone }}</td>
-              <td>{{ c.alternatePhone }}</td>
-              <td>{{ c.email }}</td>
-              <td>{{ c.city }}</td>
-              <td>{{ c.state }}</td>
-              <td>{{ c.country }}</td>
-              <td>{{ c.postalCode }}</td>
-              <td><span class="badge" [ngClass]="c.isActive ? 'bg-success' : 'bg-danger'">{{ c.isActive ? 'Active' : 'Inactive' }}</span></td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-primary me-1" (click)="editCustomer(c)"><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn btn-sm btn-danger" (click)="deleteCustomer(c)"><i class="bi bi-trash-fill"></i></button>
-              </td>
-            </tr>
-            <tr *ngIf="customers.length === 0">
-              <td colspan="12" class="text-center text-muted">No customers found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newCustomerCreate()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD CUSTOMER
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshCustomers()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
+    </div>
+
+    <div class="total-badge saas">
+      TOTAL CUSTOMERS : {{ customers.length }}
     </div>
 
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE CUSTOMER</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateCustomer()"
+          [disabled]="duplicateError"
+        >
+          {{ customer.customerID ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetCustomer()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+   <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Code -->
+        <div class="form-column">
+          <label>Code</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.customerCode"
+            name="customerCode"
+            readonly
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Name -->
+        <div class="form-column">
+          <label>Customer Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.customerName"
+            name="customerName"
+            required
+            appInputRestrict="letter"
+            appFocusOnKey
+            (ngModelChange)="checkDuplicate()"
+          />
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            Customer name already exists!
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-column">
+          <label>Phone</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.phone"
+            name="phone"
+            appInputRestrict="number"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Alt Phone -->
+        <div class="form-column">
+          <label>Alt Phone</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.alternatePhone"
+            name="alternatePhone"
+            appInputRestrict="number"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-column">
+          <label>Email</label>
+          <input
+            type="email"
+            class="input-common"
+            [(ngModel)]="customer.email"
+            name="email"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Postal -->
+        <div class="form-column">
+          <label>Postal Code</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.postalCode"
+            name="postalCode"
+            appInputRestrict="number"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Address 1 -->
+        <div class="form-column full-width">
+          <label>Address Line 1</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.addressLine1"
+            name="addressLine1"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Address 2 -->
+        <div class="form-column full-width">
+          <label>Address Line 2</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.addressLine2"
+            name="addressLine2"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- City -->
+        <div class="form-column">
+          <label>City</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.city"
+            name="city"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- State -->
+        <div class="form-column">
+          <label>State</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.state"
+            name="state"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Country -->
+        <div class="form-column">
+          <label>Country</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="customer.country"
+            name="country"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="customer.isActive"
+              name="isActive"
+              appFocusOnKey
+            />
+            <span class="slider"></span>
+            <span class="switch-text">
+              {{ customer.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="customers"
+      [columns]="customerColumns"
+      title="ALL CUSTOMERS"
+      companyName="SmartBillPro"
+      (edit)="editCustomer($event)"
+      (delete)="deleteCustomer($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

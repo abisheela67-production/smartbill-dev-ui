@@ -7,18 +7,36 @@ import { SweetAlertService } from '../../../services/properties/sweet-alert.serv
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { Unit } from '../../models/common-models/master-models/master';
 import { CommonserviceService } from '../../../services/commonservice.service';
-interface ApiResponse { success: boolean; message?: string; }
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
+
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+}
 @Component({
   selector: 'app-unit',
-  imports: [CommonModule, FormsModule, FocusOnKeyDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FocusOnKeyDirective,
+    MasterTableViewComponent,
+    SharedModule,
+  ],
   templateUrl: './unit.component.html',
-  styleUrl: './unit.component.css'
+  styleUrl: './unit.component.css',
 })
 export class UnitComponent {
- units: Unit[] = [];
+  units: Unit[] = [];
   unit: Unit = this.newUnit();
   duplicateError = false;
-
+  isEditMode = false;
+  isFormEnabled = false;
+  unitColumns = [
+    { field: 'unitName', header: 'Unit Name' },
+    { field: 'unitCode', header: 'Unit Code' },
+    { field: 'isActive', header: 'Active' },
+  ];
   constructor(
     private readonly masterService: MasterService,
     private readonly commonService: CommonserviceService,
@@ -26,9 +44,19 @@ export class UnitComponent {
     private readonly swall: SweetAlertService
   ) {}
 
-  ngOnInit() { this.loadUnits(); }
-
-
+  ngOnInit() {
+    this.loadUnits();
+  }
+  newUnitCreate() {
+    this.refreshUnits();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshUnits() {
+    this.loadUnits();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   /** New empty unit */
   private newUnit(): Unit {
     const now = new Date().toISOString();
@@ -42,7 +70,7 @@ export class UnitComponent {
       createdAt: now,
       updatedByUserID: 0,
       updatedSystemName: 'AngularApp',
-      updatedAt: now
+      updatedAt: now,
     };
   }
 
@@ -50,24 +78,31 @@ export class UnitComponent {
   private focusUnit() {
     setTimeout(() => {
       const el = document.getElementById('unitName') as HTMLInputElement | null;
-      el?.focus(); el?.select();
+      el?.focus();
+      el?.select();
     }, 0);
   }
 
   /** Load all units */
   loadUnits() {
     this.masterService.getUnits().subscribe({
-      next: res => this.units = res ?? [],
-      error: () => this.swall.error('Error', 'Failed to load units!', () => this.focusUnit())
+      next: (res) => (this.units = res ?? []),
+      error: () =>
+        this.swall.error('Error', 'Failed to load units!', () =>
+          this.focusUnit()
+        ),
     });
   }
 
-checkDuplicate() {
-  this.duplicateError = this.units
-    .filter(u => u.unitID !== this.unit.unitID) // ignore current record
-    .some(u => u.unitName.trim().toLowerCase() === this.unit.unitName.trim().toLowerCase());
-}
-
+  checkDuplicate() {
+    this.duplicateError = this.units
+      .filter((u) => u.unitID !== this.unit.unitID) // ignore current record
+      .some(
+        (u) =>
+          u.unitName.trim().toLowerCase() ===
+          this.unit.unitName.trim().toLowerCase()
+      );
+  }
 
   /** Validate unit before save/update */
   private validateUnit(): boolean {
@@ -75,11 +110,15 @@ checkDuplicate() {
     this.unit.unitCode = this.unit.unitCode?.trim() || '';
     this.checkDuplicate();
     if (!this.unit.unitName) {
-      this.swall.warning('Validation', 'Unit Name is required!', () => this.focusUnit());
+      this.swall.warning('Validation', 'Unit Name is required!', () =>
+        this.focusUnit()
+      );
       return false;
     }
     if (this.duplicateError) {
-      this.swall.warning('Validation', 'Unit already exists!', () => this.focusUnit());
+      this.swall.warning('Validation', 'Unit already exists!', () =>
+        this.focusUnit()
+      );
       return false;
     }
     return true;
@@ -109,12 +148,23 @@ checkDuplicate() {
         if (res.success) {
           this.loadUnits();
           this.resetUnit();
-          this.swall.success('Success', res.message || 'Unit saved successfully!', () => this.focusUnit());
+          this.swall.success(
+            'Success',
+            res.message || 'Unit saved successfully!',
+            () => this.focusUnit()
+          );
         } else {
-          this.swall.error('Error', res.message || 'Something went wrong!', () => this.focusUnit());
+          this.swall.error(
+            'Error',
+            res.message || 'Something went wrong!',
+            () => this.focusUnit()
+          );
         }
       },
-      error: () => this.swall.error('Error', 'Failed to save unit!', () => this.focusUnit())
+      error: () =>
+        this.swall.error('Error', 'Failed to save unit!', () =>
+          this.focusUnit()
+        ),
     });
   }
 
@@ -126,27 +176,42 @@ checkDuplicate() {
 
   /** Delete (mark inactive) a unit */
   deleteUnit(u: Unit) {
-    this.swall.confirm(`Delete ${u.unitName}?`, 'This will mark the unit as inactive.').then(result => {
-      if (!result.isConfirmed) return;
+    this.swall
+      .confirm(`Delete ${u.unitName}?`, 'This will mark the unit as inactive.')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-      const userId = this.commonService.getCurrentUserId();
-      const now = new Date().toISOString();
+        const userId = this.commonService.getCurrentUserId();
+        const now = new Date().toISOString();
 
-      const deleted: Unit = {
-        ...u,
-        isActive: false,
-        updatedByUserID: userId,
-        updatedAt: now,
-        updatedSystemName: 'AngularApp'
-      };
+        const deleted: Unit = {
+          ...u,
+          isActive: false,
+          updatedByUserID: userId,
+          updatedAt: now,
+          updatedSystemName: 'AngularApp',
+        };
 
-      this.masterService.saveUnit(deleted).subscribe({
-        next: (res: ApiResponse) => res.success ?
-          (this.loadUnits(), this.swall.success('Deleted!', res.message || 'Unit deleted!', () => this.focusUnit())) :
-          this.swall.error('Error', res.message || 'Failed to delete unit!', () => this.focusUnit()),
-        error: () => this.swall.error('Error', 'Failed to delete unit!', () => this.focusUnit())
+        this.masterService.saveUnit(deleted).subscribe({
+          next: (res: ApiResponse) =>
+            res.success
+              ? (this.loadUnits(),
+                this.swall.success(
+                  'Deleted!',
+                  res.message || 'Unit deleted!',
+                  () => this.focusUnit()
+                ))
+              : this.swall.error(
+                  'Error',
+                  res.message || 'Failed to delete unit!',
+                  () => this.focusUnit()
+                ),
+          error: () =>
+            this.swall.error('Error', 'Failed to delete unit!', () =>
+              this.focusUnit()
+            ),
+        });
       });
-    });
   }
 
   /** Reset form */

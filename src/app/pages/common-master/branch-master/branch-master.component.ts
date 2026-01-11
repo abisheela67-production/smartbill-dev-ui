@@ -38,6 +38,7 @@ export class BranchMasterComponent implements OnInit {
   ngOnInit(): void {
     this.loadCompanies();
     this.loadBranches();
+    this.isFormEnabled = false;
   }
 
   branchColumns = [
@@ -64,6 +65,12 @@ export class BranchMasterComponent implements OnInit {
     const company = this.companies.find((c) => c.companyID === companyID);
     return company ? company.companyName : '';
   }
+  
+  newBranch() {
+    this.resetBranch();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
   Refresh() {
     this.resetBranch();
     this.isEditMode = false;
@@ -81,7 +88,7 @@ export class BranchMasterComponent implements OnInit {
       createdByUserID: 0,
       createdSystemName: 'AngularApp',
       createdAt: new Date().toISOString(),
-      updatedByUserID:  0,
+      updatedByUserID: 0,
       updatedSystemName: 'AngularApp',
       updatedAt: new Date().toISOString(),
     };
@@ -91,11 +98,6 @@ export class BranchMasterComponent implements OnInit {
     this.branch = this.getEmptyBranch();
   }
 
-  newBranch() {
-    this.resetBranch();
-    this.isEditMode = false;
-    this.isFormEnabled = true;
-  }
 
   saveOrDeleteBranch() {
     if (!this.branch.branchName || !this.branch.companyID) {

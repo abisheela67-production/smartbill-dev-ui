@@ -1,147 +1,151 @@
-<div class="container mt-5">
-  <div class="row g-4">
-    <!-- Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container p-4">
-        <h2>SubCategory Master</h2>
+<div class="master-layout">
 
-        <form #subCatForm="ngForm">
-          <!-- Category Dropdown -->
-          <div class="form-column mb-3">
-            <label for="categoryID" class="required">Category</label>
-            <select
-              id="categoryID"
-              class="form-select"
-              [(ngModel)]="subCategory.categoryID"
-              name="categoryID"
-              required
-              (change)="filterByCategory($event)"
-              appFocusOnKey="subCategoryName"
-            >
-              <option value="">Select Category</option>
-              <option *ngFor="let cat of categories" [value]="cat.categoryID">
-                {{ cat.categoryName }}
-              </option>
-            </select>
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
+
+    <div class="master-top-left">
+      <lucide-icon name="layers"></lucide-icon>
+      <div>
+        <div class="master-title-text">SUBCATEGORY MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
+      </div>
+    </div>
+
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newSubCategoryCreate()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD SUBCATEGORY
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshSubCategories()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
+    </div>
+
+    <div class="total-badge saas">
+      TOTAL SUBCATEGORIES : {{ subCategories.length }}
+    </div>
+
+  </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE SUBCATEGORY</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateSubCategory()"
+          [disabled]="duplicateError"
+        >
+          {{ subCategory.subCategoryID ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetSubCategory()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+    <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Category -->
+        <div class="form-column">
+          <label>Category</label>
+          <select
+            class="input-common"
+            [(ngModel)]="subCategory.categoryID"
+            name="categoryID"
+            required
+            (change)="filterByCategory($event)"
+            appFocusOnKey
+          >
+            <option value="">Select Category</option>
+            <option *ngFor="let cat of categories" [value]="cat.categoryID">
+              {{ cat.categoryName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- SubCategory Name -->
+        <div class="form-column">
+          <label>SubCategory Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="subCategory.subCategoryName"
+            name="subCategoryName"
+            required
+            (ngModelChange)="checkDuplicate()"
+            [ngClass]="{ 'is-warning': duplicateError }"
+            appFocusOnKey
+          />
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            This subcategory already exists!
           </div>
+        </div>
 
-          <!-- SubCategory Name -->
-          <div class="form-column mb-3">
-            <label for="subCategoryName" class="required">SubCategory Name</label>
-            <input
-              type="text"
-              id="subCategoryName"
-              class="form-control"
-              [(ngModel)]="subCategory.subCategoryName"
-              name="subCategoryName"
-              required
-              (ngModelChange)="checkDuplicate()"
-              [ngClass]="{ 'is-warning': duplicateError }"
-              appFocusOnKey="description"
-            />
-            <div class="text-danger" *ngIf="subCatForm.controls['subCategoryName']?.invalid">
-              SubCategory Name is required.
-            </div>
-            <div class="text-warning small mt-1" *ngIf="duplicateError">
-              This subcategory already exists!
-            </div>
-          </div>
+        <!-- Description -->
+        <div class="form-column full-width">
+          <label>Description</label>
+          <textarea
+            class="input-common"
+            rows="3"
+            [(ngModel)]="subCategory.description"
+            name="description"
+            appFocusOnKey
+          ></textarea>
+        </div>
 
-          <!-- Description -->
-          <div class="form-column mb-3">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              [(ngModel)]="subCategory.description"
-              name="description"
-              rows="3"
-              appFocusOnKey="isActive"
-            ></textarea>
-          </div>
-
-          <!-- Active Switch -->
-          <div class="form-check form-switch mb-3">
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+          <label class="switch">
             <input
               type="checkbox"
-              class="form-check-input"
-              id="isActive"
               [(ngModel)]="subCategory.isActive"
               name="isActive"
-              appFocusOnKey="saveBtn"
+              appFocusOnKey
             />
-            <label class="form-check-label" for="isActive">
+            <span class="slider"></span>
+            <span class="switch-text">
               {{ subCategory.isActive ? 'Active' : 'Inactive' }}
-            </label>
-          </div>
+            </span>
+          </label>
+        </div>
 
-          <!-- Buttons -->
-          <div class="form-actions d-flex gap-2">
-            <button
-              (click)="saveOrUpdateSubCategory()"
-              type="submit"
-              id="saveBtn"
-              class="btn btn-primary flex-fill"
-              [disabled]="subCatForm.invalid || duplicateError"
-            >
-              <i class="bi bi-save me-1"></i>
-              {{ subCategory.subCategoryID ? 'Update' : 'Save' }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline flex-fill"
-              (click)="resetSubCategory()"
-            >
-              <i class="bi bi-arrow-clockwise me-1"></i> Reset
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
 
-    <!-- Table -->
-    <div class="col-lg-8 col-md-7">
-      <div class="table-container">
-        <table class="table-common">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Category</th>
-              <th>SubCategory</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let sc of subCategories; let i = index"
-              [class.table-warning]="subCategory.subCategoryID === sc.subCategoryID"
-            >
-              <td>{{ i + 1 }}</td>
-              <td>{{ getCategoryName(sc.categoryID) }}</td>
-              <td>{{ sc.subCategoryName }}</td>
-              <td>{{ sc.description }}</td>
-              <td>
-                <span class="badge" [ngClass]="sc.isActive ? 'bg-success' : 'bg-danger'">
-                  {{ sc.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="text-center">
-                <button class="btn btn-sm" title="Edit" (click)="editSubCategory(sc)">
-                  <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button class="btn btn-sm" title="Delete" (click)="deleteSubCategory(sc)">
-                  <i class="bi bi-trash-fill"></i>
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="subCategories.length === 0">
-              <td colspan="6" class="text-center text-muted">No subcategories found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </fieldset>
+
   </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="subCategories"
+      [columns]="subCategoryColumns"
+      title="ALL SUBCATEGORIES"
+      companyName="SmartBillPro"
+      (edit)="editSubCategory($event)"
+      (delete)="deleteSubCategory($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

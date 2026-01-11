@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { ValidationService } from '../../../services/properties/validation.service';
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { SweetAlertService } from '../../../services/properties/sweet-alert.service';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 interface ApiResponse {
   success: boolean;
@@ -15,7 +17,7 @@ interface ApiResponse {
 @Component({
   selector: 'app-brand',
   standalone: true,
-  imports: [FormsModule, CommonModule, FocusOnKeyDirective],
+  imports: [FormsModule, CommonModule, FocusOnKeyDirective, MasterTableViewComponent, SharedModule],
   templateUrl: './brand.component.html',
   styleUrls: ['./brand.component.css'],
 })
@@ -23,7 +25,8 @@ export class BrandComponent {
   brands: Brand[] = [];
   brand: Brand = this.getEmptyBrand();
   duplicateError = false;
-
+  isEditMode = false;
+  isFormEnabled = false;
   @ViewChild(FocusOnKeyDirective) brandInput!: FocusOnKeyDirective;
 
   constructor(
@@ -31,11 +34,24 @@ export class BrandComponent {
     private validationService: ValidationService,
     private swall: SweetAlertService
   ) {}
-
+  brandColumns = [
+    { field: 'brandName', header: 'Brand Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
   ngOnInit(): void {
     this.loadBrands();
+    this.isFormEnabled = false;
   }
-
+  newBrand() {
+    this.resetBrand();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshBrands() {
+    this.resetBrand();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   private getEmptyBrand(): Brand {
     const now = new Date().toISOString();
     return {
@@ -110,6 +126,8 @@ export class BrandComponent {
   editBrand(b: Brand): void {
     this.brand = { ...b };
     setTimeout(() => this.focusBrand(), 0);
+    this.isEditMode = true;
+    this.isFormEnabled = true;
   }
 
   deleteBrand(b: Brand): void {

@@ -1,13 +1,22 @@
-<!-- ============================
-     FULL PAGE WRAPPER
-============================ -->
+
+
+<div class="master-top-header">
+  <div class="master-top-left">
+    <button class="back-btn" type="button" (click)="goBack()">
+      <lucide-icon name="arrow-left"></lucide-icon>
+      Back
+    </button>
+    <lucide-icon name="shopping-cart"></lucide-icon>
+
+    <div>
+      <div class="master-title-text">PURCHASE ENTRY</div>
+      <div class="master-subtitle-text">Enterprise Resource Planning</div>
+    </div>
+  </div>
+</div>
+
 <div class="page-layout">
   <div class="form-section">
-    <button class="btn btn-outline page-back-btn" (click)="goBack()">
-      ← Back
-    </button>
-
-    <span class="form-section-title">Purchase Entry</span>
     <div class="form-grid-4">
       <!-- Accounting Year -->
       <div class="form-field">
@@ -115,9 +124,16 @@
       </div>
 
       <!-- SAVE BUTTON CELL -->
-      <div class="form-field save-field">
-        <button class="save-btn">New</button>
-        <button class="save-btn" (click)="savePurchase()">Save</button>
+      <div class="form-field save-field"><button class="save-btn">
+  <lucide-icon name="plus-circle"></lucide-icon>
+  NEW PURCHASE
+</button>
+
+<button class="save-btn primary" (click)="savePurchase()">
+  <lucide-icon name="save"></lucide-icon>
+  SAVE PURCHASE
+</button>
+
       </div>
     </div>
 
@@ -165,104 +181,119 @@
       [allowUserToResizeColumns]="true"
     ></app-input-data-grid>
   </div>
-</div>
-<!-- ============================
+  <!-- ============================
       TOTAL SUMMARY SECTION
 ============================= -->
-<div class="total-summary">
-  <div class="total-row">
-    <label>Gross Amount</label>
-    <input
-      type="number"
-      [value]="totalGrossAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+  <div class="total-summary">
+    <div class="total-row">
+      <label>Gross Amount</label>
+      <input
+        type="number"
+        [value]="totalGrossAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Discount Amount</label>
-    <input
-      type="number"
-      [value]="totalDiscAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+    <div class="total-row">
+      <label>Discount Amount</label>
+      <input
+        type="number"
+        [value]="totalDiscAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Taxable Amount</label>
-    <input
-      type="number"
-      [value]="totalTaxableAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+    <div class="total-row">
+      <label>Taxable Amount</label>
+      <input
+        type="number"
+        [value]="totalTaxableAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>GST Amount</label>
-    <input
-      type="number"
-      [value]="totalGstAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+    <div class="total-row">
+      <label>GST Amount</label>
+      <input
+        type="number"
+        [value]="totalGstAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>CESS Amount</label>
-    <input
-      type="number"
-      [value]="totalCessAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+    <div class="total-row">
+      <label>CESS Amount</label>
+      <input
+        type="number"
+        [value]="totalCessAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Net Amount</label>
-    <input
-      type="number"
-      [value]="totalNetAmount"
-      readonly
-      class="total-input"
-    />
-  </div>
+    <div class="total-row">
+      <label>Net Amount</label>
+      <input
+        type="number"
+        [value]="totalNetAmount"
+        readonly
+        class="total-input"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Total Invoice</label>
-    <input
-      type="number"
-      [value]="totalInvoiceAmount"
-      readonly
-      class="total-input highlight"
-    />
-  </div>
+    <div class="total-row">
+      <label>Total Invoice</label>
+      <input
+        type="number"
+        [value]="totalInvoiceAmount"
+        readonly
+        class="total-input highlight"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Paid Amount</label>
-    <input
-      id="paidAmountInput"
-      type="number"
-      [(ngModel)]="totalPaidAmount"
-      (ngModelChange)="onPaidAmountChanged()"
-      class="textno"
-      appFocusOnKey
-    />
-  </div>
-  <div class="total-row">
-    <label>Balance Amount</label>
-    <input
-      type="number"
-      [value]="totalBalanceAmount"
-      readonly
-      class="total-input highlight-red"
-    />
-  </div>
+    <div class="total-row">
+      <label>Paid Amount</label>
+      <input
+        id="paidAmountInput"
+        type="number"
+        [(ngModel)]="totalPaidAmount"
+        (ngModelChange)="onPaidAmountChanged()"
+        class="textno"
+        appFocusOnKey
+      />
+    </div>
+    <div class="total-row">
+      <label>Balance Amount</label>
+      <input
+        type="number"
+        [value]="totalBalanceAmount"
+        readonly
+        class="total-input highlight-red"
+      />
+    </div>
 
-  <div class="total-row">
-    <label>Round Off</label>
-    <input type="number" [value]="totalRoundOff" readonly class="total-input" />
+    <div class="total-row">
+      <label>Round Off</label>
+      <input
+        type="number"
+        [value]="totalRoundOff"
+        readonly
+        class="total-input"
+      />
+    </div>
+  </div>
+</div>
+
+<!-- Shortcut bar INSIDE product-management -->
+<div class="shortcut-bar">
+  <div class="pos-shortcuts-inner">
+    <div class="skey"><span>Shift+N</span> ADD NEW PURCHASE</div>
+    <div class="sep">|</div>
+
+    <div class="skey"><span>Shift+S</span> SAVE PURCHASE</div>
   </div>
 </div>

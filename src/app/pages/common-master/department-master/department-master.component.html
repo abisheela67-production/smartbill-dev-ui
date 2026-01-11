@@ -1,95 +1,137 @@
-<div class="container mt-5">
+<div class="master-layout">
 
-  <div class="row g-4">
-    <!-- Department Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container">
-  <h2 class="mb-4 text-primary fw-bold text-center">Department Master</h2>
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-        <form (ngSubmit)="saveDepartment()">
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="layers"></lucide-icon>
 
-          <!-- Branch -->
-          <div class="form-column mb-3">
-            <label>Branch</label>
-            <select [(ngModel)]="department.branchID" name="branchID" class="form-select" required>
-              <option value="" disabled>Select Branch</option>
-              <option *ngFor="let branch of branches" [value]="branch.branchID">{{ branch.branchName }}</option>
-            </select>
-          </div>
-
-          <!-- Department Code
-          <div class="form-column mb-3">
-            <label>Department Code</label>
-            <input type="text" [(ngModel)]="department.departmentCode" name="departmentCode" class="form-control" required>
-          </div> -->
-
-          <!-- Department Name -->
-          <div class="form-column mb-3">
-            <label>Department Name</label>
-            <input type="text" [(ngModel)]="department.departmentName" name="departmentName" class="form-control" required>
-          </div>
-
-          <!-- Active Checkbox -->
-          <div class="form-column mb-3 checkbox-column">
-            <label>
-              <input type="checkbox" [(ngModel)]="department.isActive" name="isActive"> Active
-            </label>
-          </div>
-
-          <!-- Buttons -->
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-              {{ department.departmentID ? 'Update' : 'Save' }}
-            </button>
-            <button type="button" class="btn btn-outline" (click)="cancelEdit()">Cancel</button>
-          </div>
-        </form>
+      <div>
+        <div class="master-title-text">DEPARTMENT MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Department Table -->
-    <div class="col-lg-8 col-md-7">
-      <div class="form-container">
-        <h5 class="mb-3 text-secondary">Department List</h5>
-        <div class="table-responsive">
-          <table class="table-common align-middle">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Branch</th>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Active</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let dept of departments">
-                <td>{{ dept.departmentID }}</td>
-                <td>{{ getBranchName(dept.branchID) }}</td>
-                <td>{{ dept.departmentCode }}</td>
-                <td>{{ dept.departmentName }}</td>
-                <td>
-                  <span class="badge" [ngClass]="dept.isActive ? 'bg-success' : 'bg-danger'">
-                    {{ dept.isActive ? 'Yes' : 'No' }}
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-outline-warning me-1" (click)="editDepartment(dept)" title="Edit">
-                    <i class="bi bi-pencil-fill"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteDepartment(dept.departmentID)" title="Delete">
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="departments.length === 0">
-                <td colspan="6" class="text-center text-muted">No departments found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newDepartment()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD DEPARTMENT
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshDepartments()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
     </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL DEPARTMENTS : {{ departments.length }}
+    </div>
+
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE DEPARTMENT</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveDepartment()"
+        >
+          {{ department.departmentID ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="cancelEdit()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+    <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Branch -->
+        <div class="form-column">
+          <label>Branch</label>
+          <select
+            class="input-common"
+            [(ngModel)]="department.branchID"
+            name="branchID"
+            required
+          >
+            <option value="">Select Branch</option>
+            <option
+              *ngFor="let branch of branches"
+              [value]="branch.branchID"
+            >
+              {{ branch.branchName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Department Name -->
+        <div class="form-column">
+          <label>Department Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="department.departmentName"
+            name="departmentName"
+            required
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="department.isActive"
+              name="isActive"
+            />
+            <span class="slider"></span>
+            <span class="switch-text">
+              {{ department.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="departments"
+      [columns]="departmentColumns"
+      title="ALL DEPARTMENTS"
+      companyName="SmartBillPro"
+      (edit)="editDepartment($event)"
+      (delete)="deleteDepartment($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

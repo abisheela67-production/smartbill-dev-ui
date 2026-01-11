@@ -1,73 +1,118 @@
-<div class="container mt-5">
+<div class="master-layout">
 
-  <div class="row g-4">
-    <!-- Role Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container">
-  <h2 class="mb-4 text-primary fw-bold text-center">Role Master</h2>
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-        <form >
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="shield"></lucide-icon>
 
-        
-          <div class="form-column mb-3">
-            <label>Role Name</label>
-            <input type="text" [(ngModel)]="role.roleName" name="roleName" class="form-control" required>
-          </div>
-
-          <div class="form-column mb-3 checkbox-column">
-            <label>
-              <input type="checkbox" [(ngModel)]="role.isActive" name="isActive"> Active
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" (click)="saveOrUpdateRole()">
-              {{ role.roleID > 0 ? 'Update' : 'Save' }}
-            </button>
-            <button type="button" class="btn btn-outline" (click)="resetForm()">Reset</button>
-          </div>
-        </form>
+      <div>
+        <div class="master-title-text">ROLE MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Role Table -->
-    <div class="col-lg-8 col-md-7">
-      <div class="form-container">
-        <div class="table-responsive">
-          <table class="table-common align-middle">
-            <thead>
-              <tr>
-                <th>Role Code</th>
-                <th>Role Name</th>
-                <th>Status</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let r of roles">
-                <td>{{ r.roleCode }}</td>
-                <td>{{ r.roleName }}</td>
-                <td>
-                  <span class="badge" [ngClass]="r.isActive ? 'bg-success' : 'bg-danger'">
-                    {{ r.isActive ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-outline-warning me-1" (click)="editRole(r)" title="Edit">
-                    <i class="bi bi-pencil-fill"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteRole(r)" title="Delete">
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="roles.length === 0">
-                <td colspan="4" class="text-center text-muted">No roles found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newRole()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD ROLE
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshRoles()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
     </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL ROLES : {{ roles.length }}
+    </div>
+
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE ROLE</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateRole()"
+        >
+          {{ role.roleID > 0 ? "UPDATE" : "SAVE" }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetForm()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+    <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Role Name -->
+        <div class="form-column full-width">
+          <label>Role Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="role.roleName"
+            name="roleName"
+            required
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="role.isActive"
+              name="isActive"
+            />
+            <span class="slider"></span>
+            <span class="switch-text">
+              {{ role.isActive ? "Active" : "Inactive" }}
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="roles"
+      [columns]="roleColumns"
+      title="ALL ROLES"
+      companyName="SmartBillPro"
+      (edit)="editRole($event)"
+      (delete)="deleteRole($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

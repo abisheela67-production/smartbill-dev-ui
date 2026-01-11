@@ -7,6 +7,9 @@ import { SweetAlertService } from '../../../services/properties/sweet-alert.serv
 import { FocusOnKeyDirective } from '../../../directives/focus-on-key.directive';
 import { Category, SubCategory } from '../../models/common-models/master-models/master';
 import { CommonserviceService } from '../../../services/commonservice.service';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { share } from 'rxjs';
+import { SharedModule } from '../../../shared/shared.module';
 
 
 interface ApiResponse {
@@ -17,7 +20,7 @@ interface ApiResponse {
 @Component({
   selector: 'app-sub-category',
    standalone: true,
-  imports: [CommonModule, FormsModule, FocusOnKeyDirective],
+  imports: [CommonModule, FormsModule, FocusOnKeyDirective,MasterTableViewComponent,SharedModule],
   templateUrl: './sub-category.component.html',
   styleUrls: ['./sub-category.component.css']
 })
@@ -26,6 +29,13 @@ export class SubCategoryComponent {
   categories: Category[] = [];
   subCategory: SubCategory = this.newSubCategory();
   duplicateError = false;
+  subCategoryColumns = [
+    { field: 'subCategoryName', header: 'SubCategory Name' },
+    { field: 'categoryName', header: 'Category Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
+  isEditMode = false;
+  isFormEnabled = false;
 
   constructor(
     private readonly masterService: MasterService,
@@ -38,6 +48,16 @@ export class SubCategoryComponent {
     this.loadSubCategories();
   }
 
+    newSubCategoryCreate() {
+    this.resetSubCategory();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshSubCategories() {
+    this.resetSubCategory();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   /** Create new blank subcategory */
   private newSubCategory(): SubCategory {
     const now = new Date().toISOString();

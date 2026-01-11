@@ -10,9 +10,11 @@ import {
   Department,
   Role,
 } from '../../pages/models/common-models/companyMaster';
+import { SharedModule } from '../../shared/shared.module';
+import { MasterTableViewComponent } from '../../pages/components/master-table-view/master-table-view.component';
 @Component({
   selector: 'app-usermaster',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SharedModule, MasterTableViewComponent],
   templateUrl: './usermaster.component.html',
   styleUrl: './usermaster.component.css',
 })
@@ -23,8 +25,11 @@ export class UsermasterComponent {
   branches: Branch[] = [];
   departments: Department[] = [];
   roles: Role[] = [];
+  isEditMode = false;
+  isFormEnabled = false;
 
-  constructor(private commonservice: CommonserviceService,
+  constructor(
+    private commonservice: CommonserviceService,
     private swallservice: SweetAlertService
   ) {}
 
@@ -34,6 +39,21 @@ export class UsermasterComponent {
     this.loadDepartments();
     this.loadRoles();
     this.loadUsers();
+    this.isFormEnabled = false;
+  }
+  userColumns = [
+    { field: 'userName', header: 'User Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
+  newUser() {
+    this.refreshUsers();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshUsers() {
+    this.resetForm();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
   }
   loadCompanies() {
     this.commonservice.getCompanies().subscribe({
@@ -45,7 +65,6 @@ export class UsermasterComponent {
     this.commonservice.getBranches().subscribe({
       next: (data) => (this.branches = data),
       error: (err) => console.error('Error fetching branches:', err),
-
     });
   }
 
@@ -63,7 +82,6 @@ export class UsermasterComponent {
         console.error(' Error loading roles:', err);
 
         alert('Error loading role list.');
-
       },
     });
   }
@@ -93,27 +111,31 @@ export class UsermasterComponent {
       next: (res) => (this.users = res),
       error: (err) => {
         console.error('Error loading users:', err);
-
-
       },
     });
   }
 
   saveOrUpdateUser() {
     if (!this.user.userName) {
-      this.swallservice.error("Validation Error", "User Name and Email are required!");
+      this.swallservice.error(
+        'Validation Error',
+        'User Name and Email are required!'
+      );
       return;
     }
 
     this.commonservice.saveUser(this.user).subscribe({
       next: (id) => {
-        this.swallservice.success("Success", this.user.userID > 0 ? 'User updated!' : 'User created!');
+        this.swallservice.success(
+          'Success',
+          this.user.userID > 0 ? 'User updated!' : 'User created!'
+        );
         this.loadUsers();
         this.resetForm();
       },
       error: (err) => {
         console.error(' Error saving user:', err);
-        this.swallservice.error("Error", "Error saving user!");
+        this.swallservice.error('Error', 'Error saving user!');
       },
     });
   }
@@ -131,7 +153,7 @@ export class UsermasterComponent {
     this.commonservice.saveUser(u).subscribe({
       next: (id) => {
         console.log(' User deleted (soft delete), ID:', id);
-        this.swallservice.success("Deleted", "User deleted successfully!");
+        this.swallservice.success('Deleted', 'User deleted successfully!');
         this.loadUsers();
       },
       error: (err) => {

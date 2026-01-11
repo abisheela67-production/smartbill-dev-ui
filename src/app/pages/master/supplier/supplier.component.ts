@@ -9,12 +9,15 @@ import { InputRestrictDirective } from '../../../directives/input-restrict.direc
 import { CommonserviceService } from '../../../services/commonservice.service';
 import { Observable } from 'rxjs';
 import { Supplier } from '../../models/common-models/master-models/master';
+import { SharedModule } from '../../../shared/shared.module';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
 
-interface ApiResponse { success: boolean; message?: string; }
+interface ApiResponse 
+{ success: boolean; message?: string; }
 @Component({
   selector: 'app-supplier',
     standalone: true,
-  imports: [FormsModule, CommonModule, InputRestrictDirective, FocusOnKeyDirective],
+  imports: [FormsModule, CommonModule,SharedModule,MasterTableViewComponent, FocusOnKeyDirective],
   templateUrl: './supplier.component.html',
   styleUrl: './supplier.component.css'
 })
@@ -22,6 +25,13 @@ export class SupplierComponent {
   suppliers: Supplier[] = [];
   supplier!: Supplier;
   duplicateError = false;
+
+    supplierColumns = [
+    { field: 'supplierName', header: 'Supplier Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
+  isEditMode = false;
+  isFormEnabled = false;
 
   constructor(
     private readonly masterService: MasterService,
@@ -33,6 +43,17 @@ export class SupplierComponent {
   ngOnInit() {
     this.resetSupplier();
     this.loadSuppliers();
+    this.isFormEnabled = false;
+  }
+    newSupplierCreate() {
+    this.resetSupplier();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshSuppliers() {
+    this.resetSupplier();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
   }
 
   private newSupplier(): Supplier {

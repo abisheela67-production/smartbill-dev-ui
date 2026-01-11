@@ -39,8 +39,6 @@ interface ApiResponse {
     CommonModule,
     InputDataGridComponent,
     SharedModule,
-    IconsModule,
-    GroupBoxComponent,
   ],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],

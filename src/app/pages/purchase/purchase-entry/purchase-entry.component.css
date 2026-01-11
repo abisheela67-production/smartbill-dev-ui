@@ -1,65 +1,213 @@
-/* BIG GRID OUTER WRAPPER */
-.grid-container {
-  position: relative;
-  width: 100%;
-  min-height: 500px;   /* reserve space for popup */
+/* ================================
+   RESET & BASE
+================================ */
+* {
+  box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* ================================
+   HEADER BAR
+================================ */
+.master-top-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 16px;
+}
+
+.master-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.master-title-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1d1160;
+}
+
+.master-subtitle-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #1d1160;
+  border-radius: 6px;
+  background: #fff;
+  color: #1d1160;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #f3f4ff;
+}
+
+/* ================================
+   PAGE LAYOUT
+================================ */
+.page-layout {
+  height: calc(100vh - 110px);
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: auto 1fr;
+  gap: 12px;
+  padding: 12px 12px 55px;
+  overflow: hidden;
+}
+
+/* ================================
+   FORM SECTION
+================================ */
+.form-section {
+  grid-column: 1 / -1;
+  background: #fff;
+  padding: 16px 18px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 8px;
+}
+
+/* ---- 3 column layout ---- */
+.form-grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 14px 20px;
+  width: 100%;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-field label {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #444;
+}
+
+.form-field input,
+.form-field select {
+  width: 100% !important;
+  height: 38px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #1d1160;
+  box-shadow: 0 0 0 2px rgba(29,17,96,0.15);
+}
+
+/* Date input fix */
+.form-field input[type="date"] {
+  color: #000;
+  background: #fff;
+}
+
+/* Save buttons */
+.save-field {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.save-btn {
+  background: #1d1160;
+  color: #fff;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background: #140c44;
+}
+
+/* ================================
+   GRID CONTAINER (PURCHASE GRID)
+================================ */
+.grid-container {
+  grid-column: 1 / 2;
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 12px;     /* 👈 moved grid DOWN */
+  border-radius: 8px;
+}
+
+/* ================================
+   POPUP GRID
+================================ */
 .popup-grid {
   position: absolute;
-
-  top: calc(50% + 110px);   /* ⬅⬅ moved further down */
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   width: 600px;
-  background: #ffffff;
-  border: 1px solid #bfbfbf;
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 6px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-
   z-index: 5000;
-  padding: 0;
 }
 
-/* Ensure small-grid expands full width */
 .popup-grid app-small-grid {
   display: block;
   width: 100%;
 }
 
-/* Close button */
 .popup-close-btn {
   position: absolute;
   right: 8px;
-  top: 8px;
+  top: 6px;
   background: transparent;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  opacity: 0.6;
-}
-.popup-close-btn:hover {
-  opacity: 1;
 }
 
+/* ================================
+   TOTAL SUMMARY PANEL
+================================ */
 .total-summary {
+  grid-column: 2 / 3;
   width: 320px;
   padding: 12px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
   background: #fafafa;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
+  position: sticky;
+  top: 140px;
+  height: fit-content;
   box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
 .total-row {
-  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .total-row label {
@@ -67,14 +215,14 @@
   font-weight: 600;
 }
 
-.total-input {
+.total-input,
+.textno {
   width: 140px;
-  text-align: right;
   padding: 4px 6px;
-  background: #f3f3f3;
+  text-align: right;
   border: 1px solid #ccc;
   border-radius: 4px;
-  pointer-events: none;
+  background: #f3f3f3;
 }
 
 .highlight {
@@ -84,14 +232,68 @@
 
 .highlight-red {
   background: #ffe7e7;
-  font-weight: bold;
   color: #b00000;
+  font-weight: bold;
 }
 
+/* ================================
+   SHORTCUT BAR
+================================ */
+.shortcut-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+  width: 100%;
+  background: #1d1160;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
 
-.textno{
-  width: 140px;
-  text-align: right;
-height: 30px;
+.pos-shortcuts-inner {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
 
+.skey span {
+  background: #ffb703;
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.sep {
+  opacity: 0.6;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 1100px) {
+  .form-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .total-summary {
+    position: relative;
+    top: 0;
+    width: 100%;
+  }
+
+  .form-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
 }

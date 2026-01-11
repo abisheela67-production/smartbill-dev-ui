@@ -14,10 +14,10 @@
       <div class="user-menu" (click)="toggleUserDropdown($event)">
         <div class="user-info">
           <span class="username">
-            {{ (getCurrentUserName() || 'User') | titlecase }}
+            {{ getCurrentUserName() || "User" | titlecase }}
           </span>
           <span class="role">
-            {{ (getCurrentUserRole() || 'Guest') | titlecase }}
+            {{ getCurrentUserRole() || "Guest" | titlecase }}
           </span>
         </div>
         <lucide-angular name="chevron-down"></lucide-angular>
@@ -101,10 +101,7 @@
 
       <ul class="mobile-submenu" *ngIf="item.expanded">
         <li *ngFor="let sub of item.children">
-          <a
-            [routerLink]="sub.route"
-            (click)="closeMobileMenu()"
-          >
+          <a [routerLink]="sub.route" (click)="closeMobileMenu()">
             {{ sub.label }}
           </a>
         </li>

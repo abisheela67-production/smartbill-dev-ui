@@ -22,6 +22,8 @@ import {
   Service,
 } from '../../models/common-models/master-models/master';
 import { AuthService } from '../../../authentication/auth-service.service';
+import { MasterTableViewComponent } from '../../components/master-table-view/master-table-view.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 interface ApiResponse {
   success: boolean;
@@ -34,11 +36,17 @@ interface ApiResponse {
     CommonModule,
     InputRestrictDirective,
     FocusOnKeyDirective,
+    SharedModule,
+    MasterTableViewComponent,
   ],
   templateUrl: './service-master.component.html',
   styleUrl: './service-master.component.css',
 })
 export class ServiceMasterComponent {
+  serviceColumns = [
+    { field: 'serviceName', header: 'SERVICE Name' },
+    { field: 'isActive', header: 'Active' },
+  ];
   services: Service[] = [];
   service!: Service;
   duplicateError = false;
@@ -46,6 +54,8 @@ export class ServiceMasterComponent {
   categories: Category[] = [];
   hsnCodes: HSN[] = [];
   taxes: Tax[] = [];
+  isEditMode = false;
+  isFormEnabled = false;
 
   constructor(
     private readonly masterService: MasterService,
@@ -59,8 +69,19 @@ export class ServiceMasterComponent {
     this.resetService();
     this.loadServices();
     this.loadDropdowns();
+    this.isFormEnabled = false;
   }
 
+  newServiceCreate() {
+    this.resetService();
+    this.isEditMode = false;
+    this.isFormEnabled = true;
+  }
+  refreshServices() {
+    this.resetService();
+    this.isEditMode = false;
+    this.isFormEnabled = false;
+  }
   private newService(): Service {
     const now = new Date().toISOString();
     return {
@@ -73,12 +94,12 @@ export class ServiceMasterComponent {
       cessID: 0,
       serviceCharge: 0,
       isActive: true,
-     
+
       createdByUserID: this.commonService.getCurrentUserId(),
-      createdSystemName:   this.authService.userName || 'admin',
+      createdSystemName: this.authService.userName || 'admin',
       createdAt: now,
       updatedByUserID: this.commonService.getCurrentUserId(),
-      updatedSystemName:  this.authService.userName || 'admin',
+      updatedSystemName: this.authService.userName || 'admin',
       updatedAt: now,
     };
   }

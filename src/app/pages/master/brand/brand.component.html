@@ -1,150 +1,141 @@
-<div class="container mt-5">
-  <div class="row g-4">
+<div class="master-layout">
 
-    <!-- Brand Form -->
-    <div class="col-lg-4 col-md-5">
-      <div class="form-container p-4">
-        <h2>Brand Master</h2>
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-        <form #brandForm="ngForm" >
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="tag"></lucide-icon>
 
-          <!-- Brand Name -->
-          <div class="form-column mb-3">
-            <label for="brandName" class="required">Brand Name</label>
-            <input
-              type="text"
-              id="brandName"
-              class="form-control"
-              [(ngModel)]="brand.brandName"
-              name="brandName"
-              required
-              [autoFocus]="true"    
-              #brandName="ngModel"
-              (ngModelChange)="checkDuplicate()"
-              appFocusOnKey="description"
-              [autoSelectNext]="true"
-              [ngClass]="{
-                'is-warning': duplicateError
-              }"
-            />
-            <div class="text-danger" *ngIf="brandName.invalid">
-              Brand Name is required.
-            </div>
-            <div class="text-warning small mt-1" *ngIf="duplicateError">
-              This brand already exists!
-            </div>
+      <div>
+        <div class="master-title-text">BRAND MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newBrand()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD BRAND
+      </button>
+
+      <button class="master-btn-primary" type="button" (click)="refreshBrands()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL BRANDS : {{ brands.length }}
+    </div>
+
+  </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE BRAND</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateBrand()"
+          [disabled]="duplicateError"
+        >
+          {{ brand.brandID ? 'UPDATE' : 'SAVE' }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetBrand()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+  <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Brand Name -->
+        <div class="form-column full-width">
+          <label>Brand Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="brand.brandName"
+            name="brandName"
+            required
+            (ngModelChange)="checkDuplicate()"
+            [ngClass]="{ 'is-warning': duplicateError }"
+            appFocusOnKey="description"
+            [autoFocus]="true"
+            [autoSelectNext]="true"
+          />
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            This brand already exists!
           </div>
+        </div>
 
-          <!-- Description -->
-          <div class="form-column mb-3">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              [(ngModel)]="brand.description"
-              name="description"
-              rows="3"
-              appFocusOnKey="isActive"
-              [autoSelectNext]="true"
-            ></textarea>
-          </div>
+        <!-- Description -->
+        <div class="form-column full-width">
+          <label>Description</label>
+          <textarea
+            class="input-common"
+            rows="3"
+            [(ngModel)]="brand.description"
+            name="description"
+            appFocusOnKey="isActive"
+            [autoSelectNext]="true"
+          ></textarea>
+        </div>
 
-          <!-- Active Toggle -->
-          <div class="form-check form-switch mb-3">
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+
+          <label class="switch">
             <input
               type="checkbox"
-              class="form-check-input"
-              id="isActive"
               [(ngModel)]="brand.isActive"
               name="isActive"
               appFocusOnKey="saveBtn"
             />
-            <label class="form-check-label" for="isActive">
+            <span class="slider"></span>
+            <span class="switch-text">
               {{ brand.isActive ? 'Active' : 'Inactive' }}
-            </label>
-          </div>
-
-          <!-- Buttons -->
-          <div class="form-actions d-flex gap-2">
-            <button
-             (click)="saveOrUpdateBrand()"
-              type="submit"
-              id="saveBtn"
-              class="btn btn-primary flex-fill"
-              [disabled]="brandForm.invalid || duplicateError"
-               
-            >
-              <i class="bi bi-save me-1"></i>
-              {{ brand.brandID ? 'Update' : 'Save' }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline flex-fill"
-              (click)="resetBrand()"
-            >
-              <i class="bi bi-arrow-clockwise me-1"></i> Reset
-            </button>
-          </div>
-
-        </form>
-      </div>
-    </div>
-
-    <!-- Brand Table -->
-    <div class="col-lg-8 col-md-7">
-      <div class="form-container p-4">
-        <h5>Brand List</h5>
-        <div class="table-responsive">
-          <table class="table-common">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Brand Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let b of brands; let i = index"
-                [class.table-warning]="brand.brandID === b.brandID"
-              >
-                <td>{{ i + 1 }}</td>
-                <td>{{ b.brandName }}</td>
-                <td>{{ b.description }}</td>
-                <td>
-                  <span class="badge" [ngClass]="b.isActive ? 'bg-success' : 'bg-danger'">
-                    {{ b.isActive ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="text-center">
-                  <button
-                    class="btn btn-sm"
-                    title="Edit"
-                    (click)="editBrand(b)"
-                  >
-                    <i class="bi bi-pencil-fill"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm"
-                    title="Delete"
-                    (click)="deleteBrand(b)"
-                  >
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="brands.length === 0">
-                <td colspan="5" class="text-center text-muted">
-                  No brands found.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            </span>
+          </label>
         </div>
+
       </div>
-    </div>
+
+    </fieldset>
 
   </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="brands"
+      [columns]="brandColumns"
+      title="ALL BRANDS"
+      companyName="SmartBillPro"
+      (edit)="editBrand($event)"
+      (delete)="deleteBrand($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>

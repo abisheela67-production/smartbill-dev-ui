@@ -1,224 +1,214 @@
-<div class="container mt-5">
-  <div class="row g-4">
-    <!-- Service Form -->
-    <div class="col-12">
-      <div class="form-container p-4 rounded shadow-sm bg-light">
-        <h2>Service Master</h2>
-        <form #serviceForm="ngForm">
-          <!-- Row 1: Code, Name, Charge -->
-          <div class="form-row-three">
-            <div class="form-column">
-              <label for="serviceCode">Code</label>
-              <input
-                type="text"
-                id="serviceCode"
-                class="form-control"
-                [(ngModel)]="service.serviceCode"
-                name="serviceCode"
-                readonly
-                appInputRestrict="text"
-                appFocusOnKey
-                targetId="serviceName"
-              />
-            </div>
+<div class="master-layout">
 
-            <div class="form-column">
-              <label for="serviceName" class="required">Name</label>
-              <input
-                type="text"
-                id="serviceName"
-                class="form-control"
-                [(ngModel)]="service.serviceName"
-                name="serviceName"
-                required
-                appInputRestrict="letter"
-                appFocusOnKey
-                targetId="serviceCharge"
-                (ngModelChange)="checkDuplicate()"
-              />
-              <small *ngIf="duplicateError" class="text-danger">
-                Service Name already exists!
-              </small>
-            </div>
+  <!-- ================= TOP HEADER ================= -->
+  <div class="master-top-header">
 
-            <div class="form-column">
-              <label for="serviceCharge">Charge</label>
-              <input
-                type="text"
-                id="serviceCharge"
-                class="form-control"
-                [(ngModel)]="service.serviceCharge"
-                name="serviceCharge"
-                appInputRestrict="number"
-                appFocusOnKey
-                targetId="categoryID"
-              />
-            </div>
-          </div>
-
-          <!-- Row 2: Category, HSN, Tax, Cess -->
-          <div class="form-row-three mt-2">
-            <div class="form-column">
-              <label for="categoryID">Category</label>
-              <select
-                id="categoryID"
-                class="form-select"
-                [(ngModel)]="service.categoryID"
-                name="categoryID"
-                appFocusOnKey
-                targetId="hsnid"
-              >
-                <option [ngValue]="0">--Select--</option>
-                <option *ngFor="let c of categories" [ngValue]="c.categoryID">
-                  {{ c.categoryName }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-column">
-              <label for="hsnid">HSN</label>
-              <select
-                id="hsnid"
-                class="form-select"
-                [(ngModel)]="service.hsnid"
-                name="hsnid"
-                appFocusOnKey
-                targetId="taxID"
-              >
-                <option [ngValue]="0">--Select--</option>
-                <option *ngFor="let h of hsnCodes" [ngValue]="h.hsnid">
-                  {{ h.hsnCode }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-column">
-              <label for="taxID">Tax</label>
-              <select
-                id="taxID"
-                class="form-select"
-                [(ngModel)]="service.taxID"
-                name="taxID"
-                appFocusOnKey
-                targetId="cessID"
-              >
-                <option [ngValue]="0">--Select--</option>
-                <option *ngFor="let t of taxes" [ngValue]="t.taxID">
-                  {{ t.taxName }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-column">
-              <label for="cessID">Cess</label>
-              <select
-                id="cessID"
-                class="form-select"
-                [(ngModel)]="service.cessID"
-                name="cessID"
-                appFocusOnKey
-                targetId="isActive"
-              >
-                <option [ngValue]="0">--Select--</option>
-                <option *ngFor="let c of cesses" [ngValue]="c.cessID">
-                  {{ c.cessName }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Row 3: Active & Save -->
-          <div class="form-row-three align-items-center mt-2">
-            <div class="form-column d-flex align-items-center">
-              <input
-                type="checkbox"
-                id="isActive"
-                [(ngModel)]="service.isActive"
-                name="isActive"
-                appFocusOnKey
-                targetId="saveBtn"
-              />
-              <label for="isActive">Active</label>
-            </div>
-
-            <div class="form-column">
-              <button
-                type="button"
-                id="saveBtn"
-                class="btn btn-primary w-100"
-                (click)="saveOrUpdateService()"
-                [disabled]="serviceForm.invalid || duplicateError"
-              >
-                {{ service.serviceID ? "Update" : "Save" }}
-              </button>
-            </div>
-          </div>
-        </form>
+    <!-- LEFT -->
+    <div class="master-top-left">
+      <lucide-icon name="briefcase"></lucide-icon>
+      <div>
+        <div class="master-title-text">SERVICE MASTER</div>
+        <div class="master-subtitle-text">Enterprise Resource Planning</div>
       </div>
     </div>
 
-    <!-- Service Table -->
-    <div class="col-12 mt-4">
-      <div class="table-container">
-        <table class="table table-bordered table-hover table-common">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Charge</th>
-              <th>Category</th>
-              <th>HSN</th>
-              <th>Tax</th>
-              <th>Cess</th>
-              <th>Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let s of services; let i = index"
-              [class.table-warning]="service.serviceID === s.serviceID"
-            >
-              <td>{{ i + 1 }}</td>
-              <td>{{ s.serviceCode }}</td>
-              <td>{{ s.serviceName }}</td>
-              <td>{{ s.serviceCharge }}</td>
-              <td>{{ getCategoryName(s.categoryID) }}</td>
-              <td>{{ getHSNCode(s.hsnid) }}</td>
-              <td>{{ getTaxName(s.taxID) }}</td>
-              <td>{{ getCessName(s.cessID) }}</td>
+    <!-- RIGHT -->
+    <div class="master-top-right">
+      <button class="master-btn-primary" type="button" (click)="newServiceCreate()">
+        <lucide-icon name="plus"></lucide-icon>
+        ADD SERVICE
+      </button>
 
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="s.isActive ? 'bg-success' : 'bg-danger'"
-                  >{{ s.isActive ? "Active" : "Inactive" }}</span
-                >
-              </td>
-              <td class="text-center">
-                <button
-                  class="btn btn-sm btn-primary me-1"
-                  (click)="editService(s)"
-                >
-                  <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button
-                  class="btn btn-sm btn-danger"
-                  (click)="deleteService(s)"
-                >
-                  <i class="bi bi-trash-fill"></i>
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="services.length === 0">
-              <td colspan="10" class="text-center text-muted">
-                No services found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <button class="master-btn-primary" type="button" (click)="refreshServices()">
+        <lucide-icon name="refresh-cw"></lucide-icon>
+        REFRESH
+      </button>
     </div>
+
+    <!-- TOTAL -->
+    <div class="total-badge saas">
+      TOTAL SERVICES : {{ services.length }}
+    </div>
+
   </div>
+
+  <!-- ================= LEFT FORM PANEL ================= -->
+  <div class="master-panel">
+
+    <div class="master-header">
+      <div class="master-title">
+        <lucide-icon name="pencil"></lucide-icon>
+        <h2>CREATE SERVICE</h2>
+      </div>
+
+      <div class="master-actions">
+        <button
+          type="button"
+          class="master-btn-outline"
+          (click)="saveOrUpdateService()"
+          [disabled]="duplicateError"
+        >
+          {{ service.serviceID ? "UPDATE" : "SAVE" }}
+        </button>
+
+        <button
+          type="button"
+          class="master-btn-primary"
+          (click)="resetService()"
+        >
+          CLEAR
+        </button>
+      </div>
+    </div>
+
+   <fieldset [disabled]="!isFormEnabled" class="form-disabled-wrapper">
+
+      <div class="form-grid">
+
+        <!-- Code -->
+        <div class="form-column">
+          <label>Code</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="service.serviceCode"
+            name="serviceCode"
+            readonly
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Name -->
+        <div class="form-column">
+          <label>Service Name</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="service.serviceName"
+            name="serviceName"
+            required
+            appInputRestrict="letter"
+            appFocusOnKey
+            (ngModelChange)="checkDuplicate()"
+          />
+          <div class="text-warning small mt-1" *ngIf="duplicateError">
+            Service name already exists!
+          </div>
+        </div>
+
+        <!-- Charge -->
+        <div class="form-column">
+          <label>Charge</label>
+          <input
+            type="text"
+            class="input-common"
+            [(ngModel)]="service.serviceCharge"
+            name="serviceCharge"
+            appInputRestrict="number"
+            appFocusOnKey
+          />
+        </div>
+
+        <!-- Category -->
+        <div class="form-column">
+          <label>Category</label>
+          <select
+            class="input-common"
+            [(ngModel)]="service.categoryID"
+            name="categoryID"
+            appFocusOnKey
+          >
+            <option [ngValue]="0">Select Category</option>
+            <option *ngFor="let c of categories" [ngValue]="c.categoryID">
+              {{ c.categoryName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- HSN -->
+        <div class="form-column">
+          <label>HSN</label>
+          <select
+            class="input-common"
+            [(ngModel)]="service.hsnid"
+            name="hsnid"
+            appFocusOnKey
+          >
+            <option [ngValue]="0">Select HSN</option>
+            <option *ngFor="let h of hsnCodes" [ngValue]="h.hsnid">
+              {{ h.hsnCode }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Tax -->
+        <div class="form-column">
+          <label>Tax</label>
+          <select
+            class="input-common"
+            [(ngModel)]="service.taxID"
+            name="taxID"
+            appFocusOnKey
+          >
+            <option [ngValue]="0">Select Tax</option>
+            <option *ngFor="let t of taxes" [ngValue]="t.taxID">
+              {{ t.taxName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Cess -->
+        <div class="form-column">
+          <label>Cess</label>
+          <select
+            class="input-common"
+            [(ngModel)]="service.cessID"
+            name="cessID"
+            appFocusOnKey
+          >
+            <option [ngValue]="0">Select Cess</option>
+            <option *ngFor="let c of cesses" [ngValue]="c.cessID">
+              {{ c.cessName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="form-column">
+          <label>Status</label>
+          <label class="switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="service.isActive"
+              name="isActive"
+              appFocusOnKey
+            />
+            <span class="slider"></span>
+            <span class="switch-text">
+              {{ service.isActive ? "Active" : "Inactive" }}
+            </span>
+          </label>
+        </div>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+  <!-- ================= RIGHT TABLE PANEL ================= -->
+  <div class="master-panel">
+
+    <app-master-table-view
+      [data]="services"
+      [columns]="serviceColumns"
+      title="ALL SERVICES"
+      companyName="SmartBillPro"
+      (edit)="editService($event)"
+      (delete)="deleteService($event)"
+    >
+    </app-master-table-view>
+
+  </div>
+
 </div>
