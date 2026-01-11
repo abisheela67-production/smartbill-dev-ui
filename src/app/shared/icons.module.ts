@@ -9,6 +9,7 @@ import {
   Save,
   ChevronDown,
   X,
+  Home,
   Pencil,
   Trash2,
   Layers,
@@ -156,7 +157,8 @@ GitBranch,
       Layers,
       Folder,
       UploadCloud,
-      PlusCircle
+      PlusCircle,
+      Home
     }),
   ],
   exports: [LucideAngularModule],

@@ -46,7 +46,6 @@ export class DefaultDashboardComponent implements OnInit {
   // INIT
   // =======================
   ngOnInit(): void {
-    // 🔐 Company validation
     const cid = this.authService.companyId;
     if (!cid) {
       this.errorMessage = 'Company not found. Please login again.';
@@ -55,17 +54,13 @@ export class DefaultDashboardComponent implements OnInit {
 
     this.companyId = cid;
 
-    // 👤 Username
     this.userName = this.authService.userName ?? 'User';
 
-    // 📅 Today (yyyy-MM-dd)
     this.today = new Date().toISOString().split('T')[0];
 
-    // 📅 Default range: Today → Today
     this.fromDate = this.today;
     this.toDate = this.today;
 
-    // 🚀 Initial load
     this.loadDashboard();
   }
 

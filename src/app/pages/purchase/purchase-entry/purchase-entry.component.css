@@ -9,6 +9,7 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #f5f6fa;
 }
 
 /* ================================
@@ -76,13 +77,12 @@ body {
   padding: 16px 18px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  margin-bottom: 8px;
 }
 
-/* ---- 3 column layout ---- */
+/* 3 column desktop layout */
 .form-grid-4 {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px 20px;
   width: 100%;
 }
@@ -101,12 +101,13 @@ body {
 
 .form-field input,
 .form-field select {
-  width: 100% !important;
+  width: 100%;
   height: 38px;
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 13px;
+  background: #fff;
 }
 
 .form-field input:focus,
@@ -116,10 +117,8 @@ body {
   box-shadow: 0 0 0 2px rgba(29,17,96,0.15);
 }
 
-/* Date input fix */
 .form-field input[type="date"] {
   color: #000;
-  background: #fff;
 }
 
 /* Save buttons */
@@ -144,7 +143,7 @@ body {
 }
 
 /* ================================
-   GRID CONTAINER (PURCHASE GRID)
+   GRID CONTAINER
 ================================ */
 .grid-container {
   grid-column: 1 / 2;
@@ -152,8 +151,9 @@ body {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 12px;     /* 👈 moved grid DOWN */
+  margin-top: 14px;
   border-radius: 8px;
+  background: #fff;
 }
 
 /* ================================
@@ -274,26 +274,89 @@ body {
 }
 
 /* ================================
-   RESPONSIVE
+   TABLET
 ================================ */
 @media (max-width: 1100px) {
   .form-grid-4 {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page-layout {
+    grid-template-columns: 1fr 300px;
   }
 }
 
+/* ================================
+   MOBILE
+================================ */
 @media (max-width: 700px) {
-  .page-layout {
-    grid-template-columns: 1fr;
+
+  body {
+    overflow: auto;
   }
 
-  .total-summary {
-    position: relative;
-    top: 0;
-    width: 100%;
+  .page-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    padding-bottom: 60px;
   }
 
   .form-grid-4 {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
+  }
+
+  .grid-container {
+    max-height: 32vh;
+    margin-top: 16px;
+  }
+
+  .total-summary {
+    width: 100%;
+    position: relative;
+    top: 0;
+    margin-top: 12px;
+  }
+
+  /* Compact grid */
+  app-input-data-grid table thead th {
+    font-size: 11px;
+    padding: 6px 4px;
+  }
+
+  app-input-data-grid table tbody td {
+    font-size: 11px;
+    padding: 6px 4px;
+  }
+
+  .shortcut-bar {
+    height: 44px;
+  }
+
+  .pos-shortcuts-inner {
+    font-size: 11px;
+    gap: 8px;
+  }
+}
+
+/* ================================
+   SMALL MOBILE (320px)
+================================ */
+@media (max-width: 380px) {
+
+  .master-title-text {
+    font-size: 16px;
+  }
+
+  .form-field input,
+  .form-field select {
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .total-input,
+  .textno {
+    width: 120px;
+    font-size: 12px;
   }
 }

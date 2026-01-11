@@ -45,7 +45,14 @@
           *ngIf="item.children?.length"
           (click)="onMenuClick(item, $event)"
         >
-          {{ item.label }}
+          <lucide-angular
+            *ngIf="item.icon"
+            [name]="item.icon"
+            class="menu-icon"
+          ></lucide-angular>
+
+          <span>{{ item.label }}</span>
+
           <lucide-angular name="chevron-down"></lucide-angular>
         </a>
 
@@ -56,18 +63,30 @@
           [routerLink]="item.route"
           (click)="closeAllMenus()"
         >
-          {{ item.label }}
+          <lucide-angular
+            *ngIf="item.icon"
+            [name]="item.icon"
+            class="menu-icon"
+          ></lucide-angular>
+
+          <span>{{ item.label }}</span>
         </a>
 
         <!-- SUBMENU -->
-        <ul class="submenu" *ngIf="item.children?.length">
+        <ul class="submenu" *ngIf="item.children?.length && item.expanded">
           <li *ngFor="let sub of item.children">
             <a
               class="submenu-link"
               [routerLink]="sub.route"
               (click)="closeAllMenus()"
             >
-              {{ sub.label }}
+              <lucide-angular
+                *ngIf="sub.icon"
+                [name]="sub.icon"
+                class="submenu-icon"
+              ></lucide-angular>
+
+              <span>{{ sub.label }}</span>
             </a>
           </li>
         </ul>
@@ -95,14 +114,29 @@
   <ul class="mobile-nav-list">
     <li *ngFor="let item of navItems">
       <div class="mobile-parent" (click)="toggleMobileItem(item)">
-        {{ item.label }}
+        <div class="mobile-left">
+          <lucide-angular
+            *ngIf="item.icon"
+            [name]="item.icon"
+            class="menu-icon"
+          ></lucide-angular>
+
+          <span>{{ item.label }}</span>
+        </div>
+
         <lucide-angular name="chevron-down"></lucide-angular>
       </div>
 
       <ul class="mobile-submenu" *ngIf="item.expanded">
         <li *ngFor="let sub of item.children">
           <a [routerLink]="sub.route" (click)="closeMobileMenu()">
-            {{ sub.label }}
+            <lucide-angular
+              *ngIf="sub.icon"
+              [name]="sub.icon"
+              class="submenu-icon"
+            ></lucide-angular>
+
+            <span>{{ sub.label }}</span>
           </a>
         </li>
       </ul>
